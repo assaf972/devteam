@@ -1,4 +1,16 @@
 Rails.application.routes.draw do
+  # ── DevTeam CLI / VS Code Extension API ─────────────────────────────────
+  namespace :api do
+    namespace :v1 do
+      get  "me",               to: "users#me"
+      get  "token",            to: "users#token"
+      post "token/regenerate", to: "users#regenerate_token"
+      resources :tickets,  only: %i[index show update]
+      resources :projects, only: %i[index show]
+      post "checkout", to: "checkout#create"
+    end
+  end
+
   get "admin/users"
   get "admin/client_accounts"
   get "admin/settings"

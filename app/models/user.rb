@@ -27,11 +27,23 @@ class User < ApplicationRecord
   validates :name, presence: true
   validates :email, presence: true, uniqueness: true
 
+  before_create :generate_api_token
+
   def admin?
     role == "admin"
   end
 
   def display_name
     name.presence || email.split("@").first
+  end
+
+  def regenerate_api_token!
+    update!(api_token: SecureRandom.hex(32))
+  end
+
+  private
+
+  def generate_api_token
+    self.api_token ||= SecureRandom.hex(32)
   end
 end
