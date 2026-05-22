@@ -34,6 +34,11 @@
     <% end %>
   <% end %>
 
+  <%= link_to all_documents_path,
+        class: "sidebar-nav-item #{controller_name == 'all_documents' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">📁</span> Documents
+  <% end %>
+
   <hr class="sidebar-divider">
 
   <%# ── Chat Channels ─────────────────────────────────────────────────── %>
@@ -125,24 +130,31 @@
           Docs
         </div>
 
-        <%# README / Spec %>
-        <%= link_to project_documents_path(project, doc_type: "spec"), class: "sidebar-project-link" do %>
-          <span>📄</span> README / Spec
+        <%# All docs link %>
+        <%= link_to project_documents_path(project), class: "sidebar-project-link" do %>
+          <span>📁</span> All Documents
         <% end %>
 
-        <%# Project Backlog %>
-        <%= link_to project_documents_path(project, doc_type: "user_story"), class: "sidebar-project-link" do %>
-          <span>📋</span> Backlog
-        <% end %>
+        <% risks_doc   = @sidebar_project_docs["#{project.id}-risk_management"] %>
+        <% backlog_doc = @sidebar_project_docs["#{project.id}-user_story"] %>
+        <% testplan_doc = @sidebar_project_docs["#{project.id}-test_coverage"] %>
 
         <%# Risk Management %>
-        <%= link_to project_documents_path(project, doc_type: "risk_management"), class: "sidebar-project-link" do %>
+        <%= link_to(risks_doc ? document_path(risks_doc) : project_documents_path(project, doc_type: "risk_management"),
+              class: "sidebar-project-link") do %>
           <span>⚠️</span> Risks
         <% end %>
 
-        <%# Architecture %>
-        <%= link_to project_documents_path(project, doc_type: "architecture"), class: "sidebar-project-link" do %>
-          <span>🏗️</span> Architecture
+        <%# Backlog %>
+        <%= link_to(backlog_doc ? document_path(backlog_doc) : project_documents_path(project, doc_type: "user_story"),
+              class: "sidebar-project-link") do %>
+          <span>📋</span> Backlog
+        <% end %>
+
+        <%# Test Plan %>
+        <%= link_to(testplan_doc ? document_path(testplan_doc) : project_documents_path(project, doc_type: "test_coverage"),
+              class: "sidebar-project-link") do %>
+          <span>🧪</span> Test Plan
         <% end %>
 
         <%# Tickets %>

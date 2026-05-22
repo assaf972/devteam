@@ -117,5 +117,36 @@ he:
     milestones_header: "אבני דרך"
     due_today: "תאריך יעד היום"
     overdue: "באיחור"
+  common:
+    search: "חיפוש"
+    status: "סטטוס"
+    view: "צפייה"
+    edit: "עריכה"
+    delete: "מחיקה"
+    confirm_delete: "האם אתה בטוח שברצונך למחוק?"
+  customers:
+    title: "לקוחות"
+    new: "לקוח חדש"
+    search_placeholder: "חיפוש לקוחות…"
+    active_only: "פעילים בלבד"
+    name: "שם"
+    company: "חברה"
+    email: 'דוא"ל'
+    open_tickets: "כרטיסים פתוחים"
+    installations: "התקנות"
+    none_found: "לא נמצאו לקוחות."
+    created: "הלקוח נוצר בהצלחה."
+    updated: "הלקוח עודכן בהצלחה."
+    destroyed: "הלקוח נמחק."
+  customer_tickets:
+    created: "כרטיס תמיכה נוצר בהצלחה."
+    updated: "כרטיס תמיכה עודכן בהצלחה."
+    destroyed: "כרטיס תמיכה נמחק."
+    resolved: "הכרטיס סומן כפתור."
+    linked: "הכרטיס קושר לכרטיס פיתוח."
+  installations:
+    created: "ההתקנה נוצרה בהצלחה."
+    updated: "ההתקנה עודכנה בהצלחה."
+    destroyed: "ההתקנה נמחקה."
   errors:
     not_authorized: "אין לך הרשאה לבצע פעולה זו."

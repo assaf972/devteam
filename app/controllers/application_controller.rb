@@ -36,6 +36,12 @@ class ApplicationController < ActionController::Base
     # Open PR counts per project
     @sidebar_open_prs = PullRequest.where(status: :open).group(:project_id).count
 
+    # Canonical docs per project for sidebar links (risk, backlog, test plan)
+    sidebar_doc_types = %w[risk_management user_story test_coverage]
+    @sidebar_project_docs = Document
+      .where(project_id: @sidebar_projects.map(&:id), doc_type: sidebar_doc_types)
+      .index_by { |d| "#{d.project_id}-#{d.doc_type}" }
+
     # Chat rooms for sidebar channel list
     @sidebar_chat_rooms = ChatRoom.active.includes(:project).order(:room_type, :name)
 

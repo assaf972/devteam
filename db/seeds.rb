@@ -65,7 +65,7 @@ customer_users = customer_users_data.map do |attrs|
   CustomerUser.find_or_create_by!(email: attrs[:email]) do |cu|
     cu.name        = attrs[:name]
     cu.customer    = attrs[:client]
-    cu.password    = "  "
+    cu.password    = "password123"
     cu.password_confirmation = "password123"
   end
 end

@@ -11,6 +11,9 @@ Rails.application.routes.draw do
     end
   end
 
+  # Top-level documents overview (across all projects)
+  get "documents", to: "all_documents#index", as: :all_documents
+
   get "admin/users"
   get "admin/client_accounts"
   get "admin/settings"
