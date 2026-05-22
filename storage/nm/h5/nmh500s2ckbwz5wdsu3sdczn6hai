@@ -1,0 +1,22 @@
+# Story Specification: Build Vue 3 Composition API client statistics dashboard
+
+**Project:** Digital Internet Services
+**Kind:** Story
+**Priority:** High
+**Dev estimate:** 40.0h
+**QA estimate:** 16.0h
+
+## Overview
+
+Create a multi-panel statistics dashboard using Vue 3 Composition API + TypeScript. Panels: active sessions, bandwidth usage, top routes, error rate. Data sourced from NestJS /api/stats endpoints. Use Pinia for state management and Chart.js for visualisations.
+
+## Acceptance Criteria
+
+- [ ] Implementation matches the described behaviour
+- [ ] Unit tests cover the main code paths
+- [ ] QA sign-off on the acceptance criteria
+- [ ] Documentation updated if applicable
+
+## Technical Notes
+
+_To be filled in by the assigned developer._

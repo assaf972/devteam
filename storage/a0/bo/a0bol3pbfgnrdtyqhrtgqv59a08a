@@ -1,0 +1,22 @@
+# Story Specification: Configure Docker Windows Container CI/CD deployment pipeline
+
+**Project:** Digital Internet Services
+**Kind:** Story
+**Priority:** Medium
+**Dev estimate:** 24.0h
+**QA estimate:** 8.0h
+
+## Overview
+
+Build a Docker Windows Container image for the NestJS API. Define multi-stage Dockerfile (build → runtime). Configure the Jenkins pipeline to: build image, push to internal registry, deploy to staging via docker service update.
+
+## Acceptance Criteria
+
+- [ ] Implementation matches the described behaviour
+- [ ] Unit tests cover the main code paths
+- [ ] QA sign-off on the acceptance criteria
+- [ ] Documentation updated if applicable
+
+## Technical Notes
+
+_To be filled in by the assigned developer._

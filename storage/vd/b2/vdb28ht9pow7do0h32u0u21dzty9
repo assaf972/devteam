@@ -1,0 +1,22 @@
+# Spike Specification: Evaluate Bun native SQLite vs PostgreSQL for local dev workflow
+
+**Project:** Work Management System
+**Type:** Spike
+**Priority:** Low
+**Dev estimate:** 16.0h
+**QA estimate:** 0.0h
+
+## Overview
+
+Investigate using Bun's built-in SQLite for local development (faster setup, zero deps) vs keeping PostgreSQL everywhere. Produce a short decision document covering: performance on test suite, migration tooling compatibility, and Docker impact.
+
+## Acceptance Criteria
+
+- [ ] Implementation matches the described behaviour
+- [ ] Unit tests cover the main code paths
+- [ ] QA sign-off on the acceptance criteria
+- [ ] Documentation updated if applicable
+
+## Technical Notes
+
+_To be filled in by the assigned developer._

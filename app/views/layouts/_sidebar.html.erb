@@ -1,0 +1,199 @@
+<%# ── Left Sidebar ──────────────────────────────────────────────────────────── %>
+<aside class="app-sidebar">
+
+  <%# Workspace header %>
+  <div class="sidebar-workspace">
+    <%= link_to today_path, class: "sidebar-workspace-name" do %>
+      🚀 DevTeam Hub
+    <% end %>
+  </div>
+
+  <%# ── Navigation ──────────────────────────────────────────────────────── %>
+  <div class="sidebar-section-label">Navigation</div>
+
+  <%= link_to today_path,
+        class: "sidebar-nav-item #{controller_name == 'today' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">📋</span> Today
+  <% end %>
+
+  <%= link_to dashboard_path,
+        class: "sidebar-nav-item #{controller_name == 'dashboard' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">📊</span> Dashboard
+  <% end %>
+
+  <%= link_to meetings_path,
+        class: "sidebar-nav-item #{controller_name == 'meetings' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">📅</span> Meetings
+  <% end %>
+
+  <%= link_to notifications_path,
+        class: "sidebar-nav-item #{controller_name == 'notifications' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">🔔</span> Notifications
+    <% if @unread_notification_count > 0 %>
+      <span class="badge bg-danger is-small ms-auto" style="font-size:0.68rem;"><%= @unread_notification_count %></span>
+    <% end %>
+  <% end %>
+
+  <hr class="sidebar-divider">
+
+  <%# ── Chat Channels ─────────────────────────────────────────────────── %>
+  <div class="sidebar-section-label">
+    Channels
+    <%= link_to new_chat_room_path, class: "text-white", style: "opacity:0.4;font-size:1.1em;line-height:1;", title: "New channel" do %>+<% end %>
+  </div>
+
+  <% @sidebar_chat_rooms.each do |room| %>
+    <%= link_to chat_room_path(room),
+          class: "sidebar-channel #{params[:id].to_s == room.id.to_s && controller_name == 'chat_rooms' ? 'is-active' : ''}" do %>
+      <span class="channel-hash">#</span>
+      <span class="channel-name"><%= room.name %></span>
+      <% if room.project %>
+        <span style="font-size:0.65em;opacity:0.5;flex-shrink:0;"><%= room.project.name.truncate(8) %></span>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <hr class="sidebar-divider">
+
+  <%# ── Projects ───────────────────────────────────────────────────────── %>
+  <div class="sidebar-section-label">
+    Projects
+    <%= link_to projects_path, class: "text-white", style: "opacity:0.4;font-size:0.75rem;", title: "All projects" do %>All<% end %>
+  </div>
+
+  <% @sidebar_projects.each do |project| %>
+    <%
+      latest_ci     = @sidebar_latest_ci[project.id]
+      latest_deploy = @sidebar_latest_deploy[project.id]
+      ci_status     = latest_ci&.status || "none"
+    %>
+    <div class="sidebar-project" id="sidebar-project-<%= project.id %>">
+      <div class="sidebar-project-header"
+           data-action="click->sidebar#toggleProject">
+        <span class="ci-status-dot <%= ci_status %>"></span>
+        <span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+          <%= project.name %>
+        </span>
+        <span class="project-chevron">▶</span>
+      </div>
+
+      <div class="sidebar-project-links">
+
+        <%# CI %>
+        <%= link_to project_ci_runs_path(project), class: "sidebar-project-link" do %>
+          <span>⚙️</span>
+          <span>CI Runs</span>
+          <% if latest_ci %>
+            <span class="ci-status-dot <%= latest_ci.status %>" style="margin-left:auto;"></span>
+          <% end %>
+        <% end %>
+
+        <%# Deployments %>
+        <%= link_to project_deployments_path(project), class: "sidebar-project-link" do %>
+          <span>🚀</span>
+          <span>Deployments</span>
+          <% if latest_deploy %>
+            <span class="deploy-env-badge <%= latest_deploy.environment.to_s.downcase.gsub(/[^a-z]/, '') %>" style="margin-left:auto;">
+              <%= latest_deploy.environment %>
+            </span>
+          <% end %>
+        <% end %>
+
+        <%# PRs %>
+        <%= link_to project_pull_requests_path(project), class: "sidebar-project-link" do %>
+          <span>🔀</span>
+          <span>Pull Requests</span>
+          <% open_prs = @sidebar_open_prs[project.id].to_i %>
+          <% if open_prs > 0 %>
+            <span class="badge bg-info text-dark is-small" style="margin-left:auto;font-size:0.65rem;"><%= open_prs %></span>
+          <% end %>
+        <% end %>
+
+        <%# Versions %>
+        <%= link_to project_deployments_path(project, environment: "production"), class: "sidebar-project-link" do %>
+          <span>🏷️</span>
+          <span>Versions</span>
+          <% if latest_deploy %>
+            <span style="margin-left:auto;font-size:0.72rem;opacity:0.6;"><%= latest_deploy.version %></span>
+          <% end %>
+        <% end %>
+
+        <div style="height:0.3rem;"></div>
+
+        <%# Docs header %>
+        <div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.05em;color:rgba(255,255,255,0.25);padding:0.15rem 0.5rem 0.1rem;">
+          Docs
+        </div>
+
+        <%# README / Spec %>
+        <%= link_to project_documents_path(project, doc_type: "spec"), class: "sidebar-project-link" do %>
+          <span>📄</span> README / Spec
+        <% end %>
+
+        <%# Project Backlog %>
+        <%= link_to project_documents_path(project, doc_type: "user_story"), class: "sidebar-project-link" do %>
+          <span>📋</span> Backlog
+        <% end %>
+
+        <%# Risk Management %>
+        <%= link_to project_documents_path(project, doc_type: "risk_management"), class: "sidebar-project-link" do %>
+          <span>⚠️</span> Risks
+        <% end %>
+
+        <%# Architecture %>
+        <%= link_to project_documents_path(project, doc_type: "architecture"), class: "sidebar-project-link" do %>
+          <span>🏗️</span> Architecture
+        <% end %>
+
+        <%# Tickets %>
+        <%= link_to project_tickets_path(project), class: "sidebar-project-link" do %>
+          <span>🎫</span> Tickets
+        <% end %>
+
+        <%# External repo link %>
+        <% if project.repo_url.present? %>
+          <%= link_to project.repo_url, target: "_blank", rel: "noopener noreferrer",
+                class: "sidebar-project-link" do %>
+            <span>🔗</span> Repository ↗
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <hr class="sidebar-divider">
+
+  <%# ── Reports ──────────────────────────────────────────────────────── %>
+  <div class="sidebar-section-label">Reports</div>
+
+  <%= link_to reports_ci_summary_path,         class: "sidebar-nav-item" do %><span class="nav-icon">📈</span> CI Summary<% end %>
+  <%= link_to reports_deployment_summary_path, class: "sidebar-nav-item" do %><span class="nav-icon">🚀</span> Deployments<% end %>
+  <%= link_to reports_test_coverage_path,      class: "sidebar-nav-item" do %><span class="nav-icon">✅</span> Test Coverage<% end %>
+  <%= link_to reports_sprint_velocity_path,    class: "sidebar-nav-item" do %><span class="nav-icon">⚡</span> Velocity<% end %>
+
+  <% if current_user.respond_to?(:admin?) && current_user.admin? %>
+    <hr class="sidebar-divider">
+    <div class="sidebar-section-label">Admin</div>
+    <%= link_to admin_users_path,          class: "sidebar-nav-item" do %><span class="nav-icon">👥</span> Users<% end %>
+    <%= link_to admin_client_accounts_path, class: "sidebar-nav-item" do %><span class="nav-icon">🏢</span> Clients<% end %>
+  <% end %>
+
+  <%# ── User footer ──────────────────────────────────────────────────── %>
+  <div class="sidebar-user">
+    <div class="sidebar-user-avatar">
+      <%= current_user.display_name.first.upcase %>
+    </div>
+    <div style="flex:1;min-width:0;">
+      <div class="sidebar-user-name"><%= current_user.display_name %></div>
+      <div class="sidebar-user-status">
+        <%= link_to "Profile", edit_user_registration_path,
+              style: "color:rgba(255,255,255,0.4);font-size:0.72rem;text-decoration:none;" %>
+        &nbsp;·&nbsp;
+        <%= link_to "Sign out", destroy_user_session_path,
+              data: { turbo_method: :delete },
+              style: "color:rgba(255,255,255,0.4);font-size:0.72rem;text-decoration:none;" %>
+      </div>
+    </div>
+  </div>
+
+</aside>

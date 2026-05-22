@@ -1,0 +1,22 @@
+# Feature Specification: Support duplex printing profiles per printer
+
+**Project:** Print Server / TDI
+**Type:** Feature
+**Priority:** Low
+**Dev estimate:** 8.0h
+**QA estimate:** 2.0h
+
+## Overview
+
+Add per-printer duplex profile configuration. Operators should be able to define default duplex mode (none, long-edge, short-edge) per printer. Profile must persist across server restarts.
+
+## Acceptance Criteria
+
+- [ ] Implementation matches the described behaviour
+- [ ] Unit tests cover the main code paths
+- [ ] QA sign-off on the acceptance criteria
+- [ ] Documentation updated if applicable
+
+## Technical Notes
+
+_To be filled in by the assigned developer._

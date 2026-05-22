@@ -1,0 +1,22 @@
+# Story Specification: Implement RabbitMQ dead-letter exchange for failed message retry
+
+**Project:** TDI2
+**Kind:** Story
+**Priority:** High
+**Dev estimate:** 24.0h
+**QA estimate:** 8.0h
+
+## Overview
+
+Configure a dead-letter exchange (DLX) on the order-processing queue. Messages that fail after 3 attempts should be routed to a DLX with a 30-minute TTL before re-queuing. Add Serilog events for each DLX routing.
+
+## Acceptance Criteria
+
+- [ ] Implementation matches the described behaviour
+- [ ] Unit tests cover the main code paths
+- [ ] QA sign-off on the acceptance criteria
+- [ ] Documentation updated if applicable
+
+## Technical Notes
+
+_To be filled in by the assigned developer._

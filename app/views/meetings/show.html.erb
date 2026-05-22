@@ -1,0 +1,74 @@
+<% content_for :title, @meeting.title %>
+
+<div class="level">
+  <div class="level-left">
+    <div>
+      <h1 class="fw-bold"><%= @meeting.title %></h1>
+      <p class="subfw-bold fs-6">
+        <%= t("meetings.types.#{@meeting.meeting_type}") %> ·
+        <%= @meeting.scheduled_at.strftime('%d/%m/%Y %H:%M') %>
+        <% if @meeting.project %> · <%= link_to @meeting.project.name, @meeting.project %><% end %>
+      </p>
+    </div>
+  </div>
+  <div class="level-right">
+    <%= link_to "Edit", edit_meeting_path(@meeting), class: "btn btn-secondary btn-sm is-warning" %>
+    <%= link_to "📅 iCal", ical_meeting_path(@meeting), class: "btn btn-secondary btn-sm is-light" %>
+    <% if @meeting.status != 'completed' %>
+      <%= link_to "Join Meeting", join_meeting_path(@meeting), class: "btn btn-primary", target: "_blank" %>
+    <% end %>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-8">
+    <%# Jitsi embedded frame (optional – only if recording/embedded mode) %>
+    <% if @meeting.jitsi_room.present? && @meeting.status.in?(%w[scheduled in_progress]) %>
+      <div class="card p-3 mb-4">
+        <div class="level mb-2">
+          <div class="level-left"><h3 class="subfw-bold fs-5">📹 Video Meeting</h3></div>
+          <div class="level-right">
+            <%= link_to "Open in New Tab", @meeting.jitsi_url, target: "_blank", class: "btn btn-secondary btn-sm is-link is-light" %>
+          </div>
+        </div>
+        <iframe
+          src="<%= @meeting.jitsi_url %>"
+          allow="camera; microphone; fullscreen; display-capture"
+          style="width:100%; height:500px; border:0; border-radius:6px;"
+          title="Meeting: <%= @meeting.title %>">
+        </iframe>
+      </div>
+    <% end %>
+
+    <div class="card p-3 mb-3">
+      <h3 class="subfw-bold">Agenda</h3>
+      <div class="content"><%= simple_format(@meeting.agenda.presence || "No agenda set.") %></div>
+    </div>
+
+    <div class="card p-3 mb-3">
+      <h3 class="subfw-bold">Notes</h3>
+      <div class="content"><%= simple_format(@meeting.notes.presence || "No notes yet.") %></div>
+    </div>
+  </div>
+
+  <div class="col-4">
+    <div class="card p-3 mb-3">
+      <table class="table w-100 is-borderless fs-7">
+        <tr><th>Status</th><td><%= status_tag(@meeting.status) %></td></tr>
+        <tr><th>Organizer</th><td><%= @meeting.organizer&.display_name || '—' %></td></tr>
+        <tr><th>Duration</th><td><%= @meeting.duration_minutes || 60 %> min</td></tr>
+        <tr><th>Room</th><td><code><%= @meeting.jitsi_room %></code></td></tr>
+        <% if @meeting.recording_url.present? %>
+          <tr><th>Recording</th><td><%= link_to "▶ Watch", @meeting.recording_url, target: "_blank" %></td></tr>
+        <% end %>
+      </table>
+    </div>
+
+    <div class="card p-3 mb-3">
+      <h3 class="subfw-bold fs-6">Attendees (<%= @meeting.attendees.count %>)</h3>
+      <% @meeting.attendees.each do |user| %>
+        <p class="fs-7">👤 <%= user.display_name %></p>
+      <% end %>
+    </div>
+  </div>
+</div>

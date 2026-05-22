@@ -1,0 +1,211 @@
+<% content_for :title, "Ticket ##{@ticket.id} – #{@ticket.title}" %>
+
+<div class="row">
+  <%# ─── Left: ticket detail ─────────────────────────────────────────────── %>
+  <div class="col-8">
+    <div class="card p-3 mb-3">
+      <div class="level">
+        <div class="level-left">
+          <div>
+            <span class="badge bg-light text-dark">#<%= @ticket.id %></span>
+            <%# Kind badge %>
+            <%
+              kind_color = case @ticket.kind
+                when "story"      then "is-info"
+                when "meta_story" then "is-link"
+                when "bug_fix"    then "is-danger"
+                when "hotfix"     then "is-danger is-dark"
+                when "spike"      then "is-warning"
+                else "is-light"
+              end
+            %>
+            <span class="badge bg-secondary <%= kind_color %> ms-1"><%= @ticket.kind.humanize.gsub('_', ' ') %></span>
+            <%# Level badge %>
+            <%
+              level_color = case @ticket.level
+                when "trivial","simple"  then "is-success is-light"
+                when "moderate"          then "is-warning is-light"
+                when "complex","expert"  then "is-danger is-light"
+                else "is-light"
+              end
+            %>
+            <span class="badge bg-secondary <%= level_color %> ms-1" title="Complexity">⚙ <%= @ticket.level.capitalize %></span>
+            <%= priority_tag(@ticket.priority) %>
+            <%= status_tag(@ticket.status) %>
+          </div>
+        </div>
+        <div class="level-right">
+          <%= link_to "Edit", edit_ticket_path(@ticket), class: "btn btn-secondary btn-sm is-warning" %>
+          <%= link_to "Delete", ticket_path(@ticket), data: { turbo_method: :delete, turbo_confirm: "Delete this ticket?" }, class: "btn btn-secondary btn-sm is-danger" %>
+        </div>
+      </div>
+
+      <h1 class="fw-bold fs-4 mt-2"><%= @ticket.title %></h1>
+
+      <%# Estimations row %>
+      <% if @ticket.dev_estimate_hours.present? || @ticket.tester_estimate_hours.present? %>
+        <div class="d-flex flex-wrap gap-1 mb-2">
+          <% if @ticket.dev_estimate_hours.present? %>
+            <span class="badge bg-info text-dark is-light">🧑‍💻 Dev: <%= @ticket.dev_estimate_hours %>h</span>
+          <% end %>
+          <% if @ticket.tester_estimate_hours.present? %>
+            <span class="badge bg-warning-subtle text-warning-emphasis">🧪 QA: <%= @ticket.tester_estimate_hours %>h</span>
+          <% end %>
+        </div>
+      <% end %>
+
+      <div class="content"><%= simple_format(@ticket.description) %></div>
+
+      <%# How to Reproduce (bug_fix / hotfix only) %>
+      <% if @ticket.bug_kind? && @ticket.how_to_reproduce.present? %>
+        <div class="alert alert-warning p-3 mt-3">
+          <p class="fw-semibold mb-1">🐛 How to Reproduce</p>
+          <div class="content fs-7"><%= simple_format(@ticket.how_to_reproduce) %></div>
+        </div>
+      <% end %>
+
+      <div class="d-flex flex-wrap gap-1">
+        <% @ticket.tag_list.each do |tag| %>
+          <span class="badge bg-info text-dark is-light"><%= tag %></span>
+        <% end %>
+      </div>
+    </div>
+
+    <%# CI Runs %>
+    <div class="card p-3 mb-3">
+      <h3 class="subfw-bold"><%= t('nav.ci') %></h3>
+      <% if @ci_runs.any? %>
+        <table class="table w-100 fs-7">
+          <thead><tr><th>Build</th><th>Branch</th><th>Status</th><th>Duration</th><th>Log</th></tr></thead>
+          <tbody>
+            <% @ci_runs.each do |run| %>
+              <tr>
+                <td><%= link_to "##{run.build_number}", run %></td>
+                <td><code><%= run.branch_name %></code></td>
+                <td><%= status_tag(run.status) %></td>
+                <td><%= run.duration ? "#{run.duration} min" : "—" %></td>
+                <td><% if run.log_url.present? %><%= link_to "Log", run.log_url, target: "_blank", class: "btn btn-secondary btn-sm is-light" %><% end %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <p class="text-muted fs-7">No CI runs yet.</p>
+      <% end %>
+    </div>
+
+    <%# Comments %>
+    <div class="card p-3 mb-3" id="comments">
+      <h3 class="subfw-bold">Comments (<%= @comments.size %>)</h3>
+
+      <%# Branch assignment notification for current user %>
+      <% branch_notif = TicketBranchNotification
+           .where(recipient: current_user)
+           .where("params LIKE ?", "%\"ticket_id\":#{@ticket.id}%")
+           .order(created_at: :desc).first %>
+      <% if branch_notif %>
+        <% git_cmd = branch_notif.params.is_a?(Hash) ? branch_notif.params["git_command"] : JSON.parse(branch_notif.params.to_s)["git_command"] rescue nil %>
+        <% if git_cmd.present? %>
+          <div class="alert alert-info is-light p-3 mb-4">
+            <p class="fw-semibold mb-1">🔀 Your branch is ready</p>
+            <code class="fs-7"><%= git_cmd %></code>
+          </div>
+        <% end %>
+      <% end %>
+
+      <% @comments.each do |comment| %>
+        <article class="media mb-3" id="comment-<%= comment.id %>">
+          <div class="media-content">
+            <div class="content">
+              <p>
+                <strong><%= comment.author&.display_name || 'System' %></strong>
+                <small class="text-muted ms-2"><%= time_ago_in_words(comment.created_at) %> ago</small>
+                <br>
+                <%= simple_format(h(comment.body)) %>
+              </p>
+            </div>
+          </div>
+          <% if comment.author == current_user || current_user.admin? %>
+            <div class="media-right">
+              <%= button_to "✕",
+                    ticket_comment_path(@ticket, comment),
+                    method: :delete,
+                    data: { confirm: "Delete this comment?" },
+                    class: "btn-close" %>
+            </div>
+          <% end %>
+        </article>
+      <% end %>
+
+      <% if @comments.empty? %>
+        <p class="text-muted fs-7 mb-4">No comments yet. Be the first!</p>
+      <% end %>
+
+      <%# Comment form — only for project members %>
+      <% is_member = current_user.admin? || @ticket.project.members.include?(current_user) %>
+      <% if is_member %>
+        <hr>
+        <%= form_with url: ticket_comments_path(@ticket), method: :post, local: true do |f| %>
+          <div class="mb-3">
+            <%= f.text_area :body, class: "textarea", rows: 3,
+                  placeholder: "Add a comment… (supports plain text)" %>
+          </div>
+          <div class="">
+            <%= f.submit "Comment", class: "btn btn-primary btn-sm" %>
+          </div>
+        <% end %>
+      <% else %>
+        <p class="text-muted fs-7">Join the project to comment.</p>
+      <% end %>
+    </div>
+  </div>
+
+  <%# ─── Right: metadata ─────────────────────────────────────────────────── %>
+  <div class="col-4">
+    <div class="card p-3 mb-3">
+      <table class="table w-100 is-borderless fs-7">
+        <tr><th>Project</th><td><%= link_to @ticket.project.name, @ticket.project %></td></tr>
+        <tr><th>Kind</th><td><span class="badge bg-light text-dark is-small"><%= @ticket.kind.humanize.gsub('_',' ') %></span></td></tr>
+        <tr><th>Level</th><td><span class="badge bg-light text-dark is-small"><%= @ticket.level.capitalize %></span></td></tr>
+        <tr><th>Reporter</th><td><%= @ticket.owner&.display_name || '—' %></td></tr>
+        <tr><th>Assignee</th>
+          <td><%= @ticket.assignee&.display_name || content_tag(:span, 'Unassigned', class: 'has-text-grey') %></td>
+        </tr>
+        <tr><th>Sprint</th><td><%= @ticket.sprint&.name || '—' %></td></tr>
+        <tr><th>Points</th><td><%= @ticket.story_points || '—' %></td></tr>
+        <tr><th>Branch</th>
+          <td><% if @ticket.branch_name.present? %><code class="fs-7"><%= @ticket.branch_name %></code>
+              <% else %><span class="text-muted">none</span><% end %></td>
+        </tr>
+        <tr><th>Created</th><td><%= @ticket.created_at.strftime('%d/%m/%Y') %></td></tr>
+      </table>
+    </div>
+
+    <%# Pull Requests %>
+    <div class="card p-3 mb-3">
+      <h3 class="subfw-bold fs-6">Pull Requests</h3>
+      <% @pull_requests.each do |pr| %>
+        <div class="level is-mobile fs-7">
+          <div class="level-left">
+            <%= link_to "##{pr.pr_number} #{pr.title.truncate(30)}", pr.gitea_url.presence || '#', target: "_blank" %>
+          </div>
+          <div class="level-right"><%= status_tag(pr.status) %></div>
+        </div>
+      <% end %>
+      <% if @pull_requests.empty? %>
+        <p class="text-muted fs-7">No PRs linked.</p>
+      <% end %>
+    </div>
+
+    <%# Branches %>
+    <div class="card p-3 mb-3">
+      <h3 class="subfw-bold fs-6">Branches</h3>
+      <% @branches.each do |branch| %>
+        <p class="fs-7"><code><%= branch.name %></code> <%= status_tag(branch.status) %></p>
+      <% end %>
+      <% if @branches.empty? %>
+        <p class="text-muted fs-7">No branches. Assign a developer to auto-create.</p>
+      <% end %>
+    </div>
+  </div>
+</div>

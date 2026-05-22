@@ -1,0 +1,40 @@
+<% content_for :title, t('nav.projects') %>
+
+<div class="level">
+  <div class="level-left"><h1 class="fw-bold"><%= t('nav.projects') %></h1></div>
+  <div class="level-right"><%= link_to "New Project", new_project_path, class: "btn btn-primary" %></div>
+</div>
+
+<div class="row">
+  <% @projects.each do |project| %>
+    <div class="col-6">
+      <div class="card p-3 mb-3">
+        <div class="level">
+          <div class="level-left">
+            <div>
+              <p class="fw-bold fs-5"><%= link_to project.name, project %></p>
+              <p class="subfw-bold is-7 text-muted"><%= project.tech_stack %></p>
+            </div>
+          </div>
+          <div class="level-right">
+            <%= link_to "CI", project_ci_dashboard_path(project), class: "btn btn-secondary btn-sm is-light" %>
+          </div>
+        </div>
+        <p class="fs-7 mb-3"><%= project.description&.truncate(120) %></p>
+        <div class="d-flex flex-wrap gap-1">
+          <span class="badge bg-info text-dark is-light"><%= project.tickets.where.not(status: [:done, :closed]).count %> open tickets</span>
+          <span class="badge bg-warning-subtle text-warning-emphasis"><%= project.sprints.active.count %> active sprints</span>
+          <span class="badge bg-success-subtle text-success"><%= project.ci_runs.passed.where(created_at: 7.days.ago..Time.current).count %> builds passed</span>
+          <% if project.ci_runs.failed.where(created_at: 1.day.ago..Time.current).any? %>
+            <span class="badge bg-danger">⚠ CI Failing</span>
+          <% end %>
+        </div>
+        <div class="d-flex gap-2 align-items-end mt-3">
+          <%= link_to "Tickets", project_tickets_path(project), class: "btn btn-secondary btn-sm is-info is-light" %>
+          <%= link_to "Documents", project_documents_path(project), class: "btn btn-secondary btn-sm is-light" %>
+          <%= link_to "Deployments", project_deployments_path(project), class: "btn btn-secondary btn-sm is-light" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

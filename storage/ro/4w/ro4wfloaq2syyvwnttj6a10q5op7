@@ -1,0 +1,22 @@
+# Feature Specification: Kanban board with drag-and-drop using Next.js 16 Server Actions
+
+**Project:** Work Management System
+**Type:** Feature
+**Priority:** High
+**Dev estimate:** 32.0h
+**QA estimate:** 12.0h
+
+## Overview
+
+Implement a drag-and-drop Kanban board for sprint tickets using @dnd-kit/core. Board columns: Backlog, In Progress, In Review, Done. Column transitions should call Next.js 16 Server Actions to persist status changes. Optimistic UI updates required.
+
+## Acceptance Criteria
+
+- [ ] Implementation matches the described behaviour
+- [ ] Unit tests cover the main code paths
+- [ ] QA sign-off on the acceptance criteria
+- [ ] Documentation updated if applicable
+
+## Technical Notes
+
+_To be filled in by the assigned developer._

@@ -1,0 +1,150 @@
+# Files in the config/locales directory are used for internationalization and
+# are automatically loaded by Rails. If you want to use locales other than
+# English, add the necessary files in this directory.
+#
+# To use the locales, use `I18n.t`:
+#
+#     I18n.t "hello"
+#
+# In views, this is aliased to just `t`:
+#
+#     <%= t("hello") %>
+#
+# To use a different locale, set it with `I18n.locale`:
+#
+#     I18n.locale = :es
+#
+# This would use the information in config/locales/es.yml.
+#
+# To learn more about the API, please read the Rails Internationalization guide
+# at https://guides.rubyonrails.org/i18n.html.
+#
+# Be aware that YAML interprets the following case-insensitive strings as
+# booleans: `true`, `false`, `on`, `off`, `yes`, `no`. Therefore, these strings
+# must be quoted to be interpreted as strings. For example:
+#
+#     en:
+#       "yes": yup
+#       enabled: "ON"
+
+en:
+  app_name: "DevTeam Hub"
+  nav:
+    today: "Today"
+    dashboard: "Dashboard"
+    projects: "Projects"
+    tickets: "Tickets"
+    sprints: "Sprints"
+    meetings: "Meetings"
+    documents: "Documents"
+    ci: "CI/CD"
+    deployments: "Deployments"
+    reports: "Reports"
+    admin: "Admin"
+    notifications: "Notifications"
+    sign_out: "Sign Out"
+    profile: "Profile"
+  dashboard:
+    title: "Dashboard"
+    my_tickets: "My Tickets"
+    recent_ci: "Recent CI Runs"
+    recent_deployments: "Recent Deployments"
+    upcoming_meetings: "Upcoming Meetings"
+    failing_ci: "Failing Builds"
+    ci_stats: "CI Stats (Last 7 Days)"
+  tickets:
+    created: "Ticket created successfully."
+    updated: "Ticket updated successfully."
+    deleted: "Ticket deleted."
+    statuses:
+      backlog: "Backlog"
+      open: "Open"
+      in_progress: "In Progress"
+      in_review: "In Review"
+      testing: "Testing"
+      done: "Done"
+      closed: "Closed"
+      blocked: "Blocked"
+    priorities:
+      low: "Low"
+      medium: "Medium"
+      high: "High"
+      critical: "Critical"
+  ci_runs:
+    statuses:
+      pending: "Pending"
+      running: "Running"
+      passed: "Passed"
+      failed: "Failed"
+      cancelled: "Cancelled"
+      error: "Error"
+  deployments:
+    statuses:
+      pending: "Pending"
+      in_progress: "In Progress"
+      succeeded: "Succeeded"
+      failed: "Failed"
+      rolled_back: "Rolled Back"
+    types:
+      web_app: "Web App"
+      windows_installer: "Windows Installer"
+      windows_service: "Windows Service"
+      docker: "Docker"
+  meetings:
+    types:
+      daily_standup: "Daily Standup"
+      sprint_planning: "Sprint Planning"
+      sprint_review: "Sprint Review"
+      retrospective: "Retrospective"
+      demo: "Demo"
+      one_on_one: "1:1"
+      other: "Other"
+  documents:
+    types:
+      spec: "Specification"
+      risk_management: "Risk Management"
+      user_story: "User Story"
+      timeline: "Timeline"
+      test_coverage: "Test Coverage"
+      architecture: "Architecture"
+      runbook: "Runbook"
+      other: "Other"
+  users:
+    roles:
+      developer: "Developer"
+      team_lead: "Team Lead"
+      project_manager: "Project Manager"
+      admin: "Admin"
+      qa: "QA"
+  mailers:
+    ticket_assigned: "[DevTeam] Ticket #%{ticket_id} assigned to you: %{title}"
+    ticket_status_changed: "[DevTeam] Ticket #%{ticket_id} status changed to %{status}"
+    ci_failed: "[DevTeam] CI failed for ticket #%{ticket_id}"
+    deploy_failed: "[DevTeam] Deployment failed for ticket #%{ticket_id}"
+  today:
+    title: "My Day"
+    greeting: "Good day, %{name}!"
+    next_meeting: "Next meeting"
+    join: "Join"
+    active_tickets: "Active Tickets"
+    meetings: "Meetings"
+    ci_runs: "CI Runs Today"
+    deploys: "Deploys Today"
+    docs_changed: "Docs Changed"
+    milestones: "Milestones"
+    active_tickets_header: "My Active Tickets"
+    no_tickets: "No active tickets — enjoy the day!"
+    meetings_header: "Today's Meetings"
+    no_meetings: "No meetings scheduled today."
+    ci_header: "CI Runs Today"
+    no_ci: "No CI runs triggered today."
+    ci_jobs: "Quick CI Links"
+    deploys_header: "My Deployments Today"
+    no_deploys: "No deployments today."
+    docs_header: "Docs Updated Today"
+    no_docs: "No documents updated today."
+    milestones_header: "Milestones"
+    due_today: "Due Today"
+    overdue: "Overdue"
+  errors:
+    not_authorized: "You are not authorized to perform this action."

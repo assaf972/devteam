@@ -1,0 +1,22 @@
+# Story Specification: Auto-create git branch and notify assignee on ticket assignment
+
+**Project:** DevTeam Hub
+**Kind:** Story
+**Priority:** High
+**Dev estimate:** 16.0h
+**QA estimate:** 4.0h
+
+## Overview
+
+When a ticket is assigned to a developer, automatically create a branch on the Gitea repo (feature/T-{id}-{slug} or bugfix/...) and send the assignee an in-app notification with the exact git fetch + git checkout command they need to run.
+
+## Acceptance Criteria
+
+- [ ] Implementation matches the described behaviour
+- [ ] Unit tests cover the main code paths
+- [ ] QA sign-off on the acceptance criteria
+- [ ] Documentation updated if applicable
+
+## Technical Notes
+
+_To be filled in by the assigned developer._

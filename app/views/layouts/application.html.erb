@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>" dir="<%= I18n.locale.to_s == 'he' ? 'rtl' : 'ltr' %>">
+  <head>
+    <title><%= content_for(:title) || t('app_name') %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="DevTeam Hub">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= yield :head %>
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+  </head>
+
+  <body class="<%= I18n.locale.to_s == 'he' ? 'is-rtl' : '' %>">
+    <% if user_signed_in? %>
+    <%# ═══════════════════════════════════════════════════════════════════ %>
+    <%# Slack-style 3-column app shell %>
+    <%# ═══════════════════════════════════════════════════════════════════ %>
+    <div class="app-layout" data-controller="sidebar">
+
+      <%# ── Left sidebar ─────────────────────────────────────────────── %>
+      <%= render 'layouts/sidebar' %>
+
+      <%# ── Main area ────────────────────────────────────────────────── %>
+      <div class="app-main">
+
+        <%# Top bar %>
+        <div class="app-topbar">
+          <span class="topbar-title">
+            <%= content_for?(:page_title) ? yield(:page_title) : yield(:title).presence || t('app_name') %>
+          </span>
+
+          <div class="topbar-search">
+            <input class="form-control form-control-sm" type="search" placeholder="🔍 Jump to...">
+          </div>
+
+          <%# Language switcher %>
+          <%= link_to "🇮🇱", url_for(locale: :he), class: "btn btn-sm btn-link text-white px-1" %>
+          <%= link_to "🇺🇸", url_for(locale: :en), class: "btn btn-sm btn-link text-white px-1" %>
+
+          <%# Notifications toggle %>
+          <button class="topbar-panel-toggle is-active"
+                  data-action="click->sidebar#togglePanel"
+                  title="Toggle notifications">
+            🔔<% if @unread_notification_count > 0 %>
+              <span class="badge bg-danger" style="margin-left:2px;font-size:0.65rem;"><%= @unread_notification_count %></span>
+            <% end %>
+          </button>
+        </div>
+
+        <%# Flash messages %>
+        <% if flash.any? %>
+          <div class="app-flash px-5 pt-3">
+            <% flash.each do |type, message| %>
+              <div class="alert <%= flash_class(type) %> d-flex align-items-center py-2" data-controller="flash" role="alert">
+                <button class="btn-close ms-auto" data-action="click->flash#dismiss" aria-label="Close"></button>
+                <%= message %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+
+        <%# Page content %>
+        <div class="app-content">
+          <%= yield %>
+        </div>
+      </div>
+
+      <%# ── Right notifications panel ────────────────────────────────── %>
+      <aside class="app-right-panel" id="rightPanel">
+        <%= render 'layouts/notifications_panel' %>
+      </aside>
+
+    </div>
+    <% else %>
+    <%# Non-authenticated pages (Devise sign-in etc.) %>
+    <div class="bg-light min-vh-100">
+      <%= yield %>
+    </div>
+    <% end %>
+  </body>
+</html>

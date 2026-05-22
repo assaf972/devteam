@@ -1,0 +1,56 @@
+<%= form_with(model: [@project, document], class: "card p-3 mb-3") do |f| %>
+  <% if document.errors.any? %>
+    <div class="alert alert-danger is-light">
+      <ul><% document.errors.full_messages.each do |m| %><li><%= m %></li><% end %></ul>
+    </div>
+  <% end %>
+
+  <div class="row">
+    <div class="col-8">
+      <div class="mb-3">
+        <%= f.label :title, class: "label" %>
+        <div class=""><%= f.text_field :title, class: "input", required: true %></div>
+      </div>
+    </div>
+    <div class="col-2">
+      <div class="mb-3">
+        <%= f.label :doc_type, "Type", class: "label" %>
+        <div class="">
+          <div class="select w-100">
+            <%= f.select :doc_type, Document.doc_types.keys.map { |d| [t("documents.types.#{d}"), d] } %>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-2">
+      <div class="mb-3">
+        <%= f.label :version_number, "Version", class: "label" %>
+        <div class=""><%= f.text_field :version_number, class: "input", placeholder: "1.0" %></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :summary, "Summary (one line)", class: "label" %>
+    <div class=""><%= f.text_field :summary, class: "input" %></div>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :content, "Content (Markdown supported)", class: "label" %>
+    <div class="">
+      <%= f.text_area :content, class: "textarea", rows: 20,
+          placeholder: "# Document Title\n\n## Overview\n\nWrite your content here in Markdown...\n\n## Details\n\n..." %>
+    </div>
+    <p class="form-text text-muted">Supports <strong>Markdown</strong> formatting: headers, bold, tables, code blocks.</p>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :tag_list, "Tags (comma separated)", class: "label" %>
+    <div class=""><%= f.text_field :tag_list, value: document.tag_list.to_s, class: "input" %></div>
+  </div>
+
+  <div class="d-flex gap-2 align-items-end">
+    <div class=""><%= f.submit document.new_record? ? "Create Document" : "Update Document", class: "btn btn-primary" %></div>
+    <div class=""><%= link_to "Cancel", project_documents_path(@project), class: "btn btn-secondary" %></div>
+  </div>
+<% end %>
