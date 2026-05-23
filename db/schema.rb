@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_23_062321) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_23_070534) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -266,7 +266,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_23_062321) do
     t.bigint "project_id"
     t.string "recording_url"
     t.datetime "scheduled_at"
-    t.integer "sprint_id"
+    t.integer "sprint_id", null: false
     t.integer "status"
     t.string "title"
     t.datetime "updated_at", null: false
@@ -344,6 +344,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_23_062321) do
     t.bigint "project_id", null: false
     t.date "start_date"
     t.integer "status"
+    t.text "things_that_went_right"
+    t.text "things_to_improve"
     t.datetime "updated_at", null: false
     t.integer "velocity"
     t.index ["project_id"], name: "index_sprints_on_project_id"
@@ -404,6 +406,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_23_062321) do
   end
 
   create_table "tickets", force: :cascade do |t|
+    t.integer "actual_velocity"
     t.bigint "assignee_id"
     t.string "branch_name"
     t.datetime "created_at", null: false
@@ -422,6 +425,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_23_062321) do
     t.bigint "sprint_id"
     t.integer "status"
     t.integer "story_points"
+    t.text "test_plan"
     t.decimal "tester_estimate_hours", precision: 6, scale: 2
     t.string "title"
     t.datetime "updated_at", null: false

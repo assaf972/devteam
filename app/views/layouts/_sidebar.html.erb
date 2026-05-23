@@ -60,6 +60,19 @@
 
   <hr class="sidebar-divider">
 
+  <%# ── Sprints ─────────────────────────────────────────────────────────── %>
+  <div class="sidebar-section-label">Sprints</div>
+
+  <% @sidebar_projects.each do |project| %>
+    <%= link_to project_sprints_path(project),
+          class: "sidebar-nav-item #{controller_name == 'sprints' && params[:project_id].to_s == project.id.to_s ? 'is-active' : ''}" do %>
+      <span class="nav-icon">🏃</span>
+      <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><%= project.name.truncate(20) %></span>
+    <% end %>
+  <% end %>
+
+  <hr class="sidebar-divider">
+
   <%# ── Chat Channels ─────────────────────────────────────────────────── %>
   <div class="sidebar-section-label">
     Channels

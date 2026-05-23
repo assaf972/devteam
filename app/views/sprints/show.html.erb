@@ -66,6 +66,35 @@
   </div>
 <% end %>
 
+<% if @sprint.things_that_went_right.present? || @sprint.things_to_improve.present? %>
+  <div class="row mb-4">
+    <% if @sprint.things_that_went_right.present? %>
+      <div class="col-md-6">
+        <div class="card p-3 h-100 border-success">
+          <h5 class="fw-bold text-success mb-2">✅ Things That Went Right</h5>
+          <div class="trix-content">
+            <%= sanitize @sprint.things_that_went_right,
+                  tags: %w[p ul ol li strong em h1 h2 h3 h4 blockquote pre code br a],
+                  attributes: %w[href] %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+    <% if @sprint.things_to_improve.present? %>
+      <div class="col-md-6">
+        <div class="card p-3 h-100 border-warning">
+          <h5 class="fw-bold text-warning mb-2">🔧 Things to Improve</h5>
+          <div class="trix-content">
+            <%= sanitize @sprint.things_to_improve,
+                  tags: %w[p ul ol li strong em h1 h2 h3 h4 blockquote pre code br a],
+                  attributes: %w[href] %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+
 <div class="row">
   <div class="col-8">
 

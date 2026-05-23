@@ -90,6 +90,11 @@
             input_html: { class: "form-control", min: 1, max: 100 } %>
     </div>
     <div class="col-3">
+      <%= f.input :actual_velocity,
+            label: "Actual Velocity (pts)",
+            input_html: { class: "form-control", min: 0 } %>
+    </div>
+    <div class="col-3">
       <%= f.input :dev_estimate_hours,
             label: "Dev Estimate (h)",
             input_html: { class: "form-control", min: 0, step: 0.5 } %>
@@ -99,6 +104,8 @@
             label: "QA Estimate (h)",
             input_html: { class: "form-control", min: 0, step: 0.5 } %>
     </div>
+  </div>
+  <div class="row mb-3">
     <div class="col-3">
       <%= f.input :pr_url,
             label: "PR URL",
@@ -110,14 +117,18 @@
   <%# ── How to Reproduce (bug_fix / hotfix only) ────────────────────── %>
   <div class="mb-3" id="how-to-reproduce-section"
        style="<%= ticket.bug_fix? || ticket.hotfix? ? '' : 'display:none;' %>">
-    <%= f.input :how_to_reproduce,
-          label: "How to Reproduce",
-          as: :text,
-          input_html: {
-            class: "form-control", rows: 4,
-            placeholder: "1. Go to...\n2. Click on...\n3. Observe..."
-          },
-          hint: "Steps to reproduce — for bug_fix and hotfix tickets." %>
+    <label class="form-label fw-semibold">How to Reproduce</label>
+    <%= f.hidden_field :how_to_reproduce, id: "ticket_how_to_reproduce_input" %>
+    <trix-editor input="ticket_how_to_reproduce_input" class="trix-content" style="min-height:120px;"></trix-editor>
+    <div class="form-text">Steps to reproduce — for bug_fix and hotfix tickets.</div>
+  </div>
+
+  <%# ── Test Plan ───────────────────────────────────────────────────── %>
+  <div class="mb-3">
+    <label class="form-label fw-semibold">Test Plan</label>
+    <%= f.hidden_field :test_plan, id: "ticket_test_plan_input" %>
+    <trix-editor input="ticket_test_plan_input" class="trix-content" style="min-height:120px;"></trix-editor>
+    <div class="form-text">Describe how this story will be tested.</div>
   </div>
 
   <%# ── Tags ────────────────────────────────────────────────────────── %>
@@ -162,6 +173,15 @@
 
 <script>
   (function () {
+    // Trix: load existing HTML content into each editor
+    document.addEventListener("trix-initialize", function(event) {
+      var editor  = event.target;
+      var inputId = editor.getAttribute("input");
+      var hidden  = document.getElementById(inputId);
+      if (hidden && hidden.value) { editor.editor.loadHTML(hidden.value); }
+    });
+
+    // Toggle how-to-reproduce section based on ticket kind
     const kindSelect = document.getElementById("ticket_kind_select");
     const section    = document.getElementById("how-to-reproduce-section");
     if (!kindSelect || !section) return;

@@ -46,6 +46,32 @@
     <%= f.text_area :goals, class: "form-control", rows: 3, placeholder: "What should be achieved in this sprint?" %>
   </div>
 
+  <div class="row">
+    <div class="col-md-6">
+      <div class="mb-3">
+        <%= f.label :things_that_went_right, "Things That Went Right", class: "label" %>
+        <%= f.hidden_field :things_that_went_right, id: "sprint_things_that_went_right_input" %>
+        <trix-editor input="sprint_things_that_went_right_input" class="trix-content" style="min-height:140px;"></trix-editor>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="mb-3">
+        <%= f.label :things_to_improve, "Things to Improve", class: "label" %>
+        <%= f.hidden_field :things_to_improve, id: "sprint_things_to_improve_input" %>
+        <trix-editor input="sprint_things_to_improve_input" class="trix-content" style="min-height:140px;"></trix-editor>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("trix-initialize", function(event) {
+      var editor = event.target;
+      var inputId = editor.getAttribute("input");
+      var hidden = document.getElementById(inputId);
+      if (hidden && hidden.value) { editor.editor.loadHTML(hidden.value); }
+    });
+  </script>
+
   <div class="d-flex gap-2">
     <%= f.submit sprint.new_record? ? "Create Sprint" : "Update Sprint", class: "btn btn-primary" %>
     <% if sprint.new_record? %>

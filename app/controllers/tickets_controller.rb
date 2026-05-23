@@ -70,7 +70,7 @@ class TicketsController < ApplicationController
   def ticket_params
     params.require(:ticket).permit(
       :title, :description, :status, :priority, :kind, :level,
-      :how_to_reproduce, :sprint_id, :assignee_id, :owner_id,
+      :how_to_reproduce, :test_plan, :actual_velocity, :sprint_id, :assignee_id, :owner_id,
       :milestone_id, :story_points, :tag_list, :pr_number, :pr_url,
       :dev_estimate_hours, :tester_estimate_hours,
       attachments: []
