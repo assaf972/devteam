@@ -22,9 +22,12 @@
   </div>
 <% end %>
 
-<div class="card p-3 mb-3 content">
-  <%# Render markdown content %>
-  <%= raw(Redcarpet::Markdown.new(Redcarpet::Render::HTML.new(safe_links_only: true), autolink: true, tables: true, fenced_code_blocks: true).render(@document.content || '')) %>
+<div class="card p-3 mb-3 trix-content">
+  <%= sanitize @document.content,
+        tags: %w[h1 h2 h3 h4 h5 h6 p br strong em b i u s del ins
+                 ul ol li blockquote pre code a img figure figcaption
+                 table thead tbody tr th td hr div span],
+        attributes: %w[href src alt title class id style target rel] %>
 </div>
 
 <% if @document.tag_list.any? %>

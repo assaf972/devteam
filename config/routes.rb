@@ -45,6 +45,8 @@ Rails.application.routes.draw do
   root "dashboard#index"
   get "dashboard", to: "dashboard#index", as: :dashboard
   get "today",     to: "today#index",     as: :today
+  get "calendar",  to: "calendar#index",  as: :calendar
+  get "calendar/events", to: "calendar#events", as: :calendar_events
 
   resources :customers do
     resources :customer_tickets do
@@ -71,6 +73,7 @@ Rails.application.routes.draw do
     member do
       get :report
       get :ci_dashboard
+      get :calendar_events
     end
   end
 
@@ -94,6 +97,11 @@ Rails.application.routes.draw do
   # Ticket comments — derived from ticket (project resolved via ticket.project)
   resources :tickets, only: [] do
     resources :comments, only: %i[create destroy]
+  end
+
+  # Sprint comments
+  resources :sprints, only: [] do
+    resources :comments, only: %i[create destroy], controller: "sprint_comments"
   end
 
   # Webhooks (no CSRF – verified by secret header)

@@ -1,0 +1,19 @@
+<div class="card p-3 mb-2">
+  <div class="d-flex align-items-center justify-content-between">
+    <div>
+      <p class="fw-semibold mb-0"><%= link_to sprint.name, sprint_path(sprint) %></p>
+      <p class="text-muted fs-7 mb-0">
+        <%= sprint.start_date.strftime("%d %b") %> – <%= sprint.end_date.strftime("%d %b %Y") %>
+        · <%= sprint.tickets.count %> tickets
+        <% if sprint.velocity.present? %>· <%= sprint.velocity %> pts velocity<% end %>
+      </p>
+    </div>
+    <div class="d-flex gap-2">
+      <%= link_to "View", sprint_path(sprint), class: "btn btn-secondary btn-sm" %>
+      <%= link_to "Edit", edit_sprint_path(sprint), class: "btn btn-secondary btn-sm is-warning is-light" %>
+      <%= button_to "Delete", sprint_path(sprint), method: :delete,
+            data: { turbo_confirm: "Delete this sprint?" },
+            class: "btn btn-secondary btn-sm is-danger is-light" %>
+    </div>
+  </div>
+</div>

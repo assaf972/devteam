@@ -15,3 +15,6 @@ application.register("sidebar", SidebarController)
 
 import ChatController from "./chat_controller"
 application.register("chat", ChatController)
+
+import CalendarController from "./calendar_controller"
+application.register("calendar", CalendarController)

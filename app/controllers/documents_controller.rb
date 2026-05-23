@@ -1,5 +1,5 @@
 class DocumentsController < ApplicationController
-  before_action :set_project
+  before_action :set_project, only: [ :index, :new, :create ]
   before_action :set_document, only: [ :show, :edit, :update, :destroy ]
 
   def index
@@ -46,7 +46,8 @@ class DocumentsController < ApplicationController
   end
 
   def set_document
-    @document = @project.documents.find(params[:id])
+    @document = Document.find(params[:id])
+    @project  = @document.project
   end
 
   def document_params

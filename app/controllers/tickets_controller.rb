@@ -1,6 +1,6 @@
 class TicketsController < ApplicationController
-  before_action :set_project
-  before_action :set_ticket, only: [ :show, :edit, :update, :destroy ]
+  before_action :set_project, only: [ :index, :new, :create ]
+  before_action :set_ticket,  only: [ :show, :edit, :update, :destroy ]
 
   def index
     @tickets = @project.tickets.includes(:assignee, :sprint, :ci_runs).order(priority: :desc, created_at: :desc)
@@ -39,11 +39,11 @@ class TicketsController < ApplicationController
       # Auto-create branch when ticket is assigned for the first time
       if @ticket.assignee_id.present? && old_assignee_id != @ticket.assignee_id
         CreateBranchJob.perform_later(@ticket.id) if defined?(CreateBranchJob)
-        TicketAssignedMailer.notify(@ticket).deliver_later
+        TicketMailer.assigned(@ticket).deliver_later
       end
       # Notify watchers on status change
       if @ticket.saved_change_to_status?
-        TicketStatusChangedMailer.notify(@ticket).deliver_later
+        @ticket.watchers.each { |w| TicketMailer.status_changed(@ticket, w).deliver_later }
       end
       redirect_to @ticket, notice: t("tickets.updated")
     else
@@ -63,7 +63,8 @@ class TicketsController < ApplicationController
   end
 
   def set_ticket
-    @ticket = @project.tickets.find(params[:id])
+    @ticket  = Ticket.find(params[:id])
+    @project = @ticket.project
   end
 
   def ticket_params
@@ -71,6 +72,7 @@ class TicketsController < ApplicationController
       :title, :description, :status, :priority, :kind, :level,
       :how_to_reproduce, :sprint_id, :assignee_id, :owner_id,
       :milestone_id, :story_points, :tag_list, :pr_number, :pr_url,
+      :dev_estimate_hours, :tester_estimate_hours,
       attachments: []
     )
   end

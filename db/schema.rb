@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_22_600002) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_23_062321) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -266,11 +266,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_600002) do
     t.bigint "project_id"
     t.string "recording_url"
     t.datetime "scheduled_at"
+    t.integer "sprint_id"
     t.integer "status"
     t.string "title"
     t.datetime "updated_at", null: false
     t.index ["organizer_id"], name: "index_meetings_on_organizer_id"
     t.index ["project_id"], name: "index_meetings_on_project_id"
+    t.index ["sprint_id"], name: "index_meetings_on_sprint_id"
   end
 
   create_table "milestones", force: :cascade do |t|
@@ -411,6 +413,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_600002) do
     t.integer "kind", default: 0, null: false
     t.integer "latest_ci_run_id"
     t.integer "level", default: 2, null: false
+    t.integer "milestone_id"
     t.bigint "owner_id"
     t.integer "pr_number"
     t.string "pr_url"
@@ -425,6 +428,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_600002) do
     t.index ["assignee_id"], name: "index_tickets_on_assignee_id"
     t.index ["kind"], name: "index_tickets_on_kind"
     t.index ["level"], name: "index_tickets_on_level"
+    t.index ["milestone_id"], name: "index_tickets_on_milestone_id"
     t.index ["owner_id"], name: "index_tickets_on_owner_id"
     t.index ["project_id"], name: "index_tickets_on_project_id"
     t.index ["sprint_id"], name: "index_tickets_on_sprint_id"
@@ -479,6 +483,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_600002) do
   add_foreign_key "meeting_attendees", "meetings"
   add_foreign_key "meeting_attendees", "users"
   add_foreign_key "meetings", "projects"
+  add_foreign_key "meetings", "sprints"
   add_foreign_key "meetings", "users", column: "organizer_id"
   add_foreign_key "milestones", "projects"
   add_foreign_key "project_memberships", "projects"
@@ -490,6 +495,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_600002) do
   add_foreign_key "test_results", "ci_runs"
   add_foreign_key "ticket_watchers", "tickets"
   add_foreign_key "ticket_watchers", "users"
+  add_foreign_key "tickets", "milestones"
   add_foreign_key "tickets", "projects"
   add_foreign_key "tickets", "sprints"
   add_foreign_key "tickets", "users", column: "assignee_id"

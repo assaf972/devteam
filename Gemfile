@@ -55,6 +55,9 @@ gem "icalendar"
 # Tagging (tickets, documents)
 gem "acts-as-taggable-on"
 
+# Form builder
+gem "simple_form"
+
 # PDF report generation
 gem "prawn"
 gem "prawn-table", github: "prawnpdf/prawn-table"

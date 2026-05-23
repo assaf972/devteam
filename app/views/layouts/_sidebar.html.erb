@@ -26,6 +26,11 @@
     <span class="nav-icon">📅</span> Meetings
   <% end %>
 
+  <%= link_to calendar_path,
+        class: "sidebar-nav-item #{controller_name == 'calendar' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">🗓️</span> Calendar
+  <% end %>
+
   <%= link_to notifications_path,
         class: "sidebar-nav-item #{controller_name == 'notifications' ? 'is-active' : ''}" do %>
     <span class="nav-icon">🔔</span> Notifications
@@ -37,6 +42,20 @@
   <%= link_to all_documents_path,
         class: "sidebar-nav-item #{controller_name == 'all_documents' ? 'is-active' : ''}" do %>
     <span class="nav-icon">📁</span> Documents
+  <% end %>
+
+  <%= link_to customers_path,
+        class: "sidebar-nav-item #{controller_name == 'customers' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">🏢</span> Customers
+  <% end %>
+
+  <% if @sidebar_current_sprint %>
+    <%= link_to sprint_path(@sidebar_current_sprint),
+          class: "sidebar-nav-item #{params[:id].to_s == @sidebar_current_sprint.id.to_s && controller_name == 'sprints' ? 'is-active' : ''}" do %>
+      <span class="nav-icon">🏃</span>
+      <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Sprint: <%= @sidebar_current_sprint.name.truncate(18) %></span>
+      <span class="badge bg-success ms-1" style="font-size:0.62rem;flex-shrink:0;">Active</span>
+    <% end %>
   <% end %>
 
   <hr class="sidebar-divider">
@@ -68,109 +87,14 @@
 
   <% @sidebar_projects.each do |project| %>
     <%
-      latest_ci     = @sidebar_latest_ci[project.id]
-      latest_deploy = @sidebar_latest_deploy[project.id]
-      ci_status     = latest_ci&.status || "none"
+      latest_ci = @sidebar_latest_ci[project.id]
+      ci_status = latest_ci&.status || "none"
     %>
-    <div class="sidebar-project" id="sidebar-project-<%= project.id %>">
-      <div class="sidebar-project-header"
-           data-action="click->sidebar#toggleProject">
-        <span class="ci-status-dot <%= ci_status %>"></span>
-        <span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-          <%= project.name %>
-        </span>
-        <span class="project-chevron">▶</span>
-      </div>
-
-      <div class="sidebar-project-links">
-
-        <%# CI %>
-        <%= link_to project_ci_runs_path(project), class: "sidebar-project-link" do %>
-          <span>⚙️</span>
-          <span>CI Runs</span>
-          <% if latest_ci %>
-            <span class="ci-status-dot <%= latest_ci.status %>" style="margin-left:auto;"></span>
-          <% end %>
-        <% end %>
-
-        <%# Deployments %>
-        <%= link_to project_deployments_path(project), class: "sidebar-project-link" do %>
-          <span>🚀</span>
-          <span>Deployments</span>
-          <% if latest_deploy %>
-            <span class="deploy-env-badge <%= latest_deploy.environment.to_s.downcase.gsub(/[^a-z]/, '') %>" style="margin-left:auto;">
-              <%= latest_deploy.environment %>
-            </span>
-          <% end %>
-        <% end %>
-
-        <%# PRs %>
-        <%= link_to project_pull_requests_path(project), class: "sidebar-project-link" do %>
-          <span>🔀</span>
-          <span>Pull Requests</span>
-          <% open_prs = @sidebar_open_prs[project.id].to_i %>
-          <% if open_prs > 0 %>
-            <span class="badge bg-info text-dark is-small" style="margin-left:auto;font-size:0.65rem;"><%= open_prs %></span>
-          <% end %>
-        <% end %>
-
-        <%# Versions %>
-        <%= link_to project_deployments_path(project, environment: "production"), class: "sidebar-project-link" do %>
-          <span>🏷️</span>
-          <span>Versions</span>
-          <% if latest_deploy %>
-            <span style="margin-left:auto;font-size:0.72rem;opacity:0.6;"><%= latest_deploy.version %></span>
-          <% end %>
-        <% end %>
-
-        <div style="height:0.3rem;"></div>
-
-        <%# Docs header %>
-        <div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.05em;color:rgba(255,255,255,0.25);padding:0.15rem 0.5rem 0.1rem;">
-          Docs
-        </div>
-
-        <%# All docs link %>
-        <%= link_to project_documents_path(project), class: "sidebar-project-link" do %>
-          <span>📁</span> All Documents
-        <% end %>
-
-        <% risks_doc   = @sidebar_project_docs["#{project.id}-risk_management"] %>
-        <% backlog_doc = @sidebar_project_docs["#{project.id}-user_story"] %>
-        <% testplan_doc = @sidebar_project_docs["#{project.id}-test_coverage"] %>
-
-        <%# Risk Management %>
-        <%= link_to(risks_doc ? document_path(risks_doc) : project_documents_path(project, doc_type: "risk_management"),
-              class: "sidebar-project-link") do %>
-          <span>⚠️</span> Risks
-        <% end %>
-
-        <%# Backlog %>
-        <%= link_to(backlog_doc ? document_path(backlog_doc) : project_documents_path(project, doc_type: "user_story"),
-              class: "sidebar-project-link") do %>
-          <span>📋</span> Backlog
-        <% end %>
-
-        <%# Test Plan %>
-        <%= link_to(testplan_doc ? document_path(testplan_doc) : project_documents_path(project, doc_type: "test_coverage"),
-              class: "sidebar-project-link") do %>
-          <span>🧪</span> Test Plan
-        <% end %>
-
-        <%# Tickets %>
-        <%= link_to project_tickets_path(project), class: "sidebar-project-link" do %>
-          <span>🎫</span> Tickets
-        <% end %>
-
-        <%# External repo link %>
-        <% if project.repo_url.present? %>
-          <%= link_to project.repo_url, target: "_blank", rel: "noopener noreferrer",
-                class: "sidebar-project-link" do %>
-            <span>🔗</span> Repository ↗
-          <% end %>
-        <% end %>
-      </div>
-    </div>
+    <%= link_to project_path(project),
+          class: "sidebar-nav-item #{params[:id].to_s == project.id.to_s && controller_name == 'projects' ? 'is-active' : ''}" do %>
+      <span class="ci-status-dot <%= ci_status %>"></span>
+      <span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><%= project.name %></span>
+    <% end %>
   <% end %>
 
   <hr class="sidebar-divider">

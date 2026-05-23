@@ -1,4 +1,4 @@
-<%= form_with(model: [@project, document], class: "card p-3 mb-3") do |f| %>
+<%= form_with(model: document.new_record? ? [@project, document] : document, html: { class: "card p-3 mb-3" }) do |f| %>
   <% if document.errors.any? %>
     <div class="alert alert-danger is-light">
       <ul><% document.errors.full_messages.each do |m| %><li><%= m %></li><% end %></ul>
@@ -9,7 +9,7 @@
     <div class="col-8">
       <div class="mb-3">
         <%= f.label :title, class: "label" %>
-        <div class=""><%= f.text_field :title, class: "input", required: true %></div>
+        <div class=""><%= f.text_field :title, class: "input form-control", required: true %></div>
       </div>
     </div>
     <div class="col-2">
@@ -17,7 +17,7 @@
         <%= f.label :doc_type, "Type", class: "label" %>
         <div class="">
           <div class="select w-100">
-            <%= f.select :doc_type, Document.doc_types.keys.map { |d| [t("documents.types.#{d}"), d] } %>
+            <%= f.select :doc_type, Document.doc_types.keys.map { |d| [t("documents.types.#{d}"), d] }, {}, class: "form-select" %>
           </div>
         </div>
       </div>
@@ -25,28 +25,27 @@
     <div class="col-2">
       <div class="mb-3">
         <%= f.label :version_number, "Version", class: "label" %>
-        <div class=""><%= f.text_field :version_number, class: "input", placeholder: "1.0" %></div>
+        <div class=""><%= f.text_field :version_number, class: "input form-control", placeholder: "1.0" %></div>
       </div>
     </div>
   </div>
 
   <div class="mb-3">
     <%= f.label :summary, "Summary (one line)", class: "label" %>
-    <div class=""><%= f.text_field :summary, class: "input" %></div>
+    <div class=""><%= f.text_field :summary, class: "input form-control" %></div>
   </div>
 
+  <%# Hidden input that Trix writes into — Rails receives document[content] as HTML %>
   <div class="mb-3">
-    <%= f.label :content, "Content (Markdown supported)", class: "label" %>
-    <div class="">
-      <%= f.text_area :content, class: "textarea", rows: 20,
-          placeholder: "# Document Title\n\n## Overview\n\nWrite your content here in Markdown...\n\n## Details\n\n..." %>
-    </div>
-    <p class="form-text text-muted">Supports <strong>Markdown</strong> formatting: headers, bold, tables, code blocks.</p>
+    <%= f.label :content, "Content", class: "label" %>
+    <%= f.hidden_field :content, id: "document_content_input" %>
+    <trix-editor input="document_content_input" class="trix-editor-field"></trix-editor>
+    <p class="form-text text-muted mt-1">Use the toolbar above to format your document — bold, headings, lists, links and more.</p>
   </div>
 
   <div class="mb-3">
     <%= f.label :tag_list, "Tags (comma separated)", class: "label" %>
-    <div class=""><%= f.text_field :tag_list, value: document.tag_list.to_s, class: "input" %></div>
+    <div class=""><%= f.text_field :tag_list, value: document.tag_list.to_s, class: "input form-control" %></div>
   </div>
 
   <div class="d-flex gap-2 align-items-end">
@@ -54,3 +53,14 @@
     <div class=""><%= link_to "Cancel", project_documents_path(@project), class: "btn btn-secondary" %></div>
   </div>
 <% end %>
+
+<script>
+  // Populate Trix editor with existing content on page load
+  document.addEventListener("trix-initialize", function(event) {
+    const editor = event.target
+    const hiddenInput = document.getElementById("document_content_input")
+    if (hiddenInput && hiddenInput.value && hiddenInput.value.trim() !== "") {
+      editor.editor.loadHTML(hiddenInput.value)
+    }
+  })
+</script>

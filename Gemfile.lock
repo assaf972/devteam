@@ -449,6 +449,9 @@ GEM
       logger
     shoulda-matchers (7.0.1)
       activesupport (>= 7.1)
+    simple_form (5.4.1)
+      actionpack (>= 7.0)
+      activemodel (>= 7.0)
     solid_cable (3.0.12)
       actioncable (>= 7.2)
       activejob (>= 7.2)
@@ -567,6 +570,7 @@ DEPENDENCIES
   sentry-rails
   sentry-ruby
   shoulda-matchers
+  simple_form
   solid_cable
   solid_cache
   solid_queue

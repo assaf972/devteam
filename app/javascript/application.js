@@ -7,3 +7,6 @@ import "bootstrap"
 
 // Charts
 import "chartkick/chart.js"
+
+// Trix WYSIWYG editor (registers <trix-editor> custom element)
+import "trix"

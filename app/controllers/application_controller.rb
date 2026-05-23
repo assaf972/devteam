@@ -22,28 +22,21 @@ class ApplicationController < ActionController::Base
   end
 
   def load_sidebar_data
-    # Active projects for sidebar accordion
+    # Active projects for sidebar list
     @sidebar_projects = Project.active.order(:name)
 
-    # Latest CI run per project (by highest id = most recent insertion)
+    # Latest CI run per project for status dot
     latest_ci_ids = CiRun.select("MAX(id) as id").group(:project_id).map(&:id)
     @sidebar_latest_ci = CiRun.where(id: latest_ci_ids).index_by(&:project_id)
 
-    # Latest deployment per project
-    latest_deploy_ids = Deployment.select("MAX(id) as id").group(:project_id).map(&:id)
-    @sidebar_latest_deploy = Deployment.where(id: latest_deploy_ids).index_by(&:project_id)
-
-    # Open PR counts per project
-    @sidebar_open_prs = PullRequest.where(status: :open).group(:project_id).count
-
-    # Canonical docs per project for sidebar links (risk, backlog, test plan)
-    sidebar_doc_types = %w[risk_management user_story test_coverage]
-    @sidebar_project_docs = Document
-      .where(project_id: @sidebar_projects.map(&:id), doc_type: sidebar_doc_types)
-      .index_by { |d| "#{d.project_id}-#{d.doc_type}" }
-
     # Chat rooms for sidebar channel list
     @sidebar_chat_rooms = ChatRoom.active.includes(:project).order(:room_type, :name)
+
+    # Current sprint for sidebar (first active sprint across user's projects)
+    @sidebar_current_sprint = Sprint.current
+                                    .joins(:project)
+                                    .merge(current_user.member_projects)
+                                    .first
 
     # Right panel: 15 most recent notifications
     @panel_notifications = current_user.notifications

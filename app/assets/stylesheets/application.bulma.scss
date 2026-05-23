@@ -1,3 +1,5 @@
+@use "sass:meta";
+
 // ─── Bootstrap variable overrides (must be before import) ─────────────────
 $primary: #4a90d9;
 $link-color: #4a90d9;
@@ -938,4 +940,75 @@ body {
     max-width: none;
     margin: 0;
     padding: 0;
+}
+
+// ─── Trix WYSIWYG editor ────────────────────────────────────────────────────
+@include meta.load-css("trix/dist/trix");
+
+// Trix editor style overrides for Bootstrap 5 integration
+trix-editor {
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    min-height: 300px;
+    padding: 0.75rem;
+    background: #fff;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    outline: none;
+
+    &:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+}
+
+trix-toolbar {
+    border: 1px solid #dee2e6;
+    border-bottom: none;
+    border-radius: 0.375rem 0.375rem 0 0;
+    background: #f8f9fa;
+    padding: 0.375rem 0.5rem;
+}
+
+.trix-content {
+    font-size: 0.9375rem;
+    line-height: 1.7;
+
+    h1,
+    h2,
+    h3,
+    h4 {
+        font-weight: 600;
+        margin-top: 1.25em;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    h2 {
+        font-size: 1.25rem;
+    }
+
+    h3 {
+        font-size: 1.1rem;
+    }
+
+    pre {
+        background: #f8f9fa;
+        border-radius: 0.375rem;
+        padding: 0.75rem 1rem;
+        font-size: 0.85rem;
+    }
+
+    blockquote {
+        border-left: 3px solid #dee2e6;
+        padding-left: 1rem;
+        color: #6c757d;
+    }
+
+    img {
+        max-width: 100%;
+        border-radius: 0.375rem;
+    }
 }
