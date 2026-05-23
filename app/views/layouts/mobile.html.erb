@@ -62,32 +62,32 @@
       <nav class="mobile-bottom-nav">
         <%= link_to mobile_today_path,       class: "nav-tab #{current_page?(mobile_today_path)       ? 'is-active' : ''}" do %>
           <span class="nav-icon">☀️</span>
-          <span>Today</span>
+          <span><%= t('mobile.nav.today') %></span>
         <% end %>
 
         <%= link_to mobile_messages_path,    class: "nav-tab #{current_page?(mobile_messages_path)    ? 'is-active' : ''}" do %>
           <span class="nav-icon">💬</span>
-          <span>Messages</span>
+          <span><%= t('mobile.nav.messages') %></span>
         <% end %>
 
         <%= link_to mobile_meetings_path,    class: "nav-tab #{current_page?(mobile_meetings_path)    ? 'is-active' : ''}" do %>
           <span class="nav-icon">📅</span>
-          <span>Meetings</span>
+          <span><%= t('mobile.nav.meetings') %></span>
         <% end %>
 
         <%= link_to mobile_projects_path,    class: "nav-tab #{current_page?(mobile_projects_path)    ? 'is-active' : ''}" do %>
           <span class="nav-icon">🗂️</span>
-          <span>Projects</span>
+          <span><%= t('mobile.nav.projects') %></span>
         <% end %>
 
         <%= link_to mobile_tickets_path,     class: "nav-tab #{current_page?(mobile_tickets_path)     ? 'is-active' : ''}" do %>
           <span class="nav-icon">🎫</span>
-          <span>Tickets</span>
+          <span><%= t('mobile.nav.tickets') %></span>
         <% end %>
 
         <%= link_to mobile_video_calls_path, class: "nav-tab #{current_page?(mobile_video_calls_path) ? 'is-active' : ''}" do %>
           <span class="nav-icon">📹</span>
-          <span>Video</span>
+          <span><%= t('mobile.nav.video') %></span>
         <% end %>
       </nav>
     </div>

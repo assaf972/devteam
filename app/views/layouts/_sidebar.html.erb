@@ -9,31 +9,31 @@
   </div>
 
   <%# ── Navigation ──────────────────────────────────────────────────────── %>
-  <div class="sidebar-section-label">Navigation</div>
+  <div class="sidebar-section-label"><%= t('sidebar.nav_label') %></div>
 
   <%= link_to today_path,
         class: "sidebar-nav-item #{controller_name == 'today' ? 'is-active' : ''}" do %>
-    <span class="nav-icon">📋</span> Today
+    <span class="nav-icon">📋</span> <%= t('nav.today') %>
   <% end %>
 
   <%= link_to dashboard_path,
         class: "sidebar-nav-item #{controller_name == 'dashboard' ? 'is-active' : ''}" do %>
-    <span class="nav-icon">📊</span> Dashboard
+    <span class="nav-icon">📊</span> <%= t('nav.dashboard') %>
   <% end %>
 
   <%= link_to meetings_path,
         class: "sidebar-nav-item #{controller_name == 'meetings' ? 'is-active' : ''}" do %>
-    <span class="nav-icon">📅</span> Meetings
+    <span class="nav-icon">📅</span> <%= t('nav.meetings') %>
   <% end %>
 
   <%= link_to calendar_path,
         class: "sidebar-nav-item #{controller_name == 'calendar' ? 'is-active' : ''}" do %>
-    <span class="nav-icon">🗓️</span> Calendar
+    <span class="nav-icon">🗓️</span> <%= t('nav.calendar') %>
   <% end %>
 
   <%= link_to notifications_path,
         class: "sidebar-nav-item #{controller_name == 'notifications' ? 'is-active' : ''}" do %>
-    <span class="nav-icon">🔔</span> Notifications
+    <span class="nav-icon">🔔</span> <%= t('nav.notifications') %>
     <% if @unread_notification_count > 0 %>
       <span class="badge bg-danger is-small ms-auto" style="font-size:0.68rem;"><%= @unread_notification_count %></span>
     <% end %>
@@ -41,27 +41,27 @@
 
   <%= link_to all_documents_path,
         class: "sidebar-nav-item #{controller_name == 'all_documents' ? 'is-active' : ''}" do %>
-    <span class="nav-icon">📁</span> Documents
+    <span class="nav-icon">📁</span> <%= t('nav.documents') %>
   <% end %>
 
   <%= link_to customers_path,
         class: "sidebar-nav-item #{controller_name == 'customers' ? 'is-active' : ''}" do %>
-    <span class="nav-icon">🏢</span> Customers
+    <span class="nav-icon">🏢</span> <%= t('nav.customers') %>
   <% end %>
 
   <% if @sidebar_current_sprint %>
     <%= link_to sprint_path(@sidebar_current_sprint),
           class: "sidebar-nav-item #{params[:id].to_s == @sidebar_current_sprint.id.to_s && controller_name == 'sprints' ? 'is-active' : ''}" do %>
       <span class="nav-icon">🏃</span>
-      <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Sprint: <%= @sidebar_current_sprint.name.truncate(18) %></span>
-      <span class="badge bg-success ms-1" style="font-size:0.62rem;flex-shrink:0;">Active</span>
+      <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><%= t('sidebar.active_sprint_prefix') %> <%= @sidebar_current_sprint.name.truncate(18) %></span>
+      <span class="badge bg-success ms-1" style="font-size:0.62rem;flex-shrink:0;"><%= t('sidebar.active_badge') %></span>
     <% end %>
   <% end %>
 
   <hr class="sidebar-divider">
 
   <%# ── Sprints ─────────────────────────────────────────────────────────── %>
-  <div class="sidebar-section-label">Sprints</div>
+  <div class="sidebar-section-label"><%= t('sidebar.sprints_label') %></div>
 
   <% @sidebar_projects.each do |project| %>
     <%= link_to project_sprints_path(project),
@@ -75,8 +75,8 @@
 
   <%# ── Chat Channels ─────────────────────────────────────────────────── %>
   <div class="sidebar-section-label">
-    Channels
-    <%= link_to new_chat_room_path, class: "text-white", style: "opacity:0.4;font-size:1.1em;line-height:1;", title: "New channel" do %>+<% end %>
+    <%= t('sidebar.channels_label') %>
+    <%= link_to new_chat_room_path, class: "text-white", style: "opacity:0.4;font-size:1.1em;line-height:1;", title: t('sidebar.channels_label') do %>+<% end %>
   </div>
 
   <% @sidebar_chat_rooms.each do |room| %>
@@ -94,8 +94,8 @@
 
   <%# ── Projects ───────────────────────────────────────────────────────── %>
   <div class="sidebar-section-label">
-    Projects
-    <%= link_to projects_path, class: "text-white", style: "opacity:0.4;font-size:0.75rem;", title: "All projects" do %>All<% end %>
+    <%= t('sidebar.projects_label') %>
+    <%= link_to projects_path, class: "text-white", style: "opacity:0.4;font-size:0.75rem;", title: t('sidebar.projects_label') do %><%= t('sidebar.all') %><% end %>
   </div>
 
   <% @sidebar_projects.each do |project| %>
@@ -113,26 +113,26 @@
   <hr class="sidebar-divider">
 
   <%# ── Reports ──────────────────────────────────────────────────────── %>
-  <div class="sidebar-section-label">Reports</div>
+  <div class="sidebar-section-label"><%= t('sidebar.reports_label') %></div>
 
-  <%= link_to reports_ci_summary_path,         class: "sidebar-nav-item" do %><span class="nav-icon">📈</span> CI Summary<% end %>
-  <%= link_to reports_deployment_summary_path, class: "sidebar-nav-item" do %><span class="nav-icon">🚀</span> Deployments<% end %>
-  <%= link_to reports_test_coverage_path,      class: "sidebar-nav-item" do %><span class="nav-icon">✅</span> Test Coverage<% end %>
-  <%= link_to reports_sprint_velocity_path,    class: "sidebar-nav-item" do %><span class="nav-icon">⚡</span> Velocity<% end %>
+  <%= link_to reports_ci_summary_path,         class: "sidebar-nav-item" do %><span class="nav-icon">📈</span> <%= t('sidebar.reports.ci_summary') %><% end %>
+  <%= link_to reports_deployment_summary_path, class: "sidebar-nav-item" do %><span class="nav-icon">🚀</span> <%= t('sidebar.reports.deployments') %><% end %>
+  <%= link_to reports_test_coverage_path,      class: "sidebar-nav-item" do %><span class="nav-icon">✅</span> <%= t('sidebar.reports.test_coverage') %><% end %>
+  <%= link_to reports_sprint_velocity_path,    class: "sidebar-nav-item" do %><span class="nav-icon">⚡</span> <%= t('sidebar.reports.velocity') %><% end %>
 
   <% if current_user.respond_to?(:admin?) && current_user.admin? %>
     <hr class="sidebar-divider">
-    <div class="sidebar-section-label">Admin</div>
-    <%= link_to admin_users_path,          class: "sidebar-nav-item" do %><span class="nav-icon">👥</span> Users<% end %>
-    <%= link_to admin_client_accounts_path, class: "sidebar-nav-item" do %><span class="nav-icon">🏢</span> Clients<% end %>
+    <div class="sidebar-section-label"><%= t('sidebar.admin_label') %></div>
+    <%= link_to admin_users_path,          class: "sidebar-nav-item" do %><span class="nav-icon">👥</span> <%= t('sidebar.admin.users') %><% end %>
+    <%= link_to admin_client_accounts_path, class: "sidebar-nav-item" do %><span class="nav-icon">🏢</span> <%= t('sidebar.admin.clients') %><% end %>
   <% end %>
 
   <hr class="sidebar-divider">
 
   <%# ── Team ────────────────────────────────────────────────────────── %>
   <div class="sidebar-section-label">
-    Team
-    <%= link_to new_meeting_path, class: "text-white", style: "opacity:0.4;font-size:0.75rem;", title: "Start a huddle" do %>📹<% end %>
+    <%= t('sidebar.team_label') %>
+    <%= link_to new_meeting_path, class: "text-white", style: "opacity:0.4;font-size:0.75rem;", title: t('sidebar.team_label') do %>📹<% end %>
   </div>
 
   <% @sidebar_team_members.each do |member| %>
@@ -144,7 +144,7 @@
       </span>
       <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:0.82rem;">
         <%= member.display_name %>
-        <% if member.id == current_user.id %><span style="opacity:0.4;font-size:0.7rem;"> (you)</span><% end %>
+        <% if member.id == current_user.id %><span style="opacity:0.4;font-size:0.7rem;"> <%= t('sidebar.you') %></span><% end %>
       </span>
     <% end %>
   <% end %>
@@ -157,10 +157,10 @@
     <div style="flex:1;min-width:0;">
       <div class="sidebar-user-name"><%= current_user.display_name %></div>
       <div class="sidebar-user-status">
-        <%= link_to "Profile", edit_user_registration_path,
+        <%= link_to t('nav.profile'), edit_profile_path,
               style: "color:rgba(255,255,255,0.4);font-size:0.72rem;text-decoration:none;" %>
         &nbsp;·&nbsp;
-        <%= link_to "Sign out", destroy_user_session_path,
+        <%= link_to t('nav.sign_out'), destroy_user_session_path,
               data: { turbo_method: :delete },
               style: "color:rgba(255,255,255,0.4);font-size:0.72rem;text-decoration:none;" %>
       </div>

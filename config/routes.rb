@@ -26,6 +26,9 @@ Rails.application.routes.draw do
     registrations: "users/registrations"
   }
 
+  # User profile (separate from Devise registrations)
+  resource :profile, only: %i[edit update], controller: "profile"
+
   # ── Customer Portal ──────────────────────────────────────────────────────
   devise_for :customer_users,
              path: "portal",

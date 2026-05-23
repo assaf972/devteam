@@ -1,4 +1,4 @@
-<% content_for(:page_title) { "Projects" } %>
+<% content_for(:page_title) { t('mobile.nav.projects') } %>
 
 <% @projects.each do |project| %>
   <%
@@ -19,14 +19,14 @@
         </div>
         <div class="mobile-card-meta">
           <% if active_sprint %>
-            Sprint: <%= active_sprint.name.truncate(24) %>
+            <%= t('mobile.projects.sprint_prefix') %> <%= active_sprint.name.truncate(24) %>
           <% else %>
-            No active sprint
+            <%= t('mobile.projects.no_sprint') %>
           <% end %>
         </div>
       </div>
       <span class="tag is-rounded is-small <%= project.active? ? 'is-success is-light' : 'is-light' %>">
-          <%= project.active? ? "Active" : "Inactive" %>
+          <%= project.active? ? t('mobile.projects.active') : t('mobile.projects.inactive') %>
         </span>
     </div>
     <div class="mobile-card-body">
@@ -34,32 +34,32 @@
         <div class="column has-text-centered">
           <%= link_to project_tickets_path(project), class: "is-block" do %>
             <p style="font-size:1.2rem;font-weight:800;color:<%= open_tickets > 0 ? '#d97706' : '#2d3748' %>"><%= open_tickets %></p>
-            <p style="font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8a93a2;">Open</p>
+            <p style="font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8a93a2;"><%= t('mobile.projects.open') %></p>
           <% end %>
         </div>
         <div class="column has-text-centered">
           <%= link_to project_pull_requests_path(project), class: "is-block" do %>
             <p style="font-size:1.2rem;font-weight:800;color:<%= open_prs > 0 ? '#3182ce' : '#2d3748' %>"><%= open_prs %></p>
-            <p style="font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8a93a2;">PRs</p>
+            <p style="font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8a93a2;"><%= t('mobile.projects.prs') %></p>
           <% end %>
         </div>
         <div class="column has-text-centered">
           <p style="font-size:1.2rem;font-weight:800;color:#2d3748;"><%= project.tickets.where(status: [:done, :closed]).count %></p>
-          <p style="font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8a93a2;">Done</p>
+          <p style="font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8a93a2;"><%= t('mobile.projects.done') %></p>
         </div>
       </div>
       <div class="is-flex" style="gap:0.5rem;flex-wrap:wrap;margin-top:0.5rem;">
         <%= link_to project_path(project), class: "button is-small is-light is-rounded" do %>
-          👁 View
+          <%= t('mobile.projects.view') %>
         <% end %>
         <%= link_to project_tickets_path(project), class: "button is-small is-light is-rounded" do %>
-          🎫 Tickets
+          <%= t('mobile.projects.tickets_btn') %>
         <% end %>
         <%= link_to project_sprints_path(project), class: "button is-small is-light is-rounded" do %>
-          🏃 Sprints
+          <%= t('mobile.projects.sprints_btn') %>
         <% end %>
         <%= link_to project_meetings_path(project), class: "button is-small is-light is-rounded" do %>
-          📅 Meetings
+          <%= t('mobile.projects.meetings_btn') %>
         <% end %>
       </div>
     </div>
@@ -69,6 +69,6 @@
 <% if @projects.empty? %>
   <div class="has-text-centered py-6" style="color:#bbb;">
     <p style="font-size:3rem;">🗂️</p>
-    <p style="color:#8a93a2;">No projects yet.</p>
+    <p style="color:#8a93a2;"><%= t('mobile.projects.no_projects') %></p>
   </div>
 <% end %>

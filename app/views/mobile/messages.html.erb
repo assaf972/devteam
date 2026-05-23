@@ -1,4 +1,4 @@
-<% content_for(:page_title) { "Messages" } %>
+<% content_for(:page_title) { t('mobile.nav.messages') } %>
 
 <% if @chat_rooms.any? %>
   <div class="box p-0" style="overflow:hidden;">
@@ -16,7 +16,7 @@
               <strong><%= last_msg.user&.display_name.to_s.split.first %>:</strong>
               <%= last_msg.body.truncate(45) %>
             <% else %>
-              <em style="color:#bbb;">No messages yet</em>
+              <em style="color:#bbb;"><%= t('mobile.messages.no_messages_yet') %></em>
             <% end %>
           </div>
         </div>
@@ -33,7 +33,7 @@
 <% else %>
   <div class="has-text-centered py-6" style="color:#bbb;">
     <p style="font-size:3rem;">💬</p>
-    <p style="color:#8a93a2;">No chat rooms yet.</p>
+    <p style="color:#8a93a2;"><%= t('mobile.messages.no_rooms') %></p>
     <%= link_to new_chat_room_path, class: "button is-primary is-rounded mt-3" do %>
       + New Chat Room
     <% end %>
