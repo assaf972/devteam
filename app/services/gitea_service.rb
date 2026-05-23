@@ -46,6 +46,22 @@ class GiteaService
     nil
   end
 
+  # Create a pull request in Gitea
+  def create_pull_request(repo_owner:, repo_name:, title:, head:, base:, body: nil)
+    response = @conn.post("/api/v1/repos/#{repo_owner}/#{repo_name}/pulls") do |req|
+      req.body = {
+        title: title,
+        head: head,
+        base: base,
+        body: body
+      }.compact
+    end
+    response.success? ? response.body : nil
+  rescue Faraday::Error => e
+    Rails.logger.error "GiteaService#create_pull_request failed: #{e.message}"
+    nil
+  end
+
   # Verify webhook HMAC signature
   def self.valid_signature?(payload, signature, secret)
     return false if signature.blank? || secret.blank?

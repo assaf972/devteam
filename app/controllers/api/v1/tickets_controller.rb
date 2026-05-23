@@ -22,9 +22,30 @@ module Api
         render json: render_ticket(@ticket)
       end
 
+      # POST /api/v1/tickets
+      def create
+        attrs = params.require(:ticket).permit(
+          :project_id, :title, :description, :status, :priority,
+          :kind, :level, :how_to_reproduce, :assignee_id,
+          :owner_id, :dev_estimate_hours, :tester_estimate_hours
+        )
+
+        ticket = Ticket.new(attrs)
+        ticket.owner ||= current_api_user
+
+        if ticket.save
+          render json: render_ticket(ticket), status: :created
+        else
+          render json: { errors: ticket.errors.full_messages }, status: :unprocessable_entity
+        end
+      end
+
       # PATCH /api/v1/tickets/:id
       def update
-        allowed = %w[status priority assignee_id pr_number pr_url]
+        allowed = %w[
+          title description status priority kind level how_to_reproduce
+          assignee_id owner_id pr_number pr_url dev_estimate_hours tester_estimate_hours
+        ]
         attrs   = params.require(:ticket).permit(*allowed)
 
         if @ticket.update(attrs)
