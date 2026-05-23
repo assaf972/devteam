@@ -228,7 +228,7 @@ puts "  ✓ #{chat_rooms_data.size} chat rooms"
 # Tickets / Stories
 # Each entry: project, kind, level, title, description,
 #             status, priority, owner, assignee,
-#             dev_estimate_hours, tester_estimate_hours,
+#             dev_estimate_hours, tester_estimate_hours, actual_hours,
 #             how_to_reproduce (optional — bugs/hotfixes),
 #             pr_number (optional), pr_url (optional),
 #             attach_spec (true = attach a spec/design document)
@@ -249,6 +249,7 @@ tickets_data = [
     assignee:              noam,
     dev_estimate_hours:    16.0,
     tester_estimate_hours: 4.0,
+    actual_hours:          "2d 2h",
     attach_spec:           true
   },
   {
@@ -265,6 +266,7 @@ tickets_data = [
     assignee:              nil,
     dev_estimate_hours:    8.0,
     tester_estimate_hours: 2.0,
+    actual_hours:          nil,
     attach_spec:           true
   },
   {
@@ -283,6 +285,7 @@ tickets_data = [
     assignee:              dana,
     dev_estimate_hours:    4.0,
     tester_estimate_hours: 1.0,
+    actual_hours:          "5h",
     attach_spec:           false
   },
   {
@@ -300,6 +303,7 @@ tickets_data = [
     assignee:              oren,
     dev_estimate_hours:    6.0,
     tester_estimate_hours: 2.0,
+    actual_hours:          "7h",
     pr_number:             12,
     pr_url:                "http://gitea.local/devteam/print-server-tdi/pulls/12",
     attach_spec:           false
@@ -318,6 +322,7 @@ tickets_data = [
     assignee:              avi,
     dev_estimate_hours:    8.0,
     tester_estimate_hours: 8.0,
+    actual_hours:          "1d 1h",
     attach_spec:           false
   },
 
@@ -336,6 +341,7 @@ tickets_data = [
     assignee:              noam,
     dev_estimate_hours:    24.0,
     tester_estimate_hours: 8.0,
+    actual_hours:          "3d 6h",
     attach_spec:           true
   },
   {
@@ -353,6 +359,7 @@ tickets_data = [
     assignee:              dana,
     dev_estimate_hours:    12.0,
     tester_estimate_hours: 4.0,
+    actual_hours:          "10h",
     attach_spec:           false
   },
   {
@@ -388,6 +395,7 @@ tickets_data = [
     assignee:              oren,
     dev_estimate_hours:    16.0,
     tester_estimate_hours: 8.0,
+    actual_hours:          "18h",
     pr_number:             34,
     pr_url:                "http://gitea.local/devteam/tdi2/pulls/34",
     attach_spec:           false
@@ -408,6 +416,7 @@ tickets_data = [
     assignee:              avi,
     dev_estimate_hours:    8.0,
     tester_estimate_hours: 4.0,
+    actual_hours:          "9h",
     attach_spec:           false
   },
 
@@ -427,6 +436,7 @@ tickets_data = [
     assignee:              noam,
     dev_estimate_hours:    40.0,
     tester_estimate_hours: 16.0,
+    actual_hours:          "4d 4h",
     attach_spec:           true
   },
   {
@@ -461,6 +471,7 @@ tickets_data = [
     assignee:              dana,
     dev_estimate_hours:    20.0,
     tester_estimate_hours: 8.0,
+    actual_hours:          "2d 2h",
     attach_spec:           false
   },
   {
@@ -479,6 +490,7 @@ tickets_data = [
     assignee:              oren,
     dev_estimate_hours:    4.0,
     tester_estimate_hours: 2.0,
+    actual_hours:          "3h",
     attach_spec:           false
   },
   {
@@ -497,6 +509,7 @@ tickets_data = [
     assignee:              avi,
     dev_estimate_hours:    8.0,
     tester_estimate_hours: 4.0,
+    actual_hours:          "11h",
     pr_number:             18,
     pr_url:                "http://gitea.local/devteam/digital-internet-services/pulls/18",
     attach_spec:           false
@@ -518,6 +531,7 @@ tickets_data = [
     assignee:              noam,
     dev_estimate_hours:    32.0,
     tester_estimate_hours: 12.0,
+    actual_hours:          "4d",
     attach_spec:           true
   },
   {
@@ -552,6 +566,7 @@ tickets_data = [
     assignee:              dana,
     dev_estimate_hours:    20.0,
     tester_estimate_hours: 8.0,
+    actual_hours:          "2d 6h",
     attach_spec:           false
   },
   {
@@ -570,6 +585,7 @@ tickets_data = [
     assignee:              oren,
     dev_estimate_hours:    6.0,
     tester_estimate_hours: 2.0,
+    actual_hours:          "6.5h",
     attach_spec:           false
   },
   {
@@ -588,6 +604,7 @@ tickets_data = [
     assignee:              avi,
     dev_estimate_hours:    8.0,
     tester_estimate_hours: 4.0,
+    actual_hours:          "10h",
     pr_number:             9,
     pr_url:                "http://gitea.local/devteam/work-management-system/pulls/9",
     attach_spec:           false
@@ -626,6 +643,7 @@ tickets_data = [
     assignee:              admin,
     dev_estimate_hours:    24.0,
     tester_estimate_hours: 8.0,
+    actual_hours:          "3d 2h",
     attach_spec:           false
   },
   {
@@ -643,6 +661,7 @@ tickets_data = [
     assignee:              team_lead,
     dev_estimate_hours:    16.0,
     tester_estimate_hours: 4.0,
+    actual_hours:          "1d 6h",
     attach_spec:           false
   },
   {
@@ -660,6 +679,7 @@ tickets_data = [
     assignee:              noam,
     dev_estimate_hours:    40.0,
     tester_estimate_hours: 8.0,
+    actual_hours:          "5d 2h",
     attach_spec:           false
   },
   {
@@ -677,6 +697,7 @@ tickets_data = [
     assignee:              dana,
     dev_estimate_hours:    16.0,
     tester_estimate_hours: 4.0,
+    actual_hours:          "17h",
     attach_spec:           true
   },
   {
@@ -695,6 +716,7 @@ tickets_data = [
     assignee:              oren,
     dev_estimate_hours:    2.0,
     tester_estimate_hours: 1.0,
+    actual_hours:          "2.5h",
     attach_spec:           false
   },
   {
@@ -730,6 +752,7 @@ tickets_data.each do |t|
     tk.assignee              = t[:assignee]
     tk.dev_estimate_hours    = t[:dev_estimate_hours]
     tk.tester_estimate_hours = t[:tester_estimate_hours]
+    tk.actual_hours          = t[:actual_hours]
     tk.how_to_reproduce      = t[:how_to_reproduce] if t[:how_to_reproduce]
     tk.pr_number             = t[:pr_number] if t[:pr_number]
     tk.pr_url                = t[:pr_url]    if t[:pr_url]
@@ -739,7 +762,8 @@ tickets_data.each do |t|
   # Always keep new fields up to date (idempotent on re-seed)
   ticket.update_columns(
     kind:  Ticket.kinds[t[:kind].to_s],
-    level: Ticket.levels[(t[:level] || :moderate).to_s]
+    level: Ticket.levels[(t[:level] || :moderate).to_s],
+    actual_hours: t[:actual_hours]
   )
   ticket.update_column(:how_to_reproduce, t[:how_to_reproduce]) if t[:how_to_reproduce].present?
 
