@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_23_070534) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_23_074939) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -199,6 +199,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_23_070534) do
     t.integer "deploy_type"
     t.datetime "deployed_at"
     t.bigint "deployed_by_id"
+    t.text "env_vars"
     t.string "environment"
     t.string "machine_name"
     t.text "notes"
@@ -216,8 +217,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_23_070534) do
     t.text "content"
     t.datetime "created_at", null: false
     t.integer "doc_type"
+    t.boolean "is_template"
     t.bigint "project_id", null: false
     t.text "summary"
+    t.integer "template_id"
     t.string "title"
     t.datetime "updated_at", null: false
     t.string "version_number"
@@ -322,13 +325,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_23_070534) do
 
   create_table "pull_requests", force: :cascade do |t|
     t.string "author"
+    t.text "build_errors"
+    t.text "code_changed"
     t.datetime "created_at", null: false
     t.text "description"
+    t.text "files_changed"
     t.string "gitea_url"
+    t.text "latest_test_results"
     t.datetime "merged_at"
+    t.text "pr_comments_data"
     t.integer "pr_number"
     t.bigint "project_id", null: false
     t.integer "status"
+    t.datetime "synced_at"
+    t.text "test_code"
     t.bigint "ticket_id", null: false
     t.string "title"
     t.datetime "updated_at", null: false

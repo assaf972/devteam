@@ -782,4 +782,236 @@ end
 puts "  ✓ #{tickets_data.size} tickets (#{created_ticket_count} newly created)"
 puts "  ✓ spec docs attached to feature/spike tickets"
 
+# ─────────────────────────────────────────────────────────────────
+# Milestones
+# ─────────────────────────────────────────────────────────────────
+milestones_data = [
+  # Print Server / TDI
+  { project: projects[0], name: "v3.2 — PDF Export & Profiles",   description: "PDF print queue export and per-printer duplex profiles.", due_date: Date.new(2026, 4, 30), status: :completed   },
+  { project: projects[0], name: "v3.3 — Performance Hardening",   description: "Fix network timeout bugs and paper-size locale issues.",   due_date: Date.new(2026, 5, 30), status: :in_progress },
+  { project: projects[0], name: "v4.0 — .NET 4.8.1 Upgrade",      description: "Full framework upgrade and regression suite.",              due_date: Date.new(2026, 6, 30), status: :open        },
+
+  # TDI2
+  { project: projects[1], name: "v1.0 — MVP Launch",              description: "Core order processing with RabbitMQ and EF Core.",         due_date: Date.new(2026, 4, 15), status: :completed   },
+  { project: projects[1], name: "v1.1 — Resilience & Logging",    description: "Dead-letter exchange, structured Serilog logging.",         due_date: Date.new(2026, 5, 20), status: :in_progress },
+  { project: projects[1], name: "v2.0 — EF Core Migration",       description: "Full data-layer migration to EF Core 9 code-first.",        due_date: Date.new(2026, 7, 1),  status: :open        },
+
+  # Digital Internet Services
+  { project: projects[2], name: "v2.0 — Vue 3 Dashboard",         description: "Statistics dashboard and JWT auth overhaul.",              due_date: Date.new(2026, 4, 20), status: :completed   },
+  { project: projects[2], name: "v2.1 — Stability & Performance",  description: "Fix Pinia persistence and connection pool issues.",         due_date: Date.new(2026, 5, 25), status: :in_progress },
+  { project: projects[2], name: "v3.0 — Docker CI/CD",            description: "Containerised Windows deployment pipeline.",                due_date: Date.new(2026, 6, 15), status: :open        },
+
+  # Work Management System
+  { project: projects[3], name: "v1.0 — Kanban & Search",         description: "Drag-and-drop Kanban and PostgreSQL full-text search.",    due_date: Date.new(2026, 4, 25), status: :completed   },
+  { project: projects[3], name: "v1.1 — CI & Bug Fixes",          description: "Jenkins Bun pipeline, fix hot-reload and query planner.",   due_date: Date.new(2026, 5, 28), status: :in_progress },
+  { project: projects[3], name: "v2.0 — Bun Native Evaluation",   description: "Evaluate Bun SQLite and optimise dev workflow.",            due_date: Date.new(2026, 7, 15), status: :open        },
+
+  # DevTeam Hub
+  { project: projects[4], name: "v1.0 — Core Platform",           description: "Projects, tickets, CI dashboard, chat, notifications.",    due_date: Date.new(2026, 4, 10), status: :completed   },
+  { project: projects[4], name: "v1.1 — Sprints & Docs",          description: "Sprint CRUD, WYSIWYG docs, customer sidebar.",             due_date: Date.new(2026, 5, 31), status: :in_progress },
+  { project: projects[4], name: "v2.0 — Video Huddles",           description: "Jitsi huddles, team presence, meeting recordings.",        due_date: Date.new(2026, 6, 30), status: :open        }
+]
+
+milestones = milestones_data.map do |m|
+  Milestone.find_or_create_by!(project: m[:project], name: m[:name]) do |ms|
+    ms.description = m[:description]
+    ms.due_date    = m[:due_date]
+    ms.status      = m[:status]
+  end
+end
+puts "  ✓ #{milestones.size} milestones"
+
+# ─────────────────────────────────────────────────────────────────
+# Sprints  (3 completed + 1 active + 1 planning per project)
+# ─────────────────────────────────────────────────────────────────
+today  = Date.today
+
+sprint_templates = [
+  { label: "Sprint 1 — Foundation",    offset_start: -49, offset_end: -36, status: :completed, velocity: 34, goals: "Establish core architecture, CI pipeline, and database schema."      },
+  { label: "Sprint 2 — Core Features", offset_start: -35, offset_end: -22, status: :completed, velocity: 40, goals: "Build primary user-facing features and key integrations."              },
+  { label: "Sprint 3 — Polish & Bugs", offset_start: -21, offset_end:  -8, status: :completed, velocity: 38, goals: "Fix critical bugs surfaced in Sprint 2 review. Improve UX."          },
+  { label: "Sprint 4 — Active",        offset_start:  -7, offset_end:   6, status: :active,    velocity: 42, goals: "Finish milestone features, address tech-debt, prep for release."      },
+  { label: "Sprint 5 — Planning",      offset_start:   7, offset_end:  20, status: :planning,  velocity: 40, goals: "TBD — items to be pulled from backlog during sprint planning session." }
+]
+
+sprints_by_project = {}   # project_id => array of sprints in order
+
+projects.each do |project|
+  sprints_by_project[project.id] = sprint_templates.map do |tmpl|
+    sprint = Sprint.find_or_create_by!(project: project, name: "#{project.name.truncate(20)} — #{tmpl[:label]}") do |s|
+      s.start_date = today + tmpl[:offset_start]
+      s.end_date   = today + tmpl[:offset_end]
+      s.status     = tmpl[:status]
+      s.velocity   = tmpl[:velocity]
+      s.goals      = tmpl[:goals]
+    end
+    sprint
+  end
+end
+
+total_sprints = sprints_by_project.values.sum(&:size)
+puts "  ✓ #{total_sprints} sprints (#{Sprint.active.count} active)"
+
+# Assign retrospective copy to completed sprints
+Sprint.where(status: :completed).find_each do |s|
+  next if s.things_that_went_right.present?
+  s.update_columns(
+    things_that_went_right: "<p>Team collaboration was strong. CI pipeline ran without issues. Sprint velocity met target.</p><ul><li>All planned stories delivered</li><li>Zero production incidents</li><li>Good code-review turnaround time</li></ul>",
+    things_to_improve:      "<p>Estimation accuracy needs work on complex tasks.</p><ul><li>Underestimated integration complexity in 2 tickets</li><li>Daily standup attendance could improve</li><li>More detailed acceptance criteria needed upfront</li></ul>"
+  )
+end
+
+# ─────────────────────────────────────────────────────────────────
+# Deployments
+# ─────────────────────────────────────────────────────────────────
+deployments_data = [
+  # Print Server / TDI
+  { project: projects[0], version: "3.1.4", environment: "production", deploy_type: :windows_installer, status: :succeeded,   deployed_at: today - 42, deployed_by: noam,  notes: "Stable release. No issues reported."               },
+  { project: projects[0], version: "3.2.0", environment: "staging",    deploy_type: :windows_installer, status: :succeeded,   deployed_at: today - 20, deployed_by: dana,  notes: "PDF export feature deployed to staging."            },
+  { project: projects[0], version: "3.2.0", environment: "production", deploy_type: :windows_installer, status: :succeeded,   deployed_at: today -  7, deployed_by: team_lead, notes: "Signed off by QA. Released after successful UAT."  },
+  { project: projects[0], version: "3.3.0-beta", environment: "staging", deploy_type: :windows_installer, status: :in_progress, deployed_at: today -  1, deployed_by: dana, notes: "Bug-fix sprint build. Under QA review."             },
+
+  # TDI2
+  { project: projects[1], version: "1.0.0", environment: "staging",    deploy_type: :windows_service,   status: :succeeded,   deployed_at: today - 35, deployed_by: noam,  notes: "First staging deploy of the new platform."         },
+  { project: projects[1], version: "1.0.0", environment: "production", deploy_type: :windows_service,   status: :succeeded,   deployed_at: today - 28, deployed_by: team_lead, notes: "MVP go-live. All smoke tests passed."             },
+  { project: projects[1], version: "1.1.0", environment: "staging",    deploy_type: :windows_service,   status: :succeeded,   deployed_at: today - 10, deployed_by: avi,   notes: "Dead-letter exchange + Serilog upgrade."            },
+  { project: projects[1], version: "1.1.0", environment: "production", deploy_type: :windows_service,   status: :pending,     deployed_at: nil,        deployed_by: team_lead, notes: "Scheduled after race-condition fix merges."      },
+
+  # Digital Internet Services
+  { project: projects[2], version: "2.0.1", environment: "staging",    deploy_type: :docker,            status: :succeeded,   deployed_at: today - 30, deployed_by: dana,  notes: "Vue 3 dashboard + JWT auth."                       },
+  { project: projects[2], version: "2.0.1", environment: "production", deploy_type: :docker,            status: :succeeded,   deployed_at: today - 21, deployed_by: team_lead, notes: "Customer-facing release approved."               },
+  { project: projects[2], version: "2.1.0", environment: "staging",    deploy_type: :docker,            status: :failed,      deployed_at: today -  5, deployed_by: oren,  notes: "Deploy failed — connection pool config error. Reverted." },
+  { project: projects[2], version: "2.1.1", environment: "staging",    deploy_type: :docker,            status: :succeeded,   deployed_at: today -  2, deployed_by: oren,  notes: "Hotfix: correct pool size env vars in Docker compose."   },
+
+  # Work Management System
+  { project: projects[3], version: "1.0.0", environment: "staging",    deploy_type: :web_app,           status: :succeeded,   deployed_at: today - 28, deployed_by: noam,  notes: "Kanban board and search features complete."        },
+  { project: projects[3], version: "1.0.0", environment: "production", deploy_type: :web_app,           status: :succeeded,   deployed_at: today - 18, deployed_by: pm_user, notes: "Production launch. Stakeholder sign-off received."  },
+  { project: projects[3], version: "1.1.0", environment: "staging",    deploy_type: :web_app,           status: :in_progress, deployed_at: today -  1, deployed_by: dana,  notes: "Jenkins CI pipeline running Bun test suite."       },
+
+  # DevTeam Hub
+  { project: projects[4], version: "1.0.0", environment: "production", deploy_type: :web_app,           status: :succeeded,   deployed_at: today - 40, deployed_by: admin, notes: "Initial platform launch."                          },
+  { project: projects[4], version: "1.1.0", environment: "staging",    deploy_type: :web_app,           status: :succeeded,   deployed_at: today -  8, deployed_by: admin, notes: "Sprints, WYSIWYG docs, customer portal added."     },
+  { project: projects[4], version: "1.1.0", environment: "production", deploy_type: :web_app,           status: :succeeded,   deployed_at: today -  3, deployed_by: admin, notes: "Passed internal QA. Released to team."             },
+  { project: projects[4], version: "2.0.0-alpha", environment: "staging", deploy_type: :web_app,        status: :pending,     deployed_at: nil,        deployed_by: admin, notes: "Video huddles milestone — pending final review."   }
+]
+
+deployments_data.each do |d|
+  Deployment.find_or_create_by!(project: d[:project], version: d[:version], environment: d[:environment]) do |dep|
+    dep.deploy_type  = d[:deploy_type]
+    dep.status       = d[:status]
+    dep.deployed_at  = d[:deployed_at]
+    dep.deployed_by  = d[:deployed_by]
+    dep.notes        = d[:notes]
+  end
+end
+
+puts "  ✓ #{deployments_data.size} deployments"
+
+# ─────────────────────────────────────────────────────────────────
+# Meetings  (standups, planning, reviews, retros, demos)
+# ─────────────────────────────────────────────────────────────────
+meetings_data = [
+  # ── Print Server / TDI ────────────────────────────────────────────
+  { project: projects[0], sprint_idx: 3, title: "TDI Daily Standup",                  meeting_type: :daily_standup,   status: :scheduled,  scheduled_at: today + 1,  duration: 15,  organizer: team_lead, attendees: [ team_lead, noam, dana, qa_user ],
+    agenda: "1. What did you do yesterday?\n2. What will you do today?\n3. Any blockers?",
+    jitsi_room: "devteam-tdi-standup" },
+  { project: projects[0], sprint_idx: 3, title: "TDI Sprint 4 Planning",              meeting_type: :sprint_planning, status: :completed,  scheduled_at: today - 7,  duration: 90,  organizer: team_lead, attendees: [ team_lead, noam, dana, qa_user, pm_user ],
+    agenda: "Review sprint goal, estimate backlog items, assign stories.",
+    notes: "Committed to 7 stories. Network timeout bug prioritised as critical.",
+    jitsi_room: "devteam-tdi-planning4" },
+  { project: projects[0], sprint_idx: 2, title: "TDI Sprint 3 Retrospective",         meeting_type: :retrospective,   status: :completed,  scheduled_at: today - 10, duration: 60,  organizer: team_lead, attendees: [ team_lead, noam, dana, qa_user ],
+    agenda: "What went well? What could improve? Action items.",
+    notes: "Team velocity exceeded target. CI build times still too slow — add parallel test jobs.",
+    jitsi_room: "devteam-tdi-retro3" },
+  { project: projects[0], sprint_idx: 3, title: "TDI Customer Demo — Acme Corp",      meeting_type: :demo,            status: :scheduled,  scheduled_at: today + 3,  duration: 45,  organizer: pm_user,   attendees: [ pm_user, team_lead, noam ],
+    agenda: "Demonstrate PDF export feature and duplex profile configuration to Acme Corp.",
+    jitsi_room: "devteam-tdi-demo-acme" },
+
+  # ── TDI2 ──────────────────────────────────────────────────────────
+  { project: projects[1], sprint_idx: 3, title: "TDI2 Daily Standup",                 meeting_type: :daily_standup,   status: :in_progress, scheduled_at: today,      duration: 15, organizer: team_lead, attendees: [ team_lead, noam, dana, oren, avi, qa_user ],
+    agenda: "Round-robin: yesterday / today / blockers",
+    jitsi_room: "devteam-tdi2-standup" },
+  { project: projects[1], sprint_idx: 3, title: "TDI2 Architecture Review",           meeting_type: :other,           status: :completed,   scheduled_at: today - 5,  duration: 60, organizer: admin,     attendees: [ admin, team_lead, noam, avi ],
+    agenda: "Review dead-letter exchange design and distributed lock implementation plan.",
+    notes: "Agreed on SQL Server sp_getapplock for distributed locks. DLX config reviewed.",
+    jitsi_room: "devteam-tdi2-arch" },
+  { project: projects[1], sprint_idx: 3, title: "TDI2 Sprint 4 Planning",             meeting_type: :sprint_planning, status: :completed,   scheduled_at: today - 7,  duration: 90, organizer: team_lead, attendees: [ team_lead, noam, dana, oren, avi, qa_user, pm_user ],
+    agenda: "Sprint 4 goal alignment. Pull from backlog. Estimate race-condition fix.",
+    notes: "Velocity target: 42pts. Race condition fix: 16pts (2 devs). EF Core spike moved to Sprint 5.",
+    jitsi_room: "devteam-tdi2-planning4" },
+  { project: projects[1], sprint_idx: 2, title: "TDI2 Sprint 3 Review",               meeting_type: :sprint_review,   status: :completed,   scheduled_at: today - 9,  duration: 45, organizer: pm_user,   attendees: [ pm_user, team_lead, noam, dana ],
+    agenda: "Demo completed stories. Review against sprint goal.",
+    notes: "Serilog logging: done. RabbitMQ DLX: 80% done — carry over to Sprint 4.",
+    jitsi_room: "devteam-tdi2-review3" },
+
+  # ── Digital Internet Services ──────────────────────────────────────
+  { project: projects[2], sprint_idx: 3, title: "DIS Daily Standup",                  meeting_type: :daily_standup,   status: :scheduled,  scheduled_at: today + 1,  duration: 15, organizer: team_lead, attendees: [ team_lead, noam, dana, oren, avi, qa_user ],
+    agenda: "Daily sync — blockers and progress.",
+    jitsi_room: "devteam-dis-standup" },
+  { project: projects[2], sprint_idx: 3, title: "DIS Connection Pool Post-Mortem",    meeting_type: :other,           status: :completed,  scheduled_at: today - 4,  duration: 60, organizer: qa_user,   attendees: [ qa_user, team_lead, aven = avi ],
+    agenda: "Root cause analysis of staging deployment failure. Corrective actions.",
+    notes: "Root cause: DOCKER_POOL_MAX env var not injected in compose override. Fix applied in 2.1.1.",
+    jitsi_room: "devteam-dis-postmortem" },
+  { project: projects[2], sprint_idx: 3, title: "DIS Sprint 4 Planning",              meeting_type: :sprint_planning, status: :completed,  scheduled_at: today - 7,  duration: 90, organizer: team_lead, attendees: [ team_lead, noam, dana, oren, avi, pm_user ],
+    agenda: "Plan sprint items: Docker CI/CD pipeline, Pinia persistence fix.",
+    notes: "Docker pipeline: 24pts (avi + noam). Pinia fix: 4pts (oren).",
+    jitsi_room: "devteam-dis-planning4" },
+  { project: projects[2], sprint_idx: 4, title: "DIS Roadmap Review with Globex",     meeting_type: :demo,            status: :scheduled,  scheduled_at: today + 5,  duration: 60, organizer: pm_user,   attendees: [ pm_user, team_lead, dana ],
+    agenda: "Present v2.1 stability improvements and v3.0 Docker pipeline roadmap to Globex Solutions.",
+    jitsi_room: "devteam-dis-globex-roadmap" },
+
+  # ── Work Management System ─────────────────────────────────────────
+  { project: projects[3], sprint_idx: 3, title: "WMS Daily Standup",                  meeting_type: :daily_standup,   status: :scheduled,  scheduled_at: today + 1,  duration: 15, organizer: pm_user,   attendees: [ pm_user, noam, dana, oren, avi ],
+    agenda: "Daily sync.",
+    jitsi_room: "devteam-wms-standup" },
+  { project: projects[3], sprint_idx: 3, title: "WMS Sprint 4 Planning",              meeting_type: :sprint_planning, status: :completed,  scheduled_at: today - 7,  duration: 90, organizer: pm_user,   attendees: [ pm_user, noam, dana, oren, avi, qa_user ],
+    agenda: "Plan: Jenkins CI pipeline, WSL2 hot-reload fix, PostgreSQL index bug.",
+    notes: "Bun test runner integration: 20pts. Hot-reload bug: 6pts (oren).",
+    jitsi_room: "devteam-wms-planning4" },
+  { project: projects[3], sprint_idx: 2, title: "WMS Sprint 3 Retrospective",         meeting_type: :retrospective,   status: :completed,  scheduled_at: today - 10, duration: 60, organizer: pm_user,   attendees: [ pm_user, noam, dana, oren, avi, qa_user ],
+    agenda: "Retro: went well / improve / action items.",
+    notes: "Kanban DnD well-received. Need better cross-browser testing for drag events. Add playwright tests.",
+    jitsi_room: "devteam-wms-retro3" },
+  { project: projects[3], sprint_idx: 3, title: "WMS One-on-One: PM & Noam",          meeting_type: :one_on_one,      status: :scheduled,  scheduled_at: today + 2,  duration: 30, organizer: pm_user,   attendees: [ pm_user, noam ],
+    agenda: "Career check-in. Discuss Kanban implementation progress and next sprint scope.",
+    jitsi_room: "devteam-wms-1on1-noam" },
+
+  # ── DevTeam Hub ────────────────────────────────────────────────────
+  { project: projects[4], sprint_idx: 3, title: "DevTeam Daily Standup",              meeting_type: :daily_standup,   status: :in_progress, scheduled_at: today,      duration: 15, organizer: admin,     attendees: [ admin, team_lead, noam, dana, qa_user ],
+    agenda: "1. Yesterday 2. Today 3. Blockers",
+    jitsi_room: "devteam-hub-standup" },
+  { project: projects[4], sprint_idx: 3, title: "DevTeam Hub Sprint 4 Planning",      meeting_type: :sprint_planning, status: :completed,   scheduled_at: today - 7,  duration: 90, organizer: admin,     attendees: [ admin, team_lead, noam, dana, qa_user, pm_user ],
+    agenda: "Review sprint goal: video huddles milestone. Estimate Jitsi integration stories.",
+    notes: "Sprint 4 goal: ship Jitsi huddles + team presence sidebar. 9 stories totalling 42pts.",
+    jitsi_room: "devteam-hub-planning4" },
+  { project: projects[4], sprint_idx: 2, title: "DevTeam Hub Sprint 3 Review",        meeting_type: :sprint_review,   status: :completed,   scheduled_at: today - 9,  duration: 60, organizer: admin,     attendees: [ admin, team_lead, noam, dana, qa_user ],
+    agenda: "Demo sprint deliverables: sprint views, WYSIWYG editor, customers sidebar.",
+    notes: "All stories shipped. WYSIWYG editor praised. Sprint CRUD views look polished.",
+    jitsi_room: "devteam-hub-review3" },
+  { project: projects[4], sprint_idx: 4, title: "All-Hands Team Meeting",             meeting_type: :other,           status: :scheduled,   scheduled_at: today + 7,  duration: 60, organizer: admin,     attendees: users,
+    agenda: "Company updates, project status round-table, Q&A.",
+    jitsi_room: "devteam-allhands-may2026" }
+]
+
+meetings_data.each do |m|
+  sprint = sprints_by_project[m[:project].id][m[:sprint_idx]]
+  meeting = Meeting.find_or_create_by!(project: m[:project], title: m[:title]) do |mt|
+    mt.meeting_type     = m[:meeting_type]
+    mt.status           = m[:status]
+    mt.scheduled_at     = m[:scheduled_at].is_a?(Date) ? m[:scheduled_at].to_time + 9.hours : m[:scheduled_at]
+    mt.duration_minutes = m[:duration]
+    mt.organizer        = m[:organizer]
+    mt.sprint           = sprint
+    mt.jitsi_room       = m[:jitsi_room]
+    mt.agenda           = m[:agenda]
+    mt.notes            = m[:notes] if m[:notes]
+  end
+  # Add attendees idempotently
+  (m[:attendees] || []).flatten.compact.uniq.each do |u|
+    MeetingAttendee.find_or_create_by!(meeting: meeting, user: u)
+  end
+end
+
+puts "  ✓ #{meetings_data.size} meetings with attendees"
+
 puts "✅ Seed complete!"

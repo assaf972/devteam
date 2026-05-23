@@ -1,0 +1,217 @@
+<%
+  status_colors = { "open" => "success", "review" => "primary", "merged" => "purple", "closed" => "secondary" }
+  badge_class   = "bg-#{status_colors.fetch(@pull_request.status, 'secondary')}"
+%>
+
+<div class="d-flex align-items-start justify-content-between mb-3">
+  <div>
+    <%= link_to project_pull_requests_path(@project), class: "text-muted small text-decoration-none" do %>
+      <i class="bi bi-arrow-left me-1"></i>All PRs — <%= @project.name %>
+    <% end %>
+    <h2 class="fw-bold mb-1 mt-1">
+      <span class="text-muted me-2">#<%= @pull_request.pr_number %></span>
+      <%= @pull_request.title %>
+    </h2>
+    <div class="d-flex gap-2 align-items-center flex-wrap">
+      <span class="badge <%= badge_class %>"><%= @pull_request.status.capitalize %></span>
+      <% if @pull_request.author.present? %>
+        <span class="badge bg-light text-dark border">
+          <i class="bi bi-person me-1"></i><%= @pull_request.author %>
+        </span>
+      <% end %>
+      <% if @pull_request.ticket %>
+        <span class="badge bg-light text-dark border">
+          <i class="bi bi-ticket me-1"></i>
+          <%= link_to @pull_request.ticket.title.truncate(40), ticket_path(@pull_request.ticket), class: "text-dark text-decoration-none" %>
+        </span>
+      <% end %>
+      <% if @pull_request.gitea_url.present? %>
+        <%= link_to @pull_request.gitea_url, target: "_blank", class: "badge bg-light text-dark border text-decoration-none" do %>
+          <i class="bi bi-box-arrow-up-right me-1"></i>View on Gitea
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="d-flex flex-column align-items-end gap-1">
+    <%= button_to sync_pull_request_path(@pull_request), method: :post,
+          class: "btn btn-primary",
+          data: { confirm: "Refresh data from Gitea?" } do %>
+      <i class="bi bi-arrow-clockwise me-1"></i>Refresh from Gitea
+    <% end %>
+    <% if @pull_request.synced? %>
+      <small class="text-muted">
+        <i class="bi bi-check-circle me-1"></i>Last synced <%= @pull_request.synced_at.strftime("%b %-d, %Y %H:%M") %>
+      </small>
+    <% else %>
+      <small class="text-warning"><i class="bi bi-exclamation-circle me-1"></i>Never synced</small>
+    <% end %>
+  </div>
+</div>
+
+<% if @pull_request.description.present? %>
+  <div class="card mb-3 shadow-sm">
+    <div class="card-body"><%= @pull_request.description %></div>
+  </div>
+<% end %>
+
+<div class="row g-3">
+
+  <%# ── Left column ───────────────────────────────────────────── %>
+  <div class="col-lg-8">
+
+    <%# Changed Files %>
+    <div class="card shadow-sm mb-3">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <strong><i class="bi bi-file-earmark-code me-2"></i>Changed Files</strong>
+        <span class="badge bg-secondary"><%= @pull_request.changed_files.size %></span>
+      </div>
+      <% if @pull_request.changed_files.any? %>
+        <ul class="list-group list-group-flush">
+          <% @pull_request.source_files.each do |f| %>
+            <li class="list-group-item py-1 ps-3 font-monospace small"><i class="bi bi-file-code me-2 text-primary"></i><%= f %></li>
+          <% end %>
+          <% @pull_request.test_files.each do |f| %>
+            <li class="list-group-item py-1 ps-3 font-monospace small text-success"><i class="bi bi-check2-square me-2"></i><%= f %></li>
+          <% end %>
+        </ul>
+      <% else %>
+        <div class="card-body text-muted small"><i class="bi bi-info-circle me-1"></i>No file data — click Refresh from Gitea.</div>
+      <% end %>
+    </div>
+
+    <%# Code Diff %>
+    <% if @pull_request.code_changed.present? %>
+      <div class="card shadow-sm mb-3">
+        <div class="card-header">
+          <strong><i class="bi bi-code-slash me-2"></i>Source Diff</strong>
+        </div>
+        <div class="card-body p-0">
+          <pre class="mb-0 p-3 overflow-auto font-monospace small" style="max-height:480px;background:#0d1117;color:#e6edf3;"><%= @pull_request.code_changed %></pre>
+        </div>
+      </div>
+    <% end %>
+
+    <%# Test Diff %>
+    <% if @pull_request.test_code.present? %>
+      <div class="card shadow-sm mb-3">
+        <div class="card-header">
+          <strong><i class="bi bi-check2-all me-2"></i>Test Diff</strong>
+        </div>
+        <div class="card-body p-0">
+          <pre class="mb-0 p-3 overflow-auto font-monospace small" style="max-height:480px;background:#0d1117;color:#a5d6a7;"><%= @pull_request.test_code %></pre>
+        </div>
+      </div>
+    <% end %>
+
+  </div>
+
+  <%# ── Right column ──────────────────────────────────────────── %>
+  <div class="col-lg-4">
+
+    <%# CI / Test Results %>
+    <div class="card shadow-sm mb-3">
+      <div class="card-header">
+        <strong><i class="bi bi-cpu me-2"></i>CI Results</strong>
+      </div>
+      <% if Array(@pull_request.latest_test_results).any? %>
+        <ul class="list-group list-group-flush">
+          <% Array(@pull_request.latest_test_results).each do |s| %>
+            <%
+              state = s["state"].to_s
+              icon  = state == "success" ? "check-circle-fill text-success" : (state == "failure" ? "x-circle-fill text-danger" : "clock-fill text-warning")
+            %>
+            <li class="list-group-item py-2 small">
+              <i class="bi bi-<%= icon %> me-2"></i>
+              <span class="fw-semibold"><%= s["context"] %></span>
+              <% if s["description"].present? %>
+                <div class="text-muted ms-4"><%= s["description"] %></div>
+              <% end %>
+              <% if s["target_url"].present? %>
+                <div class="ms-4"><%= link_to "View details", s["target_url"], target: "_blank", class: "small" %></div>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <div class="card-body text-muted small">No CI data — sync to refresh.</div>
+      <% end %>
+    </div>
+
+    <%# Build Errors %>
+    <% if @pull_request.build_errors.present? %>
+      <div class="card shadow-sm mb-3 border-danger">
+        <div class="card-header bg-danger text-white">
+          <strong><i class="bi bi-exclamation-triangle me-2"></i>Build Errors</strong>
+        </div>
+        <div class="card-body p-0">
+          <pre class="mb-0 p-3 overflow-auto small text-danger" style="max-height:240px;"><%= @pull_request.build_errors %></pre>
+        </div>
+      </div>
+    <% end %>
+
+    <%# PR Comments from Gitea %>
+    <div class="card shadow-sm mb-3">
+      <div class="card-header d-flex justify-content-between">
+        <strong><i class="bi bi-chat-dots me-2"></i>PR Comments</strong>
+        <span class="badge bg-secondary"><%= @pull_request.pr_comments.size %></span>
+      </div>
+      <% if @pull_request.pr_comments.any? %>
+        <ul class="list-group list-group-flush">
+          <% @pull_request.pr_comments.each do |c| %>
+            <li class="list-group-item small py-2">
+              <div class="fw-semibold mb-1">
+                <i class="bi bi-person me-1"></i><%= c["user"].presence || "unknown" %>
+                <% if c["created_at"].present? %>
+                  <span class="text-muted fw-normal ms-2"><%= Time.parse(c["created_at"]).strftime("%b %-d, %H:%M") rescue c["created_at"] %></span>
+                <% end %>
+              </div>
+              <div><%= c["message"] %></div>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <div class="card-body text-muted small">No comments — sync to load.</div>
+      <% end %>
+    </div>
+
+    <%# App-level comments (from Comment model) %>
+    <% if @pull_request.comments.any? %>
+      <div class="card shadow-sm mb-3">
+        <div class="card-header">
+          <strong><i class="bi bi-chat-left-text me-2"></i>Team Comments</strong>
+        </div>
+        <ul class="list-group list-group-flush">
+          <% @pull_request.comments.includes(:user).order(:created_at).each do |c| %>
+            <li class="list-group-item small py-2">
+              <div class="fw-semibold"><%= c.user&.name.presence || "Anon" %> <span class="text-muted fw-normal"><%= c.created_at.strftime("%b %-d") %></span></div>
+              <div><%= c.body %></div>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%# Metadata %>
+    <div class="card shadow-sm">
+      <div class="card-header"><strong><i class="bi bi-info-circle me-2"></i>Details</strong></div>
+      <ul class="list-group list-group-flush small">
+        <li class="list-group-item d-flex justify-content-between">
+          <span class="text-muted">Created</span>
+          <span><%= @pull_request.created_at.strftime("%b %-d, %Y") %></span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between">
+          <span class="text-muted">Updated</span>
+          <span><%= @pull_request.updated_at.strftime("%b %-d, %Y %H:%M") %></span>
+        </li>
+        <% if @pull_request.merged_at %>
+          <li class="list-group-item d-flex justify-content-between">
+            <span class="text-muted">Merged</span>
+            <span><%= @pull_request.merged_at.strftime("%b %-d, %Y") %></span>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+
+  </div>
+</div>

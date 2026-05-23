@@ -127,6 +127,28 @@
     <%= link_to admin_client_accounts_path, class: "sidebar-nav-item" do %><span class="nav-icon">🏢</span> Clients<% end %>
   <% end %>
 
+  <hr class="sidebar-divider">
+
+  <%# ── Team ────────────────────────────────────────────────────────── %>
+  <div class="sidebar-section-label">
+    Team
+    <%= link_to new_meeting_path, class: "text-white", style: "opacity:0.4;font-size:0.75rem;", title: "Start a huddle" do %>📹<% end %>
+  </div>
+
+  <% @sidebar_team_members.each do |member| %>
+    <%= link_to new_meeting_path(invite: member.id),
+          class: "sidebar-nav-item",
+          style: "padding-top:3px;padding-bottom:3px;" do %>
+      <span style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.15);display:inline-flex;align-items:center;justify-content:center;font-size:0.7rem;flex-shrink:0;font-weight:600;">
+        <%= member.display_name.first.upcase %>
+      </span>
+      <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:0.82rem;">
+        <%= member.display_name %>
+        <% if member.id == current_user.id %><span style="opacity:0.4;font-size:0.7rem;"> (you)</span><% end %>
+      </span>
+    <% end %>
+  <% end %>
+
   <%# ── User footer ──────────────────────────────────────────────────── %>
   <div class="sidebar-user">
     <div class="sidebar-user-avatar">

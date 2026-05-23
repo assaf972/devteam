@@ -1,18 +1,40 @@
 <% content_for :title, @document.title %>
 
-<div class="level">
-  <div class="level-left">
-    <div>
-      <h1 class="fw-bold"><%= @document.title %></h1>
-      <p class="subfw-bold is-7 text-muted">
-        <%= t("documents.types.#{@document.doc_type}") %> · v<%= @document.version_number.presence || '1.0' %>
-        · by <%= @document.author&.display_name %> · <%= @document.updated_at.strftime('%d/%m/%Y %H:%M') %>
-      </p>
+<div class="d-flex align-items-start justify-content-between mb-3 flex-wrap gap-2">
+  <div>
+    <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+      <h1 class="fw-bold mb-0"><%= @document.title %></h1>
+      <% if @document.is_template? %>
+        <span class="badge bg-warning text-dark"><i class="bi bi-file-earmark-code me-1"></i>Template</span>
+      <% end %>
+      <% if @document.template %>
+        <span class="badge bg-light text-muted border">From: <%= link_to @document.template.title, @document.template, class: "text-muted" %></span>
+      <% end %>
     </div>
+    <p class="text-muted mb-0 small">
+      <%= t("documents.types.#{@document.doc_type}") %> · v<%= @document.version_number.presence || '1.0' %>
+      · by <%= @document.author&.display_name %> · <%= @document.updated_at.strftime('%d/%m/%Y %H:%M') %>
+      <% if @document.is_template? && @document.generated_documents.any? %>
+        · <span class="text-info"><%= @document.generated_documents.count %> doc(s) generated from this template</span>
+      <% end %>
+    </p>
   </div>
-  <div class="level-right">
-    <%= link_to "Edit", edit_document_path(@document), class: "btn btn-secondary btn-sm is-warning" %>
-    <%= link_to "Delete", document_path(@document), data: { turbo_method: :delete, turbo_confirm: "Delete?" }, class: "btn btn-secondary btn-sm is-danger" %>
+  <div class="d-flex gap-2 flex-wrap">
+    <% unless @document.is_template? %>
+      <%= button_to "Save as Template", save_as_template_document_path(@document),
+            method: :post,
+            class: "btn btn-outline-warning btn-sm",
+            form: { data: { turbo_confirm: "Save \"#{@document.title}\" as a reusable template?" } } do %>
+        <i class="bi bi-file-earmark-plus me-1"></i>Save as Template
+      <% end %>
+    <% end %>
+    <% if @document.is_template? %>
+      <%= link_to new_from_template_document_path(@document), class: "btn btn-outline-success btn-sm" do %>
+        <i class="bi bi-copy me-1"></i>New Doc from This Template
+      <% end %>
+    <% end %>
+    <%= link_to "Edit", edit_document_path(@document), class: "btn btn-secondary btn-sm" %>
+    <%= link_to "Delete", document_path(@document), data: { turbo_method: :delete, turbo_confirm: "Delete?" }, class: "btn btn-outline-danger btn-sm" %>
   </div>
 </div>
 

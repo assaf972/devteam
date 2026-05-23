@@ -64,10 +64,17 @@ Rails.application.routes.draw do
     resources :milestones, shallow: true
     resources :ci_runs, only: [ :index, :show ], shallow: true
     resources :deployments, shallow: true
-    resources :documents, shallow: true
+    resources :documents, shallow: true do
+      collection { get :templates }
+      member do
+        post :save_as_template
+        get  :new_from_template
+      end
+    end
     resources :branches, only: [ :index, :show ], shallow: true
-    resources :pull_requests, only: [ :index, :show ], shallow: true
-    resources :meetings, shallow: true
+    resources :pull_requests, only: [ :index, :show ], shallow: true do
+      member { post :sync }
+    end
     resources :project_memberships, only: %i[create destroy]
     resources :activities,           only: %i[index]
     member do
@@ -82,8 +89,15 @@ Rails.application.routes.draw do
       post :join
       post :end_meeting
       get  :ical
+      post :invite
+      patch :save_recording
     end
+    resources :comments, only: %i[create destroy], controller: "meeting_comments"
+    collection { get :project_meetings, path: "project/:project_id" }
   end
+
+  # project-scoped meeting index (e.g. linked from project page)
+  get "projects/:project_id/meetings", to: "meetings#index", as: :project_meetings
 
   resources :notifications, only: [ :index ] do
     collection { post :mark_all_read }
@@ -126,4 +140,15 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
   get "manifest"       => "rails/pwa#manifest",       as: :pwa_manifest
+
+  # ── Mobile UI ───────────────────────────────────────────────────────────────
+  scope :mobile, as: :mobile do
+    get "today",       to: "mobile#today",       as: :today
+    get "messages",    to: "mobile#messages",    as: :messages
+    get "meetings",    to: "mobile#meetings",    as: :meetings
+    get "projects",    to: "mobile#projects",    as: :projects
+    get "tickets",     to: "mobile#tickets",     as: :tickets
+    get "video-calls", to: "mobile#video_calls", as: :video_calls
+    root to: "mobile#today", as: :root
+  end
 end

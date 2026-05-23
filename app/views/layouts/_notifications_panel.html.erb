@@ -77,7 +77,7 @@
       <div class="alert alert-secondary-entry">
         <div class="alert alert-secondary-type-badge deploy">DEPLOY</div>
         <div class="alert alert-secondary-text">
-          <%= link_to "v#{item[:obj].version}", project_deployment_path(item[:obj].project_id, item[:obj]), style: "color:#276749;font-weight:600;" %>
+          <%= link_to "v#{item[:obj].version}", deployment_path(item[:obj]), style: "color:#276749;font-weight:600;" %>
           → <strong><%= item[:obj].environment %></strong>
           <span class="badge bg-secondary is-<%= item[:obj].succeeded? ? 'success' : item[:obj].failed? ? 'danger' : 'warning' %> ms-1">
             <%= item[:obj].status %>

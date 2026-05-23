@@ -5,6 +5,17 @@
     </div>
   <% end %>
 
+  <%# Template badge / notice %>
+  <% if document.is_template? %>
+    <div class="alert alert-warning d-flex align-items-center gap-2 mb-3 py-2">
+      <i class="bi bi-file-earmark-code fs-5"></i>
+      <span>You are editing a <strong>template</strong>. Changes here will affect all future documents created from it.</span>
+    </div>
+  <% end %>
+
+  <%# Hidden template_id if created from a template %>
+  <%= f.hidden_field :template_id if document.template_id.present? %>
+
   <div class="row">
     <div class="col-8">
       <div class="mb-3">
@@ -46,6 +57,17 @@
   <div class="mb-3">
     <%= f.label :tag_list, "Tags (comma separated)", class: "label" %>
     <div class=""><%= f.text_field :tag_list, value: document.tag_list.to_s, class: "input form-control" %></div>
+  </div>
+
+  <%# Save as Template checkbox %>
+  <div class="mb-3 border rounded p-3 bg-light">
+    <div class="form-check">
+      <%= f.check_box :is_template, class: "form-check-input", id: "doc_is_template" %>
+      <%= f.label :is_template, class: "form-check-label fw-semibold", for: "doc_is_template" do %>
+        <i class="bi bi-file-earmark-code me-1 text-warning"></i>Save as Template
+      <% end %>
+    </div>
+    <small class="text-muted">Templates can be reused to quickly create new documents with the same structure.</small>
   </div>
 
   <div class="d-flex gap-2 align-items-end">

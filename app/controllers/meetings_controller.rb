@@ -1,6 +1,6 @@
 class MeetingsController < ApplicationController
   before_action :set_project, only: [ :index, :new, :create ]
-  before_action :set_meeting, only: [ :show, :edit, :update, :destroy, :join, :end_meeting, :ical ]
+  before_action :set_meeting, only: [ :show, :edit, :update, :destroy, :join, :end_meeting, :ical, :invite, :save_recording ]
 
   def index
     @meetings = (@project&.meetings || Meeting)
@@ -12,6 +12,11 @@ class MeetingsController < ApplicationController
 
   def new
     @meeting = (@project&.meetings || Meeting).build(organizer: current_user)
+    # Pre-fill attendee when starting huddle from sidebar team member link
+    if params[:invite].present?
+      invitee = User.find_by(id: params[:invite])
+      @meeting.attendees << invitee if invitee
+    end
   end
 
   def create
@@ -46,6 +51,26 @@ class MeetingsController < ApplicationController
   def end_meeting
     @meeting.update(status: :completed)
     redirect_to @meeting, notice: "Meeting marked as completed."
+  end
+
+  def invite
+    user = User.find_by(id: params[:user_id])
+    if user && !@meeting.attendees.include?(user)
+      @meeting.attendees << user
+      flash[:notice] = "#{user.display_name} invited to the meeting."
+    else
+      flash[:alert] = user ? "Already in meeting." : "User not found."
+    end
+    redirect_to @meeting
+  end
+
+  def save_recording
+    if @meeting.update(recording_url: params[:recording_url])
+      flash[:notice] = "Recording link saved."
+    else
+      flash[:alert] = "Could not save recording link."
+    end
+    redirect_to @meeting
   end
 
   def ical

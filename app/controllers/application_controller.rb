@@ -38,6 +38,9 @@ class ApplicationController < ActionController::Base
                                     .merge(current_user.member_projects)
                                     .first
 
+    # Team members for sidebar presence list
+    @sidebar_team_members = User.order(:name)
+
     # Right panel: 15 most recent notifications
     @panel_notifications = current_user.notifications
                                        .order(created_at: :desc)
