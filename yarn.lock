@@ -103,6 +103,11 @@ bootstrap@^5.3.8:
   resolved "https://registry.npmjs.org/bootstrap/-/bootstrap-5.3.8.tgz"
   integrity sha512-HP1SZDqaLDPwsNiqRqi5NcP0SSXciX2s9E+RyqJIIqGo+vJeN5AJVM98CXmW/Wux0nQ5L7jeWUdplCEf0Ee+tg==
 
+bulma@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.npmjs.org/bulma/-/bulma-1.0.4.tgz"
+  integrity sha512-Ffb6YGXDiZYX3cqvSbHWqQ8+LkX6tVoTcZuVB3lm93sbAVXlO0D6QlOTMnV6g18gILpAXqkG2z9hf9z4hCjz2g==
+
 chart.js@^4.5.1, chart.js@>=2.8.0, chart.js@4:
   version "4.5.1"
   resolved "https://registry.npmjs.org/chart.js/-/chart.js-4.5.1.tgz"
