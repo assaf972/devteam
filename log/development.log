@@ -35203,3 +35203,1545 @@ Completed 200 OK in 16ms (Views: 6.2ms | ActiveRecord: 1.1ms (15 queries, 0 cach
 
 [Sentry::SessionFlusher] thread killed
 Shutting down background worker
+[Sentry::MetricEventBuffer] Initialized buffer with max_items=1000, flush_interval=5s
+Initializing the Sentry background worker with 7 threads
+Started GET "/notifications" for ::1 at 2026-05-22 22:47:26 +0300
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='DevTeam'*/[0m
+Processing by NotificationsController#index as HTML
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 ORDER BY "users"."id" ASC LIMIT 1 /*action='index',application='DevTeam',controller='notifications'*/[0m
+  [1m[36mNotification Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' AND "notifications"."read_at" IS NULL /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/controllers/application_controller.rb:21:in 'ApplicationController#set_notification_count'
+  [1m[36mCiRun Load (0.2ms)[0m  [1m[34mSELECT MAX(id) as id FROM "ci_runs" GROUP BY "ci_runs"."project_id" /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/controllers/application_controller.rb:29:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.2ms)[0m  [1m[34mSELECT MAX(id) as id FROM "deployments" GROUP BY "deployments"."project_id" /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/controllers/application_controller.rb:33:in 'Enumerable#map'
+  [1m[36mPullRequest Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "pull_requests"."project_id" AS "pull_requests_project_id" FROM "pull_requests" WHERE "pull_requests"."status" = 0 GROUP BY "pull_requests"."project_id" /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/controllers/application_controller.rb:37:in 'ApplicationController#load_sidebar_data'
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/controllers/application_controller.rb:42:in 'Enumerable#map'
+  [1m[36mDocument Load (0.2ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (5, 3, 1, 2, 4) AND "documents"."doc_type" IN (1, 2, 4) /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/controllers/application_controller.rb:43:in 'ApplicationController#load_sidebar_data'
+  [1m[36mCiRun Load (0.0ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" ORDER BY "ci_runs"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/controllers/application_controller.rb:58:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT "deployments".* FROM "deployments" ORDER BY "deployments"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/controllers/application_controller.rb:59:in 'Enumerable#map'
+  Rendering layout layouts/application.html.erb
+  Rendering notifications/index.html.erb within layouts/application
+  Rendered notifications/index.html.erb within layouts/application (Duration: 0.1ms | GC: 0.0ms)
+  [1m[36mChatRoom Load (0.1ms)[0m  [1m[34mSELECT "chat_rooms".* FROM "chat_rooms" WHERE "chat_rooms"."archived" = FALSE ORDER BY "chat_rooms"."room_type" ASC, "chat_rooms"."name" ASC /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  [1m[36mProject Load (0.0ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" IN (5, 3, 1, 2, 4) /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  Rendered layouts/_sidebar.html.erb (Duration: 6.1ms | GC: 0.0ms)
+  [1m[36mNotification Load (0.0ms)[0m  [1m[34mSELECT "notifications".* FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' ORDER BY "notifications"."created_at" DESC LIMIT 15 /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/views/layouts/_notifications_panel.html.erb:14
+  Rendered layouts/_notifications_panel.html.erb (Duration: 3.1ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 107.1ms | GC: 12.2ms)
+Completed 200 OK in 148ms (Views: 108.5ms | ActiveRecord: 3.3ms (12 queries, 0 cached) | GC: 12.2ms)
+
+
+Started GET "/today" for ::1 at 2026-05-22 22:47:41 +0300
+Processing by TodayController#index as HTML
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 ORDER BY "users"."id" ASC LIMIT 1 /*action='index',application='DevTeam',controller='today'*/[0m
+  [1m[36mNotification Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' AND "notifications"."read_at" IS NULL /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:21:in 'ApplicationController#set_notification_count'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT MAX(id) as id FROM "ci_runs" GROUP BY "ci_runs"."project_id" /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:29:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "deployments" GROUP BY "deployments"."project_id" /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:33:in 'Enumerable#map'
+  [1m[36mPullRequest Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "pull_requests"."project_id" AS "pull_requests_project_id" FROM "pull_requests" WHERE "pull_requests"."status" = 0 GROUP BY "pull_requests"."project_id" /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:37:in 'ApplicationController#load_sidebar_data'
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:42:in 'Enumerable#map'
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (5, 3, 1, 2, 4) AND "documents"."doc_type" IN (1, 2, 4) /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:43:in 'ApplicationController#load_sidebar_data'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" ORDER BY "ci_runs"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:58:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.1ms)[0m  [1m[34mSELECT "deployments".* FROM "deployments" ORDER BY "deployments"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:59:in 'Enumerable#map'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" WHERE "ci_runs"."triggered_by_id" = 1 AND "ci_runs"."status" = 3 ORDER BY "ci_runs"."created_at" DESC LIMIT 5 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:37:in 'TodayController#index'
+  [1m[36mMeeting Load (0.2ms)[0m  [1m[34mSELECT DISTINCT "meetings".* FROM "meetings" INNER JOIN "meeting_attendees" ON "meeting_attendees"."meeting_id" = "meetings"."id" WHERE "meetings"."scheduled_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999' AND "meetings"."status" != 3 AND ("meeting_attendees"."user_id" = 1 OR "meetings"."organizer_id" = 1) ORDER BY "meetings"."scheduled_at" ASC /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:59:in 'TodayController#index'
+  [1m[36mTicket Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "tickets" WHERE "tickets"."assignee_id" = 1 AND "tickets"."status" NOT IN (5, 6) /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:84:in 'TodayController#index'
+  [1m[36mCiRun Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "ci_runs" WHERE "ci_runs"."triggered_by_id" = 1 AND ("ci_runs"."started_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999' OR "ci_runs"."created_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999') /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:86:in 'TodayController#index'
+  [1m[36mDeployment Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "deployments" WHERE "deployments"."deployed_by_id" = 1 AND "deployments"."created_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999' /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:87:in 'TodayController#index'
+  [1m[36mDocument Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM (SELECT 1 AS one FROM "documents" WHERE "documents"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND "documents"."updated_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999' LIMIT 10) AS subquery_for_count /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:88:in 'TodayController#index'
+  [1m[36mMilestone Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND "milestones"."due_date" = '2026-05-22' /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:89:in 'TodayController#index'
+  [1m[36mMilestone Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND (due_date < '2026-05-22') AND "milestones"."status" != 2 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:89:in 'TodayController#index'
+  Rendering layout layouts/application.html.erb
+  Rendering today/index.html.erb within layouts/application
+  [1m[36mTicket Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "tickets" WHERE "tickets"."assignee_id" = 1 AND "tickets"."status" NOT IN (5, 6) LIMIT 1 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/views/today/index.html.erb:76
+  [1m[36mMilestone Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "milestones" WHERE "milestones"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND "milestones"."due_date" = '2026-05-22' LIMIT 1 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/views/today/index.html.erb:101
+  [1m[36mMilestone Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "milestones" WHERE "milestones"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND (due_date < '2026-05-22') AND "milestones"."status" != 2 LIMIT 1 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/views/today/index.html.erb:101
+  [1m[36mDocument Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "documents" WHERE "documents"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND "documents"."updated_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999' LIMIT 1 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/views/today/index.html.erb:135
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND "documents"."updated_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999' ORDER BY "documents"."updated_at" DESC LIMIT 10 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/views/today/index.html.erb:138
+  [1m[36mProject Load (0.0ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" = 5 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/views/today/index.html.erb:138
+  Rendered today/index.html.erb within layouts/application (Duration: 5.5ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 5.6ms | GC: 0.0ms)
+Completed 500 Internal Server Error in 36ms (ActiveRecord: 2.2ms (23 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+ActionView::Template::Error (undefined method 'project_document_path' for an instance of #<Class:0x000000012884b100>)
+Caused by: NoMethodError (undefined method 'project_document_path' for an instance of #<Class:0x000000012884b100>)
+
+Information for: ActionView::Template::Error (undefined method 'project_document_path' for an instance of #<Class:0x000000012884b100>):
+    138:           <div class="d-flex justify-content-between py-1" style="border-bottom: 1px solid #f5f5f5;">
+    139:             <div>
+    140:               <%= link_to doc.title, project_document_path(doc.project, doc) %>
+    141:               <span class="badge bg-light text-dark is-small ms-1"><%= doc.project.name %></span>
+    142:               <span class="badge bg-info text-dark is-light is-small ms-1"><%= doc.doc_type.to_s.humanize %></span>
+    143:             </div>
+    144:             <span class="text-muted fs-7"><%= doc.author&.display_name %> · <%= l(doc.updated_at, format: :short) %></span>
+  
+app/views/today/index.html.erb:141
+app/views/today/index.html.erb:138
+
+Information for cause: NoMethodError (undefined method 'project_document_path' for an instance of #<Class:0x000000012884b100>):
+  
+app/views/today/index.html.erb:141
+app/views/today/index.html.erb:138
+Started GET "/today" for ::1 at 2026-05-22 22:47:41 +0300
+Processing by TodayController#index as HTML
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 ORDER BY "users"."id" ASC LIMIT 1 /*action='index',application='DevTeam',controller='today'*/[0m
+  [1m[36mNotification Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' AND "notifications"."read_at" IS NULL /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:21:in 'ApplicationController#set_notification_count'
+  [1m[36mCiRun Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "ci_runs" GROUP BY "ci_runs"."project_id" /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:29:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "deployments" GROUP BY "deployments"."project_id" /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:33:in 'Enumerable#map'
+  [1m[36mPullRequest Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "pull_requests"."project_id" AS "pull_requests_project_id" FROM "pull_requests" WHERE "pull_requests"."status" = 0 GROUP BY "pull_requests"."project_id" /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:37:in 'ApplicationController#load_sidebar_data'
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:42:in 'Enumerable#map'
+  [1m[36mDocument Load (0.2ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (5, 3, 1, 2, 4) AND "documents"."doc_type" IN (1, 2, 4) /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:43:in 'ApplicationController#load_sidebar_data'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" ORDER BY "ci_runs"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:58:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.1ms)[0m  [1m[34mSELECT "deployments".* FROM "deployments" ORDER BY "deployments"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:59:in 'Enumerable#map'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" WHERE "ci_runs"."triggered_by_id" = 1 AND "ci_runs"."status" = 3 ORDER BY "ci_runs"."created_at" DESC LIMIT 5 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:37:in 'TodayController#index'
+  [1m[36mMeeting Load (0.1ms)[0m  [1m[34mSELECT DISTINCT "meetings".* FROM "meetings" INNER JOIN "meeting_attendees" ON "meeting_attendees"."meeting_id" = "meetings"."id" WHERE "meetings"."scheduled_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999' AND "meetings"."status" != 3 AND ("meeting_attendees"."user_id" = 1 OR "meetings"."organizer_id" = 1) ORDER BY "meetings"."scheduled_at" ASC /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:59:in 'TodayController#index'
+  [1m[36mTicket Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "tickets" WHERE "tickets"."assignee_id" = 1 AND "tickets"."status" NOT IN (5, 6) /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:84:in 'TodayController#index'
+  [1m[36mCiRun Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "ci_runs" WHERE "ci_runs"."triggered_by_id" = 1 AND ("ci_runs"."started_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999' OR "ci_runs"."created_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999') /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:86:in 'TodayController#index'
+  [1m[36mDeployment Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "deployments" WHERE "deployments"."deployed_by_id" = 1 AND "deployments"."created_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999' /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:87:in 'TodayController#index'
+  [1m[36mDocument Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM (SELECT 1 AS one FROM "documents" WHERE "documents"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND "documents"."updated_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999' LIMIT 10) AS subquery_for_count /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:88:in 'TodayController#index'
+  [1m[36mMilestone Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND "milestones"."due_date" = '2026-05-22' /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:89:in 'TodayController#index'
+  [1m[36mMilestone Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND (due_date < '2026-05-22') AND "milestones"."status" != 2 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:89:in 'TodayController#index'
+  Rendering layout layouts/application.html.erb
+  Rendering today/index.html.erb within layouts/application
+  [1m[36mTicket Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "tickets" WHERE "tickets"."assignee_id" = 1 AND "tickets"."status" NOT IN (5, 6) LIMIT 1 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/views/today/index.html.erb:76
+  [1m[36mMilestone Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "milestones" WHERE "milestones"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND "milestones"."due_date" = '2026-05-22' LIMIT 1 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/views/today/index.html.erb:101
+  [1m[36mMilestone Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "milestones" WHERE "milestones"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND (due_date < '2026-05-22') AND "milestones"."status" != 2 LIMIT 1 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/views/today/index.html.erb:101
+  [1m[36mDocument Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "documents" WHERE "documents"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND "documents"."updated_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999' LIMIT 1 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/views/today/index.html.erb:135
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND "documents"."updated_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999' ORDER BY "documents"."updated_at" DESC LIMIT 10 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/views/today/index.html.erb:138
+  [1m[36mProject Load (0.0ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" = 5 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/views/today/index.html.erb:138
+  Rendered today/index.html.erb within layouts/application (Duration: 4.2ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 4.3ms | GC: 0.0ms)
+Completed 500 Internal Server Error in 20ms (ActiveRecord: 1.7ms (23 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+ActionView::Template::Error (undefined method 'project_document_path' for an instance of #<Class:0x000000012884b100>)
+Caused by: NoMethodError (undefined method 'project_document_path' for an instance of #<Class:0x000000012884b100>)
+
+Information for: ActionView::Template::Error (undefined method 'project_document_path' for an instance of #<Class:0x000000012884b100>):
+    138:           <div class="d-flex justify-content-between py-1" style="border-bottom: 1px solid #f5f5f5;">
+    139:             <div>
+    140:               <%= link_to doc.title, project_document_path(doc.project, doc) %>
+    141:               <span class="badge bg-light text-dark is-small ms-1"><%= doc.project.name %></span>
+    142:               <span class="badge bg-info text-dark is-light is-small ms-1"><%= doc.doc_type.to_s.humanize %></span>
+    143:             </div>
+    144:             <span class="text-muted fs-7"><%= doc.author&.display_name %> · <%= l(doc.updated_at, format: :short) %></span>
+  
+app/views/today/index.html.erb:141
+app/views/today/index.html.erb:138
+
+Information for cause: NoMethodError (undefined method 'project_document_path' for an instance of #<Class:0x000000012884b100>):
+  
+app/views/today/index.html.erb:141
+app/views/today/index.html.erb:138
+Started GET "/dashboard" for ::1 at 2026-05-22 22:47:41 +0300
+Processing by DashboardController#index as HTML
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 ORDER BY "users"."id" ASC LIMIT 1 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  [1m[36mNotification Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' AND "notifications"."read_at" IS NULL /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:21:in 'ApplicationController#set_notification_count'
+  [1m[36mCiRun Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "ci_runs" GROUP BY "ci_runs"."project_id" /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:29:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "deployments" GROUP BY "deployments"."project_id" /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:33:in 'Enumerable#map'
+  [1m[36mPullRequest Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "pull_requests"."project_id" AS "pull_requests_project_id" FROM "pull_requests" WHERE "pull_requests"."status" = 0 GROUP BY "pull_requests"."project_id" /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:37:in 'ApplicationController#load_sidebar_data'
+  [1m[36mProject Load (0.0ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:42:in 'Enumerable#map'
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (5, 3, 1, 2, 4) AND "documents"."doc_type" IN (1, 2, 4) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:43:in 'ApplicationController#load_sidebar_data'
+  [1m[36mCiRun Load (0.0ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" ORDER BY "ci_runs"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:58:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT "deployments".* FROM "deployments" ORDER BY "deployments"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:59:in 'Enumerable#map'
+  [1m[36mCiRun Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "ci_runs" WHERE "ci_runs"."created_at" BETWEEN '2026-05-15 19:47:41.778936' AND '2026-05-22 19:47:41.778976' /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:10:in 'DashboardController#index'
+  [1m[36mCiRun Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "ci_runs" WHERE "ci_runs"."status" = 2 AND "ci_runs"."created_at" BETWEEN '2026-05-15 19:47:41.779304' AND '2026-05-22 19:47:41.779323' /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:11:in 'DashboardController#index'
+  [1m[36mCiRun Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "ci_runs" WHERE "ci_runs"."status" = 3 AND "ci_runs"."created_at" BETWEEN '2026-05-15 19:47:41.779612' AND '2026-05-22 19:47:41.779630' /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:12:in 'DashboardController#index'
+  Rendering layout layouts/application.html.erb
+  Rendering dashboard/index.html.erb within layouts/application
+  [1m[36mTicket Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM (SELECT 1 AS one FROM "tickets" WHERE "tickets"."assignee_id" = 1 AND "tickets"."status" NOT IN (5, 6) LIMIT 10) AS subquery_for_count /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:28
+  [1m[36mTicket Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "tickets" WHERE "tickets"."assignee_id" = 1 AND "tickets"."status" NOT IN (5, 6) LIMIT 1 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:40
+  [1m[36mCiRun Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "ci_runs" LIMIT 1 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:67
+  [1m[36mMeeting Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "meetings" WHERE (scheduled_at >= '2026-05-22 19:47:41.778842') LIMIT 1 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:96
+  [1m[36mDeployment Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "deployments" LIMIT 1 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:120
+  [1m[36mCACHE Project Load (0.0ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC[0m
+  ↳ app/views/dashboard/index.html.erb:140
+  [1m[36mTicket Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "tickets" WHERE "tickets"."project_id" = 5 AND "tickets"."status" NOT IN (5, 6) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:146
+  [1m[36mTicket Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "tickets" WHERE "tickets"."project_id" = 3 AND "tickets"."status" NOT IN (5, 6) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:146
+  [1m[36mTicket Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "tickets" WHERE "tickets"."project_id" = 1 AND "tickets"."status" NOT IN (5, 6) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:146
+  [1m[36mTicket Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "tickets" WHERE "tickets"."project_id" = 2 AND "tickets"."status" NOT IN (5, 6) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:146
+  [1m[36mTicket Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "tickets" WHERE "tickets"."project_id" = 4 AND "tickets"."status" NOT IN (5, 6) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:146
+  Rendered dashboard/index.html.erb within layouts/application (Duration: 4.2ms | GC: 0.0ms)
+  [1m[36mChatRoom Load (0.0ms)[0m  [1m[34mSELECT "chat_rooms".* FROM "chat_rooms" WHERE "chat_rooms"."archived" = FALSE ORDER BY "chat_rooms"."room_type" ASC, "chat_rooms"."name" ASC /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  [1m[36mProject Load (0.0ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" IN (5, 3, 1, 2, 4) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  Rendered layouts/_sidebar.html.erb (Duration: 1.8ms | GC: 0.0ms)
+  [1m[36mNotification Load (0.0ms)[0m  [1m[34mSELECT "notifications".* FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' ORDER BY "notifications"."created_at" DESC LIMIT 15 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/layouts/_notifications_panel.html.erb:14
+  Rendered layouts/_notifications_panel.html.erb (Duration: 0.5ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 7.1ms | GC: 0.0ms)
+Completed 200 OK in 13ms (Views: 7.3ms | ActiveRecord: 0.8ms (26 queries, 1 cached) | GC: 0.0ms)
+
+
+Started GET "/meetings" for ::1 at 2026-05-22 22:47:42 +0300
+Processing by MeetingsController#index as HTML
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 ORDER BY "users"."id" ASC LIMIT 1 /*action='index',application='DevTeam',controller='meetings'*/[0m
+  [1m[36mNotification Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' AND "notifications"."read_at" IS NULL /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:21:in 'ApplicationController#set_notification_count'
+  [1m[36mCiRun Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "ci_runs" GROUP BY "ci_runs"."project_id" /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:29:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "deployments" GROUP BY "deployments"."project_id" /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:33:in 'Enumerable#map'
+  [1m[36mPullRequest Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "pull_requests"."project_id" AS "pull_requests_project_id" FROM "pull_requests" WHERE "pull_requests"."status" = 0 GROUP BY "pull_requests"."project_id" /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:37:in 'ApplicationController#load_sidebar_data'
+  [1m[36mProject Load (0.0ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:42:in 'Enumerable#map'
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (5, 3, 1, 2, 4) AND "documents"."doc_type" IN (1, 2, 4) /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:43:in 'ApplicationController#load_sidebar_data'
+  [1m[36mCiRun Load (0.0ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" ORDER BY "ci_runs"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:58:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT "deployments".* FROM "deployments" ORDER BY "deployments"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:59:in 'Enumerable#map'
+  Rendering layout layouts/application.html.erb
+  Rendering meetings/index.html.erb within layouts/application
+  [1m[36mMeeting Load (0.0ms)[0m  [1m[34mSELECT "meetings".* FROM "meetings" ORDER BY "meetings"."scheduled_at" DESC /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/views/meetings/index.html.erb:9
+  Rendered meetings/index.html.erb within layouts/application (Duration: 0.8ms | GC: 0.0ms)
+  [1m[36mChatRoom Load (0.0ms)[0m  [1m[34mSELECT "chat_rooms".* FROM "chat_rooms" WHERE "chat_rooms"."archived" = FALSE ORDER BY "chat_rooms"."room_type" ASC, "chat_rooms"."name" ASC /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  [1m[36mProject Load (0.0ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" IN (5, 3, 1, 2, 4) /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  Rendered layouts/_sidebar.html.erb (Duration: 2.1ms | GC: 0.0ms)
+  [1m[36mNotification Load (0.0ms)[0m  [1m[34mSELECT "notifications".* FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' ORDER BY "notifications"."created_at" DESC LIMIT 15 /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/views/layouts/_notifications_panel.html.erb:14
+  Rendered layouts/_notifications_panel.html.erb (Duration: 0.6ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 4.1ms | GC: 0.0ms)
+Completed 200 OK in 10ms (Views: 4.6ms | ActiveRecord: 0.6ms (13 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/documents" for ::1 at 2026-05-22 22:47:42 +0300
+Processing by AllDocumentsController#index as HTML
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 ORDER BY "users"."id" ASC LIMIT 1 /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  [1m[36mNotification Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' AND "notifications"."read_at" IS NULL /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/application_controller.rb:21:in 'ApplicationController#set_notification_count'
+  [1m[36mCiRun Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "ci_runs" GROUP BY "ci_runs"."project_id" /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/application_controller.rb:29:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "deployments" GROUP BY "deployments"."project_id" /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/application_controller.rb:33:in 'Enumerable#map'
+  [1m[36mPullRequest Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "pull_requests"."project_id" AS "pull_requests_project_id" FROM "pull_requests" WHERE "pull_requests"."status" = 0 GROUP BY "pull_requests"."project_id" /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/application_controller.rb:37:in 'ApplicationController#load_sidebar_data'
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/application_controller.rb:42:in 'Enumerable#map'
+  [1m[36mDocument Load (0.2ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (5, 3, 1, 2, 4) AND "documents"."doc_type" IN (1, 2, 4) /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/application_controller.rb:43:in 'ApplicationController#load_sidebar_data'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" ORDER BY "ci_runs"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/application_controller.rb:58:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.1ms)[0m  [1m[34mSELECT "deployments".* FROM "deployments" ORDER BY "deployments"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/application_controller.rb:59:in 'Enumerable#map'
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" ORDER BY "documents"."updated_at" DESC LIMIT 200 /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/all_documents_controller.rb:15:in 'Enumerable#group_by'
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" IN (5, 4, 3, 2, 1) /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/all_documents_controller.rb:15:in 'Enumerable#group_by'
+  [1m[36mDocument Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "documents"."doc_type" AS "documents_doc_type" FROM "documents" GROUP BY "documents"."doc_type" /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/all_documents_controller.rb:16:in 'AllDocumentsController#index'
+  Rendering layout layouts/application.html.erb
+  Rendering all_documents/index.html.erb within layouts/application
+  Rendered all_documents/index.html.erb within layouts/application (Duration: 4.6ms | GC: 0.0ms)
+  [1m[36mChatRoom Load (0.1ms)[0m  [1m[34mSELECT "chat_rooms".* FROM "chat_rooms" WHERE "chat_rooms"."archived" = FALSE ORDER BY "chat_rooms"."room_type" ASC, "chat_rooms"."name" ASC /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" IN (5, 3, 1, 2, 4) /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  Rendered layouts/_sidebar.html.erb (Duration: 3.0ms | GC: 0.0ms)
+  [1m[36mNotification Load (0.1ms)[0m  [1m[34mSELECT "notifications".* FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' ORDER BY "notifications"."created_at" DESC LIMIT 15 /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/views/layouts/_notifications_panel.html.erb:14
+  Rendered layouts/_notifications_panel.html.erb (Duration: 0.8ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 9.1ms | GC: 0.0ms)
+Completed 200 OK in 20ms (Views: 9.7ms | ActiveRecord: 1.2ms (15 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/dashboard" for ::1 at 2026-05-22 22:47:44 +0300
+Processing by DashboardController#index as HTML
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 ORDER BY "users"."id" ASC LIMIT 1 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  [1m[36mNotification Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' AND "notifications"."read_at" IS NULL /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:21:in 'ApplicationController#set_notification_count'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT MAX(id) as id FROM "ci_runs" GROUP BY "ci_runs"."project_id" /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:29:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "deployments" GROUP BY "deployments"."project_id" /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:33:in 'Enumerable#map'
+  [1m[36mPullRequest Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "pull_requests"."project_id" AS "pull_requests_project_id" FROM "pull_requests" WHERE "pull_requests"."status" = 0 GROUP BY "pull_requests"."project_id" /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:37:in 'ApplicationController#load_sidebar_data'
+  [1m[36mProject Load (0.2ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:42:in 'Enumerable#map'
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (5, 3, 1, 2, 4) AND "documents"."doc_type" IN (1, 2, 4) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:43:in 'ApplicationController#load_sidebar_data'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" ORDER BY "ci_runs"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:58:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.1ms)[0m  [1m[34mSELECT "deployments".* FROM "deployments" ORDER BY "deployments"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:59:in 'Enumerable#map'
+  [1m[36mCiRun Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "ci_runs" WHERE "ci_runs"."created_at" BETWEEN '2026-05-15 19:47:44.067792' AND '2026-05-22 19:47:44.067861' /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:10:in 'DashboardController#index'
+  [1m[36mCiRun Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "ci_runs" WHERE "ci_runs"."status" = 2 AND "ci_runs"."created_at" BETWEEN '2026-05-15 19:47:44.072109' AND '2026-05-22 19:47:44.072166' /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:11:in 'DashboardController#index'
+  [1m[36mCiRun Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "ci_runs" WHERE "ci_runs"."status" = 3 AND "ci_runs"."created_at" BETWEEN '2026-05-15 19:47:44.072892' AND '2026-05-22 19:47:44.072922' /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:12:in 'DashboardController#index'
+  Rendering layout layouts/application.html.erb
+  Rendering dashboard/index.html.erb within layouts/application
+  [1m[36mTicket Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM (SELECT 1 AS one FROM "tickets" WHERE "tickets"."assignee_id" = 1 AND "tickets"."status" NOT IN (5, 6) LIMIT 10) AS subquery_for_count /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:28
+  [1m[36mTicket Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "tickets" WHERE "tickets"."assignee_id" = 1 AND "tickets"."status" NOT IN (5, 6) LIMIT 1 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:40
+  [1m[36mCiRun Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "ci_runs" LIMIT 1 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:67
+  [1m[36mMeeting Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "meetings" WHERE (scheduled_at >= '2026-05-22 19:47:44.067617') LIMIT 1 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:96
+  [1m[36mDeployment Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "deployments" LIMIT 1 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:120
+  [1m[36mCACHE Project Load (0.0ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC[0m
+  ↳ app/views/dashboard/index.html.erb:140
+  [1m[36mTicket Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "tickets" WHERE "tickets"."project_id" = 5 AND "tickets"."status" NOT IN (5, 6) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:146
+  [1m[36mTicket Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "tickets" WHERE "tickets"."project_id" = 3 AND "tickets"."status" NOT IN (5, 6) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:146
+  [1m[36mTicket Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "tickets" WHERE "tickets"."project_id" = 1 AND "tickets"."status" NOT IN (5, 6) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:146
+  [1m[36mTicket Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "tickets" WHERE "tickets"."project_id" = 2 AND "tickets"."status" NOT IN (5, 6) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:146
+  [1m[36mTicket Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "tickets" WHERE "tickets"."project_id" = 4 AND "tickets"."status" NOT IN (5, 6) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:146
+  Rendered dashboard/index.html.erb within layouts/application (Duration: 5.9ms | GC: 0.4ms)
+  [1m[36mChatRoom Load (0.1ms)[0m  [1m[34mSELECT "chat_rooms".* FROM "chat_rooms" WHERE "chat_rooms"."archived" = FALSE ORDER BY "chat_rooms"."room_type" ASC, "chat_rooms"."name" ASC /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" IN (5, 3, 1, 2, 4) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  Rendered layouts/_sidebar.html.erb (Duration: 2.7ms | GC: 0.2ms)
+  [1m[36mNotification Load (0.1ms)[0m  [1m[34mSELECT "notifications".* FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' ORDER BY "notifications"."created_at" DESC LIMIT 15 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/layouts/_notifications_panel.html.erb:14
+  Rendered layouts/_notifications_panel.html.erb (Duration: 0.7ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 10.0ms | GC: 0.6ms)
+Completed 200 OK in 26ms (Views: 10.0ms | ActiveRecord: 1.6ms (26 queries, 1 cached) | GC: 3.8ms)
+
+
+Started GET "/meetings" for ::1 at 2026-05-22 22:47:45 +0300
+Processing by MeetingsController#index as HTML
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 ORDER BY "users"."id" ASC LIMIT 1 /*action='index',application='DevTeam',controller='meetings'*/[0m
+  [1m[36mNotification Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' AND "notifications"."read_at" IS NULL /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:21:in 'ApplicationController#set_notification_count'
+  [1m[36mCiRun Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "ci_runs" GROUP BY "ci_runs"."project_id" /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:29:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.1ms)[0m  [1m[34mSELECT MAX(id) as id FROM "deployments" GROUP BY "deployments"."project_id" /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:33:in 'Enumerable#map'
+  [1m[36mPullRequest Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "pull_requests"."project_id" AS "pull_requests_project_id" FROM "pull_requests" WHERE "pull_requests"."status" = 0 GROUP BY "pull_requests"."project_id" /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:37:in 'ApplicationController#load_sidebar_data'
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:42:in 'Enumerable#map'
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (5, 3, 1, 2, 4) AND "documents"."doc_type" IN (1, 2, 4) /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:43:in 'ApplicationController#load_sidebar_data'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" ORDER BY "ci_runs"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:58:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.1ms)[0m  [1m[34mSELECT "deployments".* FROM "deployments" ORDER BY "deployments"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:59:in 'Enumerable#map'
+  Rendering layout layouts/application.html.erb
+  Rendering meetings/index.html.erb within layouts/application
+  [1m[36mMeeting Load (0.1ms)[0m  [1m[34mSELECT "meetings".* FROM "meetings" ORDER BY "meetings"."scheduled_at" DESC /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/views/meetings/index.html.erb:9
+  Rendered meetings/index.html.erb within layouts/application (Duration: 0.6ms | GC: 0.0ms)
+  [1m[36mChatRoom Load (0.1ms)[0m  [1m[34mSELECT "chat_rooms".* FROM "chat_rooms" WHERE "chat_rooms"."archived" = FALSE ORDER BY "chat_rooms"."room_type" ASC, "chat_rooms"."name" ASC /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" IN (5, 3, 1, 2, 4) /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  Rendered layouts/_sidebar.html.erb (Duration: 2.9ms | GC: 0.2ms)
+  [1m[36mNotification Load (0.1ms)[0m  [1m[34mSELECT "notifications".* FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' ORDER BY "notifications"."created_at" DESC LIMIT 15 /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/views/layouts/_notifications_panel.html.erb:14
+  Rendered layouts/_notifications_panel.html.erb (Duration: 1.0ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 5.4ms | GC: 0.2ms)
+Completed 200 OK in 14ms (Views: 5.3ms | ActiveRecord: 1.1ms (13 queries, 0 cached) | GC: 0.5ms)
+
+
+Started GET "/documents" for ::1 at 2026-05-22 22:47:46 +0300
+Processing by AllDocumentsController#index as HTML
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 ORDER BY "users"."id" ASC LIMIT 1 /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  [1m[36mNotification Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' AND "notifications"."read_at" IS NULL /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/application_controller.rb:21:in 'ApplicationController#set_notification_count'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT MAX(id) as id FROM "ci_runs" GROUP BY "ci_runs"."project_id" /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/application_controller.rb:29:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "deployments" GROUP BY "deployments"."project_id" /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/application_controller.rb:33:in 'Enumerable#map'
+  [1m[36mPullRequest Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "pull_requests"."project_id" AS "pull_requests_project_id" FROM "pull_requests" WHERE "pull_requests"."status" = 0 GROUP BY "pull_requests"."project_id" /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/application_controller.rb:37:in 'ApplicationController#load_sidebar_data'
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/application_controller.rb:42:in 'Enumerable#map'
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (5, 3, 1, 2, 4) AND "documents"."doc_type" IN (1, 2, 4) /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/application_controller.rb:43:in 'ApplicationController#load_sidebar_data'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" ORDER BY "ci_runs"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/application_controller.rb:58:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT "deployments".* FROM "deployments" ORDER BY "deployments"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/application_controller.rb:59:in 'Enumerable#map'
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" ORDER BY "documents"."updated_at" DESC LIMIT 200 /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/all_documents_controller.rb:15:in 'Enumerable#group_by'
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" IN (5, 4, 3, 2, 1) /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/all_documents_controller.rb:15:in 'Enumerable#group_by'
+  [1m[36mDocument Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "documents"."doc_type" AS "documents_doc_type" FROM "documents" GROUP BY "documents"."doc_type" /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/all_documents_controller.rb:16:in 'AllDocumentsController#index'
+  Rendering layout layouts/application.html.erb
+  Rendering all_documents/index.html.erb within layouts/application
+  Rendered all_documents/index.html.erb within layouts/application (Duration: 2.1ms | GC: 0.1ms)
+  [1m[36mChatRoom Load (0.1ms)[0m  [1m[34mSELECT "chat_rooms".* FROM "chat_rooms" WHERE "chat_rooms"."archived" = FALSE ORDER BY "chat_rooms"."room_type" ASC, "chat_rooms"."name" ASC /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" IN (5, 3, 1, 2, 4) /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  Rendered layouts/_sidebar.html.erb (Duration: 2.6ms | GC: 0.1ms)
+  [1m[36mNotification Load (0.1ms)[0m  [1m[34mSELECT "notifications".* FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' ORDER BY "notifications"."created_at" DESC LIMIT 15 /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/views/layouts/_notifications_panel.html.erb:14
+  Rendered layouts/_notifications_panel.html.erb (Duration: 3.0ms | GC: 2.3ms)
+  Rendered layout layouts/application.html.erb (Duration: 8.5ms | GC: 2.5ms)
+Completed 200 OK in 19ms (Views: 8.6ms | ActiveRecord: 1.1ms (15 queries, 0 cached) | GC: 2.7ms)
+
+
+Started GET "/today" for ::1 at 2026-05-22 22:47:46 +0300
+Processing by TodayController#index as HTML
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 ORDER BY "users"."id" ASC LIMIT 1 /*action='index',application='DevTeam',controller='today'*/[0m
+  [1m[36mNotification Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' AND "notifications"."read_at" IS NULL /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:21:in 'ApplicationController#set_notification_count'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT MAX(id) as id FROM "ci_runs" GROUP BY "ci_runs"."project_id" /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:29:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "deployments" GROUP BY "deployments"."project_id" /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:33:in 'Enumerable#map'
+  [1m[36mPullRequest Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "pull_requests"."project_id" AS "pull_requests_project_id" FROM "pull_requests" WHERE "pull_requests"."status" = 0 GROUP BY "pull_requests"."project_id" /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:37:in 'ApplicationController#load_sidebar_data'
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:42:in 'Enumerable#map'
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (5, 3, 1, 2, 4) AND "documents"."doc_type" IN (1, 2, 4) /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:43:in 'ApplicationController#load_sidebar_data'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" ORDER BY "ci_runs"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:58:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.1ms)[0m  [1m[34mSELECT "deployments".* FROM "deployments" ORDER BY "deployments"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:59:in 'Enumerable#map'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" WHERE "ci_runs"."triggered_by_id" = 1 AND "ci_runs"."status" = 3 ORDER BY "ci_runs"."created_at" DESC LIMIT 5 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:37:in 'TodayController#index'
+  [1m[36mMeeting Load (0.1ms)[0m  [1m[34mSELECT DISTINCT "meetings".* FROM "meetings" INNER JOIN "meeting_attendees" ON "meeting_attendees"."meeting_id" = "meetings"."id" WHERE "meetings"."scheduled_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999' AND "meetings"."status" != 3 AND ("meeting_attendees"."user_id" = 1 OR "meetings"."organizer_id" = 1) ORDER BY "meetings"."scheduled_at" ASC /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:59:in 'TodayController#index'
+  [1m[36mTicket Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "tickets" WHERE "tickets"."assignee_id" = 1 AND "tickets"."status" NOT IN (5, 6) /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:84:in 'TodayController#index'
+  [1m[36mCiRun Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "ci_runs" WHERE "ci_runs"."triggered_by_id" = 1 AND ("ci_runs"."started_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999' OR "ci_runs"."created_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999') /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:86:in 'TodayController#index'
+  [1m[36mDeployment Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "deployments" WHERE "deployments"."deployed_by_id" = 1 AND "deployments"."created_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999' /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:87:in 'TodayController#index'
+  [1m[36mDocument Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM (SELECT 1 AS one FROM "documents" WHERE "documents"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND "documents"."updated_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999' LIMIT 10) AS subquery_for_count /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:88:in 'TodayController#index'
+  [1m[36mMilestone Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND "milestones"."due_date" = '2026-05-22' /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:89:in 'TodayController#index'
+  [1m[36mMilestone Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND (due_date < '2026-05-22') AND "milestones"."status" != 2 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:89:in 'TodayController#index'
+  Rendering layout layouts/application.html.erb
+  Rendering today/index.html.erb within layouts/application
+  [1m[36mTicket Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "tickets" WHERE "tickets"."assignee_id" = 1 AND "tickets"."status" NOT IN (5, 6) LIMIT 1 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/views/today/index.html.erb:76
+  [1m[36mMilestone Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "milestones" WHERE "milestones"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND "milestones"."due_date" = '2026-05-22' LIMIT 1 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/views/today/index.html.erb:101
+  [1m[36mMilestone Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "milestones" WHERE "milestones"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND (due_date < '2026-05-22') AND "milestones"."status" != 2 LIMIT 1 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/views/today/index.html.erb:101
+  [1m[36mDocument Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "documents" WHERE "documents"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND "documents"."updated_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999' LIMIT 1 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/views/today/index.html.erb:135
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND "documents"."updated_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999' ORDER BY "documents"."updated_at" DESC LIMIT 10 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/views/today/index.html.erb:138
+  [1m[36mProject Load (0.0ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" = 5 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/views/today/index.html.erb:138
+  Rendered today/index.html.erb within layouts/application (Duration: 3.6ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 3.7ms | GC: 0.0ms)
+Completed 500 Internal Server Error in 19ms (ActiveRecord: 1.6ms (23 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+ActionView::Template::Error (undefined method 'project_document_path' for an instance of #<Class:0x000000012884b100>)
+Caused by: NoMethodError (undefined method 'project_document_path' for an instance of #<Class:0x000000012884b100>)
+
+Information for: ActionView::Template::Error (undefined method 'project_document_path' for an instance of #<Class:0x000000012884b100>):
+    138:           <div class="d-flex justify-content-between py-1" style="border-bottom: 1px solid #f5f5f5;">
+    139:             <div>
+    140:               <%= link_to doc.title, project_document_path(doc.project, doc) %>
+    141:               <span class="badge bg-light text-dark is-small ms-1"><%= doc.project.name %></span>
+    142:               <span class="badge bg-info text-dark is-light is-small ms-1"><%= doc.doc_type.to_s.humanize %></span>
+    143:             </div>
+    144:             <span class="text-muted fs-7"><%= doc.author&.display_name %> · <%= l(doc.updated_at, format: :short) %></span>
+  
+app/views/today/index.html.erb:141
+app/views/today/index.html.erb:138
+
+Information for cause: NoMethodError (undefined method 'project_document_path' for an instance of #<Class:0x000000012884b100>):
+  
+app/views/today/index.html.erb:141
+app/views/today/index.html.erb:138
+Started GET "/dashboard" for ::1 at 2026-05-22 22:47:47 +0300
+Processing by DashboardController#index as HTML
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 ORDER BY "users"."id" ASC LIMIT 1 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  [1m[36mNotification Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' AND "notifications"."read_at" IS NULL /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:21:in 'ApplicationController#set_notification_count'
+  [1m[36mCiRun Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "ci_runs" GROUP BY "ci_runs"."project_id" /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:29:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "deployments" GROUP BY "deployments"."project_id" /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:33:in 'Enumerable#map'
+  [1m[36mPullRequest Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "pull_requests"."project_id" AS "pull_requests_project_id" FROM "pull_requests" WHERE "pull_requests"."status" = 0 GROUP BY "pull_requests"."project_id" /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:37:in 'ApplicationController#load_sidebar_data'
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:42:in 'Enumerable#map'
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (5, 3, 1, 2, 4) AND "documents"."doc_type" IN (1, 2, 4) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:43:in 'ApplicationController#load_sidebar_data'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" ORDER BY "ci_runs"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:58:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.1ms)[0m  [1m[34mSELECT "deployments".* FROM "deployments" ORDER BY "deployments"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:59:in 'Enumerable#map'
+  [1m[36mCiRun Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "ci_runs" WHERE "ci_runs"."created_at" BETWEEN '2026-05-15 19:47:47.238282' AND '2026-05-22 19:47:47.238356' /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:10:in 'DashboardController#index'
+  [1m[36mCiRun Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "ci_runs" WHERE "ci_runs"."status" = 2 AND "ci_runs"."created_at" BETWEEN '2026-05-15 19:47:47.239307' AND '2026-05-22 19:47:47.239370' /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:11:in 'DashboardController#index'
+  [1m[36mCiRun Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "ci_runs" WHERE "ci_runs"."status" = 3 AND "ci_runs"."created_at" BETWEEN '2026-05-15 19:47:47.240471' AND '2026-05-22 19:47:47.240504' /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:12:in 'DashboardController#index'
+  Rendering layout layouts/application.html.erb
+  Rendering dashboard/index.html.erb within layouts/application
+  [1m[36mTicket Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM (SELECT 1 AS one FROM "tickets" WHERE "tickets"."assignee_id" = 1 AND "tickets"."status" NOT IN (5, 6) LIMIT 10) AS subquery_for_count /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:28
+  [1m[36mTicket Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "tickets" WHERE "tickets"."assignee_id" = 1 AND "tickets"."status" NOT IN (5, 6) LIMIT 1 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:40
+  [1m[36mCiRun Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "ci_runs" LIMIT 1 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:67
+  [1m[36mMeeting Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "meetings" WHERE (scheduled_at >= '2026-05-22 19:47:47.238136') LIMIT 1 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:96
+  [1m[36mDeployment Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "deployments" LIMIT 1 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:120
+  [1m[36mCACHE Project Load (0.0ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC[0m
+  ↳ app/views/dashboard/index.html.erb:140
+  [1m[36mTicket Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "tickets" WHERE "tickets"."project_id" = 5 AND "tickets"."status" NOT IN (5, 6) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:146
+  [1m[36mTicket Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "tickets" WHERE "tickets"."project_id" = 3 AND "tickets"."status" NOT IN (5, 6) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:146
+  [1m[36mTicket Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "tickets" WHERE "tickets"."project_id" = 1 AND "tickets"."status" NOT IN (5, 6) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:146
+  [1m[36mTicket Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "tickets" WHERE "tickets"."project_id" = 2 AND "tickets"."status" NOT IN (5, 6) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:146
+  [1m[36mTicket Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "tickets" WHERE "tickets"."project_id" = 4 AND "tickets"."status" NOT IN (5, 6) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:146
+  Rendered dashboard/index.html.erb within layouts/application (Duration: 6.6ms | GC: 0.6ms)
+  [1m[36mChatRoom Load (0.1ms)[0m  [1m[34mSELECT "chat_rooms".* FROM "chat_rooms" WHERE "chat_rooms"."archived" = FALSE ORDER BY "chat_rooms"."room_type" ASC, "chat_rooms"."name" ASC /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" IN (5, 3, 1, 2, 4) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  Rendered layouts/_sidebar.html.erb (Duration: 3.0ms | GC: 0.2ms)
+  [1m[36mNotification Load (0.1ms)[0m  [1m[34mSELECT "notifications".* FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' ORDER BY "notifications"."created_at" DESC LIMIT 15 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/layouts/_notifications_panel.html.erb:14
+  Rendered layouts/_notifications_panel.html.erb (Duration: 0.8ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 11.1ms | GC: 0.8ms)
+Completed 200 OK in 23ms (Views: 10.9ms | ActiveRecord: 1.4ms (26 queries, 1 cached) | GC: 1.5ms)
+
+
+Started GET "/meetings" for ::1 at 2026-05-22 22:47:47 +0300
+Processing by MeetingsController#index as HTML
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 ORDER BY "users"."id" ASC LIMIT 1 /*action='index',application='DevTeam',controller='meetings'*/[0m
+  [1m[36mNotification Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' AND "notifications"."read_at" IS NULL /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:21:in 'ApplicationController#set_notification_count'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT MAX(id) as id FROM "ci_runs" GROUP BY "ci_runs"."project_id" /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:29:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "deployments" GROUP BY "deployments"."project_id" /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:33:in 'Enumerable#map'
+  [1m[36mPullRequest Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "pull_requests"."project_id" AS "pull_requests_project_id" FROM "pull_requests" WHERE "pull_requests"."status" = 0 GROUP BY "pull_requests"."project_id" /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:37:in 'ApplicationController#load_sidebar_data'
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:42:in 'Enumerable#map'
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (5, 3, 1, 2, 4) AND "documents"."doc_type" IN (1, 2, 4) /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:43:in 'ApplicationController#load_sidebar_data'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" ORDER BY "ci_runs"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:58:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.1ms)[0m  [1m[34mSELECT "deployments".* FROM "deployments" ORDER BY "deployments"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:59:in 'Enumerable#map'
+  Rendering layout layouts/application.html.erb
+  Rendering meetings/index.html.erb within layouts/application
+  [1m[36mMeeting Load (0.1ms)[0m  [1m[34mSELECT "meetings".* FROM "meetings" ORDER BY "meetings"."scheduled_at" DESC /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/views/meetings/index.html.erb:9
+  Rendered meetings/index.html.erb within layouts/application (Duration: 5.9ms | GC: 5.1ms)
+  [1m[36mChatRoom Load (0.2ms)[0m  [1m[34mSELECT "chat_rooms".* FROM "chat_rooms" WHERE "chat_rooms"."archived" = FALSE ORDER BY "chat_rooms"."room_type" ASC, "chat_rooms"."name" ASC /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" IN (5, 3, 1, 2, 4) /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  Rendered layouts/_sidebar.html.erb (Duration: 5.2ms | GC: 2.2ms)
+  [1m[36mNotification Load (0.1ms)[0m  [1m[34mSELECT "notifications".* FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' ORDER BY "notifications"."created_at" DESC LIMIT 15 /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/views/layouts/_notifications_panel.html.erb:14
+  Rendered layouts/_notifications_panel.html.erb (Duration: 1.2ms | GC: 0.4ms)
+  Rendered layout layouts/application.html.erb (Duration: 13.9ms | GC: 8.3ms)
+Completed 200 OK in 24ms (Views: 13.8ms | ActiveRecord: 1.2ms (13 queries, 0 cached) | GC: 8.8ms)
+
+
+Started GET "/dashboard" for ::1 at 2026-05-22 22:47:47 +0300
+Processing by DashboardController#index as HTML
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 ORDER BY "users"."id" ASC LIMIT 1 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  [1m[36mNotification Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' AND "notifications"."read_at" IS NULL /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:21:in 'ApplicationController#set_notification_count'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT MAX(id) as id FROM "ci_runs" GROUP BY "ci_runs"."project_id" /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:29:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.1ms)[0m  [1m[34mSELECT MAX(id) as id FROM "deployments" GROUP BY "deployments"."project_id" /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:33:in 'Enumerable#map'
+  [1m[36mPullRequest Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "pull_requests"."project_id" AS "pull_requests_project_id" FROM "pull_requests" WHERE "pull_requests"."status" = 0 GROUP BY "pull_requests"."project_id" /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:37:in 'ApplicationController#load_sidebar_data'
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:42:in 'Enumerable#map'
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (5, 3, 1, 2, 4) AND "documents"."doc_type" IN (1, 2, 4) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:43:in 'ApplicationController#load_sidebar_data'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" ORDER BY "ci_runs"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:58:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.1ms)[0m  [1m[34mSELECT "deployments".* FROM "deployments" ORDER BY "deployments"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:59:in 'Enumerable#map'
+  [1m[36mCiRun Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "ci_runs" WHERE "ci_runs"."created_at" BETWEEN '2026-05-15 19:47:47.901257' AND '2026-05-22 19:47:47.901301' /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:10:in 'DashboardController#index'
+  [1m[36mCiRun Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "ci_runs" WHERE "ci_runs"."status" = 2 AND "ci_runs"."created_at" BETWEEN '2026-05-15 19:47:47.901936' AND '2026-05-22 19:47:47.902015' /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:11:in 'DashboardController#index'
+  [1m[36mCiRun Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "ci_runs" WHERE "ci_runs"."status" = 3 AND "ci_runs"."created_at" BETWEEN '2026-05-15 19:47:47.902543' AND '2026-05-22 19:47:47.902571' /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:12:in 'DashboardController#index'
+  Rendering layout layouts/application.html.erb
+  Rendering dashboard/index.html.erb within layouts/application
+  [1m[36mTicket Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM (SELECT 1 AS one FROM "tickets" WHERE "tickets"."assignee_id" = 1 AND "tickets"."status" NOT IN (5, 6) LIMIT 10) AS subquery_for_count /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:28
+  [1m[36mTicket Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "tickets" WHERE "tickets"."assignee_id" = 1 AND "tickets"."status" NOT IN (5, 6) LIMIT 1 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:40
+  [1m[36mCiRun Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "ci_runs" LIMIT 1 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:67
+  [1m[36mMeeting Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "meetings" WHERE (scheduled_at >= '2026-05-22 19:47:47.901066') LIMIT 1 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:96
+  [1m[36mDeployment Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "deployments" LIMIT 1 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:120
+  [1m[36mCACHE Project Load (0.0ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC[0m
+  ↳ app/views/dashboard/index.html.erb:140
+  [1m[36mTicket Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "tickets" WHERE "tickets"."project_id" = 5 AND "tickets"."status" NOT IN (5, 6) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:146
+  [1m[36mTicket Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "tickets" WHERE "tickets"."project_id" = 3 AND "tickets"."status" NOT IN (5, 6) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:146
+  [1m[36mTicket Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "tickets" WHERE "tickets"."project_id" = 1 AND "tickets"."status" NOT IN (5, 6) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:146
+  [1m[36mTicket Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "tickets" WHERE "tickets"."project_id" = 2 AND "tickets"."status" NOT IN (5, 6) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:146
+  [1m[36mTicket Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "tickets" WHERE "tickets"."project_id" = 4 AND "tickets"."status" NOT IN (5, 6) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:146
+  Rendered dashboard/index.html.erb within layouts/application (Duration: 10.9ms | GC: 4.9ms)
+  [1m[36mChatRoom Load (0.1ms)[0m  [1m[34mSELECT "chat_rooms".* FROM "chat_rooms" WHERE "chat_rooms"."archived" = FALSE ORDER BY "chat_rooms"."room_type" ASC, "chat_rooms"."name" ASC /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" IN (5, 3, 1, 2, 4) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  Rendered layouts/_sidebar.html.erb (Duration: 5.2ms | GC: 2.7ms)
+  [1m[36mNotification Load (0.1ms)[0m  [1m[34mSELECT "notifications".* FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' ORDER BY "notifications"."created_at" DESC LIMIT 15 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/layouts/_notifications_panel.html.erb:14
+  Rendered layouts/_notifications_panel.html.erb (Duration: 1.3ms | GC: 0.4ms)
+  Rendered layout layouts/application.html.erb (Duration: 18.4ms | GC: 8.4ms)
+Completed 200 OK in 39ms (Views: 18.0ms | ActiveRecord: 1.9ms (26 queries, 1 cached) | GC: 16.9ms)
+
+
+Started GET "/today" for ::1 at 2026-05-22 22:47:48 +0300
+Processing by TodayController#index as HTML
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 ORDER BY "users"."id" ASC LIMIT 1 /*action='index',application='DevTeam',controller='today'*/[0m
+  [1m[36mNotification Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' AND "notifications"."read_at" IS NULL /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:21:in 'ApplicationController#set_notification_count'
+  [1m[36mCiRun Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "ci_runs" GROUP BY "ci_runs"."project_id" /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:29:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "deployments" GROUP BY "deployments"."project_id" /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:33:in 'Enumerable#map'
+  [1m[36mPullRequest Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "pull_requests"."project_id" AS "pull_requests_project_id" FROM "pull_requests" WHERE "pull_requests"."status" = 0 GROUP BY "pull_requests"."project_id" /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:37:in 'ApplicationController#load_sidebar_data'
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:42:in 'Enumerable#map'
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (5, 3, 1, 2, 4) AND "documents"."doc_type" IN (1, 2, 4) /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:43:in 'ApplicationController#load_sidebar_data'
+  [1m[36mCiRun Load (0.0ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" ORDER BY "ci_runs"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:58:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT "deployments".* FROM "deployments" ORDER BY "deployments"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:59:in 'Enumerable#map'
+  [1m[36mCiRun Load (0.0ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" WHERE "ci_runs"."triggered_by_id" = 1 AND "ci_runs"."status" = 3 ORDER BY "ci_runs"."created_at" DESC LIMIT 5 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:37:in 'TodayController#index'
+  [1m[36mMeeting Load (0.1ms)[0m  [1m[34mSELECT DISTINCT "meetings".* FROM "meetings" INNER JOIN "meeting_attendees" ON "meeting_attendees"."meeting_id" = "meetings"."id" WHERE "meetings"."scheduled_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999' AND "meetings"."status" != 3 AND ("meeting_attendees"."user_id" = 1 OR "meetings"."organizer_id" = 1) ORDER BY "meetings"."scheduled_at" ASC /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:59:in 'TodayController#index'
+  [1m[36mTicket Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "tickets" WHERE "tickets"."assignee_id" = 1 AND "tickets"."status" NOT IN (5, 6) /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:84:in 'TodayController#index'
+  [1m[36mCiRun Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "ci_runs" WHERE "ci_runs"."triggered_by_id" = 1 AND ("ci_runs"."started_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999' OR "ci_runs"."created_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999') /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:86:in 'TodayController#index'
+  [1m[36mDeployment Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "deployments" WHERE "deployments"."deployed_by_id" = 1 AND "deployments"."created_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999' /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:87:in 'TodayController#index'
+  [1m[36mDocument Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM (SELECT 1 AS one FROM "documents" WHERE "documents"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND "documents"."updated_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999' LIMIT 10) AS subquery_for_count /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:88:in 'TodayController#index'
+  [1m[36mMilestone Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND "milestones"."due_date" = '2026-05-22' /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:89:in 'TodayController#index'
+  [1m[36mMilestone Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND (due_date < '2026-05-22') AND "milestones"."status" != 2 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:89:in 'TodayController#index'
+  Rendering layout layouts/application.html.erb
+  Rendering today/index.html.erb within layouts/application
+  [1m[36mTicket Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "tickets" WHERE "tickets"."assignee_id" = 1 AND "tickets"."status" NOT IN (5, 6) LIMIT 1 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/views/today/index.html.erb:76
+  [1m[36mMilestone Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "milestones" WHERE "milestones"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND "milestones"."due_date" = '2026-05-22' LIMIT 1 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/views/today/index.html.erb:101
+  [1m[36mMilestone Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "milestones" WHERE "milestones"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND (due_date < '2026-05-22') AND "milestones"."status" != 2 LIMIT 1 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/views/today/index.html.erb:101
+  [1m[36mDocument Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "documents" WHERE "documents"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND "documents"."updated_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999' LIMIT 1 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/views/today/index.html.erb:135
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND "documents"."updated_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999' ORDER BY "documents"."updated_at" DESC LIMIT 10 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/views/today/index.html.erb:138
+  [1m[36mProject Load (0.0ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" = 5 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/views/today/index.html.erb:138
+  Rendered today/index.html.erb within layouts/application (Duration: 3.0ms | GC: 0.2ms)
+  Rendered layout layouts/application.html.erb (Duration: 3.1ms | GC: 0.2ms)
+Completed 500 Internal Server Error in 29ms (ActiveRecord: 1.3ms (23 queries, 0 cached) | GC: 13.4ms)
+
+
+  
+ActionView::Template::Error (undefined method 'project_document_path' for an instance of #<Class:0x000000012884b100>)
+Caused by: NoMethodError (undefined method 'project_document_path' for an instance of #<Class:0x000000012884b100>)
+
+Information for: ActionView::Template::Error (undefined method 'project_document_path' for an instance of #<Class:0x000000012884b100>):
+    138:           <div class="d-flex justify-content-between py-1" style="border-bottom: 1px solid #f5f5f5;">
+    139:             <div>
+    140:               <%= link_to doc.title, project_document_path(doc.project, doc) %>
+    141:               <span class="badge bg-light text-dark is-small ms-1"><%= doc.project.name %></span>
+    142:               <span class="badge bg-info text-dark is-light is-small ms-1"><%= doc.doc_type.to_s.humanize %></span>
+    143:             </div>
+    144:             <span class="text-muted fs-7"><%= doc.author&.display_name %> · <%= l(doc.updated_at, format: :short) %></span>
+  
+app/views/today/index.html.erb:141
+app/views/today/index.html.erb:138
+
+Information for cause: NoMethodError (undefined method 'project_document_path' for an instance of #<Class:0x000000012884b100>):
+  
+app/views/today/index.html.erb:141
+app/views/today/index.html.erb:138
+Started GET "/dashboard" for ::1 at 2026-05-22 22:47:48 +0300
+Processing by DashboardController#index as HTML
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 ORDER BY "users"."id" ASC LIMIT 1 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  [1m[36mNotification Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' AND "notifications"."read_at" IS NULL /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:21:in 'ApplicationController#set_notification_count'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT MAX(id) as id FROM "ci_runs" GROUP BY "ci_runs"."project_id" /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:29:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "deployments" GROUP BY "deployments"."project_id" /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:33:in 'Enumerable#map'
+  [1m[36mPullRequest Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "pull_requests"."project_id" AS "pull_requests_project_id" FROM "pull_requests" WHERE "pull_requests"."status" = 0 GROUP BY "pull_requests"."project_id" /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:37:in 'ApplicationController#load_sidebar_data'
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:42:in 'Enumerable#map'
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (5, 3, 1, 2, 4) AND "documents"."doc_type" IN (1, 2, 4) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:43:in 'ApplicationController#load_sidebar_data'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" ORDER BY "ci_runs"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:58:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.2ms)[0m  [1m[34mSELECT "deployments".* FROM "deployments" ORDER BY "deployments"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/application_controller.rb:59:in 'Enumerable#map'
+  [1m[36mCiRun Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "ci_runs" WHERE "ci_runs"."created_at" BETWEEN '2026-05-15 19:47:48.892867' AND '2026-05-22 19:47:48.892939' /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:10:in 'DashboardController#index'
+  [1m[36mCiRun Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "ci_runs" WHERE "ci_runs"."status" = 2 AND "ci_runs"."created_at" BETWEEN '2026-05-15 19:47:48.893806' AND '2026-05-22 19:47:48.893887' /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:11:in 'DashboardController#index'
+  [1m[36mCiRun Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "ci_runs" WHERE "ci_runs"."status" = 3 AND "ci_runs"."created_at" BETWEEN '2026-05-15 19:47:48.894463' AND '2026-05-22 19:47:48.894490' /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:12:in 'DashboardController#index'
+  Rendering layout layouts/application.html.erb
+  Rendering dashboard/index.html.erb within layouts/application
+  [1m[36mTicket Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM (SELECT 1 AS one FROM "tickets" WHERE "tickets"."assignee_id" = 1 AND "tickets"."status" NOT IN (5, 6) LIMIT 10) AS subquery_for_count /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:28
+  [1m[36mTicket Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "tickets" WHERE "tickets"."assignee_id" = 1 AND "tickets"."status" NOT IN (5, 6) LIMIT 1 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:40
+  [1m[36mCiRun Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "ci_runs" LIMIT 1 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:67
+  [1m[36mMeeting Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "meetings" WHERE (scheduled_at >= '2026-05-22 19:47:48.892712') LIMIT 1 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:96
+  [1m[36mDeployment Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "deployments" LIMIT 1 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:120
+  [1m[36mCACHE Project Load (0.0ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC[0m
+  ↳ app/views/dashboard/index.html.erb:140
+  [1m[36mTicket Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "tickets" WHERE "tickets"."project_id" = 5 AND "tickets"."status" NOT IN (5, 6) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:146
+  [1m[36mTicket Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "tickets" WHERE "tickets"."project_id" = 3 AND "tickets"."status" NOT IN (5, 6) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:146
+  [1m[36mTicket Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "tickets" WHERE "tickets"."project_id" = 1 AND "tickets"."status" NOT IN (5, 6) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:146
+  [1m[36mTicket Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "tickets" WHERE "tickets"."project_id" = 2 AND "tickets"."status" NOT IN (5, 6) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:146
+  [1m[36mTicket Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "tickets" WHERE "tickets"."project_id" = 4 AND "tickets"."status" NOT IN (5, 6) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:146
+  Rendered dashboard/index.html.erb within layouts/application (Duration: 4.6ms | GC: 0.0ms)
+  [1m[36mChatRoom Load (0.1ms)[0m  [1m[34mSELECT "chat_rooms".* FROM "chat_rooms" WHERE "chat_rooms"."archived" = FALSE ORDER BY "chat_rooms"."room_type" ASC, "chat_rooms"."name" ASC /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" IN (5, 3, 1, 2, 4) /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  Rendered layouts/_sidebar.html.erb (Duration: 2.2ms | GC: 0.0ms)
+  [1m[36mNotification Load (0.0ms)[0m  [1m[34mSELECT "notifications".* FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' ORDER BY "notifications"."created_at" DESC LIMIT 15 /*action='index',application='DevTeam',controller='dashboard'*/[0m
+  ↳ app/views/layouts/_notifications_panel.html.erb:14
+  Rendered layouts/_notifications_panel.html.erb (Duration: 0.7ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 8.2ms | GC: 0.0ms)
+Completed 200 OK in 21ms (Views: 8.2ms | ActiveRecord: 1.6ms (26 queries, 1 cached) | GC: 0.0ms)
+
+
+Started GET "/meetings" for ::1 at 2026-05-22 22:47:49 +0300
+Processing by MeetingsController#index as HTML
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 ORDER BY "users"."id" ASC LIMIT 1 /*action='index',application='DevTeam',controller='meetings'*/[0m
+  [1m[36mNotification Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' AND "notifications"."read_at" IS NULL /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:21:in 'ApplicationController#set_notification_count'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT MAX(id) as id FROM "ci_runs" GROUP BY "ci_runs"."project_id" /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:29:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.1ms)[0m  [1m[34mSELECT MAX(id) as id FROM "deployments" GROUP BY "deployments"."project_id" /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:33:in 'Enumerable#map'
+  [1m[36mPullRequest Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "pull_requests"."project_id" AS "pull_requests_project_id" FROM "pull_requests" WHERE "pull_requests"."status" = 0 GROUP BY "pull_requests"."project_id" /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:37:in 'ApplicationController#load_sidebar_data'
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:42:in 'Enumerable#map'
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (5, 3, 1, 2, 4) AND "documents"."doc_type" IN (1, 2, 4) /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:43:in 'ApplicationController#load_sidebar_data'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" ORDER BY "ci_runs"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:58:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.1ms)[0m  [1m[34mSELECT "deployments".* FROM "deployments" ORDER BY "deployments"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:59:in 'Enumerable#map'
+  Rendering layout layouts/application.html.erb
+  Rendering meetings/index.html.erb within layouts/application
+  [1m[36mMeeting Load (0.1ms)[0m  [1m[34mSELECT "meetings".* FROM "meetings" ORDER BY "meetings"."scheduled_at" DESC /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/views/meetings/index.html.erb:9
+  Rendered meetings/index.html.erb within layouts/application (Duration: 0.8ms | GC: 0.0ms)
+  [1m[36mChatRoom Load (0.1ms)[0m  [1m[34mSELECT "chat_rooms".* FROM "chat_rooms" WHERE "chat_rooms"."archived" = FALSE ORDER BY "chat_rooms"."room_type" ASC, "chat_rooms"."name" ASC /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" IN (5, 3, 1, 2, 4) /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  Rendered layouts/_sidebar.html.erb (Duration: 3.9ms | GC: 0.6ms)
+  [1m[36mNotification Load (0.1ms)[0m  [1m[34mSELECT "notifications".* FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' ORDER BY "notifications"."created_at" DESC LIMIT 15 /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/views/layouts/_notifications_panel.html.erb:14
+  Rendered layouts/_notifications_panel.html.erb (Duration: 0.8ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 6.5ms | GC: 0.6ms)
+Completed 200 OK in 18ms (Views: 6.6ms | ActiveRecord: 1.2ms (13 queries, 0 cached) | GC: 1.6ms)
+
+
+Started GET "/chat_rooms/5" for ::1 at 2026-05-22 22:47:50 +0300
+Processing by ChatRoomsController#show as HTML
+  Parameters: {"id" => "5"}
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 ORDER BY "users"."id" ASC LIMIT 1 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  [1m[36mNotification Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' AND "notifications"."read_at" IS NULL /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:21:in 'ApplicationController#set_notification_count'
+  [1m[36mCiRun Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "ci_runs" GROUP BY "ci_runs"."project_id" /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:29:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "deployments" GROUP BY "deployments"."project_id" /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:33:in 'Enumerable#map'
+  [1m[36mPullRequest Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "pull_requests"."project_id" AS "pull_requests_project_id" FROM "pull_requests" WHERE "pull_requests"."status" = 0 GROUP BY "pull_requests"."project_id" /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:37:in 'ApplicationController#load_sidebar_data'
+  [1m[36mProject Load (0.0ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:42:in 'Enumerable#map'
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (5, 3, 1, 2, 4) AND "documents"."doc_type" IN (1, 2, 4) /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:43:in 'ApplicationController#load_sidebar_data'
+  [1m[36mCiRun Load (0.0ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" ORDER BY "ci_runs"."updated_at" DESC LIMIT 8 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:58:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT "deployments".* FROM "deployments" ORDER BY "deployments"."updated_at" DESC LIMIT 8 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:59:in 'Enumerable#map'
+  [1m[36mChatRoom Load (0.0ms)[0m  [1m[34mSELECT "chat_rooms".* FROM "chat_rooms" WHERE "chat_rooms"."archived" = FALSE AND "chat_rooms"."id" = 5 LIMIT 1 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/chat_rooms_controller.rb:40:in 'ChatRoomsController#set_chat_room'
+  [1m[36mChatMessage Load (0.0ms)[0m  [1m[34mSELECT "chat_messages".* FROM "chat_messages" WHERE "chat_messages"."chat_room_id" = 5 ORDER BY "chat_messages"."created_at" DESC LIMIT 100 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/chat_rooms_controller.rb:18:in 'ChatRoomsController#show'
+  Rendering layout layouts/application.html.erb
+  Rendering chat_rooms/show.html.erb within layouts/application
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" = 1 LIMIT 1 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/views/chat_rooms/show.html.erb:14
+  Rendered chat_rooms/show.html.erb within layouts/application (Duration: 2.3ms | GC: 0.0ms)
+  [1m[36mChatRoom Load (0.1ms)[0m  [1m[34mSELECT "chat_rooms".* FROM "chat_rooms" WHERE "chat_rooms"."archived" = FALSE ORDER BY "chat_rooms"."room_type" ASC, "chat_rooms"."name" ASC /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" IN (5, 3, 1, 2, 4) /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  Rendered layouts/_sidebar.html.erb (Duration: 3.3ms | GC: 0.3ms)
+  [1m[36mNotification Load (0.1ms)[0m  [1m[34mSELECT "notifications".* FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' ORDER BY "notifications"."created_at" DESC LIMIT 15 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/views/layouts/_notifications_panel.html.erb:14
+  Rendered layouts/_notifications_panel.html.erb (Duration: 0.8ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 7.1ms | GC: 0.3ms)
+Completed 200 OK in 19ms (Views: 7.5ms | ActiveRecord: 0.9ms (15 queries, 0 cached) | GC: 1.7ms)
+
+
+Started GET "/chat_rooms/3" for ::1 at 2026-05-22 22:47:50 +0300
+Processing by ChatRoomsController#show as HTML
+  Parameters: {"id" => "3"}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 ORDER BY "users"."id" ASC LIMIT 1 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  [1m[36mNotification Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' AND "notifications"."read_at" IS NULL /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:21:in 'ApplicationController#set_notification_count'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT MAX(id) as id FROM "ci_runs" GROUP BY "ci_runs"."project_id" /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:29:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "deployments" GROUP BY "deployments"."project_id" /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:33:in 'Enumerable#map'
+  [1m[36mPullRequest Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "pull_requests"."project_id" AS "pull_requests_project_id" FROM "pull_requests" WHERE "pull_requests"."status" = 0 GROUP BY "pull_requests"."project_id" /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:37:in 'ApplicationController#load_sidebar_data'
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:42:in 'Enumerable#map'
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (5, 3, 1, 2, 4) AND "documents"."doc_type" IN (1, 2, 4) /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:43:in 'ApplicationController#load_sidebar_data'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" ORDER BY "ci_runs"."updated_at" DESC LIMIT 8 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:58:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.1ms)[0m  [1m[34mSELECT "deployments".* FROM "deployments" ORDER BY "deployments"."updated_at" DESC LIMIT 8 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:59:in 'Enumerable#map'
+  [1m[36mChatRoom Load (0.0ms)[0m  [1m[34mSELECT "chat_rooms".* FROM "chat_rooms" WHERE "chat_rooms"."archived" = FALSE AND "chat_rooms"."id" = 3 LIMIT 1 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/chat_rooms_controller.rb:40:in 'ChatRoomsController#set_chat_room'
+  [1m[36mChatMessage Load (0.1ms)[0m  [1m[34mSELECT "chat_messages".* FROM "chat_messages" WHERE "chat_messages"."chat_room_id" = 3 ORDER BY "chat_messages"."created_at" DESC LIMIT 100 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/chat_rooms_controller.rb:18:in 'ChatRoomsController#show'
+  Rendering layout layouts/application.html.erb
+  Rendering chat_rooms/show.html.erb within layouts/application
+  Rendered chat_rooms/show.html.erb within layouts/application (Duration: 0.5ms | GC: 0.0ms)
+  [1m[36mChatRoom Load (0.1ms)[0m  [1m[34mSELECT "chat_rooms".* FROM "chat_rooms" WHERE "chat_rooms"."archived" = FALSE ORDER BY "chat_rooms"."room_type" ASC, "chat_rooms"."name" ASC /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" IN (5, 3, 1, 2, 4) /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  Rendered layouts/_sidebar.html.erb (Duration: 10.0ms | GC: 6.6ms)
+  [1m[36mNotification Load (0.1ms)[0m  [1m[34mSELECT "notifications".* FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' ORDER BY "notifications"."created_at" DESC LIMIT 15 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/views/layouts/_notifications_panel.html.erb:14
+  Rendered layouts/_notifications_panel.html.erb (Duration: 1.7ms | GC: 0.7ms)
+  Rendered layout layouts/application.html.erb (Duration: 13.2ms | GC: 7.5ms)
+Completed 200 OK in 24ms (Views: 13.3ms | ActiveRecord: 1.1ms (14 queries, 0 cached) | GC: 7.7ms)
+
+
+Started GET "/chat_rooms/5" for ::1 at 2026-05-22 22:47:59 +0300
+Processing by ChatRoomsController#show as HTML
+  Parameters: {"id" => "5"}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 ORDER BY "users"."id" ASC LIMIT 1 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  [1m[36mNotification Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' AND "notifications"."read_at" IS NULL /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:21:in 'ApplicationController#set_notification_count'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT MAX(id) as id FROM "ci_runs" GROUP BY "ci_runs"."project_id" /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:29:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "deployments" GROUP BY "deployments"."project_id" /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:33:in 'Enumerable#map'
+  [1m[36mPullRequest Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "pull_requests"."project_id" AS "pull_requests_project_id" FROM "pull_requests" WHERE "pull_requests"."status" = 0 GROUP BY "pull_requests"."project_id" /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:37:in 'ApplicationController#load_sidebar_data'
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:42:in 'Enumerable#map'
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (5, 3, 1, 2, 4) AND "documents"."doc_type" IN (1, 2, 4) /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:43:in 'ApplicationController#load_sidebar_data'
+  [1m[36mCiRun Load (0.5ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" ORDER BY "ci_runs"."updated_at" DESC LIMIT 8 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:58:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.1ms)[0m  [1m[34mSELECT "deployments".* FROM "deployments" ORDER BY "deployments"."updated_at" DESC LIMIT 8 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:59:in 'Enumerable#map'
+  [1m[36mChatRoom Load (0.1ms)[0m  [1m[34mSELECT "chat_rooms".* FROM "chat_rooms" WHERE "chat_rooms"."archived" = FALSE AND "chat_rooms"."id" = 5 LIMIT 1 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/chat_rooms_controller.rb:40:in 'ChatRoomsController#set_chat_room'
+  [1m[36mChatMessage Load (0.1ms)[0m  [1m[34mSELECT "chat_messages".* FROM "chat_messages" WHERE "chat_messages"."chat_room_id" = 5 ORDER BY "chat_messages"."created_at" DESC LIMIT 100 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/chat_rooms_controller.rb:18:in 'ChatRoomsController#show'
+  Rendering layout layouts/application.html.erb
+  Rendering chat_rooms/show.html.erb within layouts/application
+  [1m[36mProject Load (0.0ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" = 1 LIMIT 1 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/views/chat_rooms/show.html.erb:14
+  Rendered chat_rooms/show.html.erb within layouts/application (Duration: 1.5ms | GC: 0.3ms)
+  [1m[36mChatRoom Load (0.1ms)[0m  [1m[34mSELECT "chat_rooms".* FROM "chat_rooms" WHERE "chat_rooms"."archived" = FALSE ORDER BY "chat_rooms"."room_type" ASC, "chat_rooms"."name" ASC /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  [1m[36mProject Load (0.2ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" IN (5, 3, 1, 2, 4) /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  Rendered layouts/_sidebar.html.erb (Duration: 3.6ms | GC: 0.7ms)
+  [1m[36mNotification Load (0.1ms)[0m  [1m[34mSELECT "notifications".* FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' ORDER BY "notifications"."created_at" DESC LIMIT 15 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/views/layouts/_notifications_panel.html.erb:14
+  Rendered layouts/_notifications_panel.html.erb (Duration: 1.2ms | GC: 0.4ms)
+  Rendered layout layouts/application.html.erb (Duration: 7.3ms | GC: 1.6ms)
+Completed 200 OK in 31ms (Views: 7.3ms | ActiveRecord: 1.8ms (15 queries, 0 cached) | GC: 13.3ms)
+
+
+Started GET "/reports/ci_summary" for ::1 at 2026-05-22 22:48:00 +0300
+Processing by ReportsController#ci_summary as HTML
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 ORDER BY "users"."id" ASC LIMIT 1 /*action='ci_summary',application='DevTeam',controller='reports'*/[0m
+  [1m[36mNotification Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' AND "notifications"."read_at" IS NULL /*action='ci_summary',application='DevTeam',controller='reports'*/[0m
+  ↳ app/controllers/application_controller.rb:21:in 'ApplicationController#set_notification_count'
+  [1m[36mCiRun Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "ci_runs" GROUP BY "ci_runs"."project_id" /*action='ci_summary',application='DevTeam',controller='reports'*/[0m
+  ↳ app/controllers/application_controller.rb:29:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "deployments" GROUP BY "deployments"."project_id" /*action='ci_summary',application='DevTeam',controller='reports'*/[0m
+  ↳ app/controllers/application_controller.rb:33:in 'Enumerable#map'
+  [1m[36mPullRequest Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "pull_requests"."project_id" AS "pull_requests_project_id" FROM "pull_requests" WHERE "pull_requests"."status" = 0 GROUP BY "pull_requests"."project_id" /*action='ci_summary',application='DevTeam',controller='reports'*/[0m
+  ↳ app/controllers/application_controller.rb:37:in 'ApplicationController#load_sidebar_data'
+  [1m[36mProject Load (0.2ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC /*action='ci_summary',application='DevTeam',controller='reports'*/[0m
+  ↳ app/controllers/application_controller.rb:42:in 'Enumerable#map'
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (5, 3, 1, 2, 4) AND "documents"."doc_type" IN (1, 2, 4) /*action='ci_summary',application='DevTeam',controller='reports'*/[0m
+  ↳ app/controllers/application_controller.rb:43:in 'ApplicationController#load_sidebar_data'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" ORDER BY "ci_runs"."updated_at" DESC LIMIT 8 /*action='ci_summary',application='DevTeam',controller='reports'*/[0m
+  ↳ app/controllers/application_controller.rb:58:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT "deployments".* FROM "deployments" ORDER BY "deployments"."updated_at" DESC LIMIT 8 /*action='ci_summary',application='DevTeam',controller='reports'*/[0m
+  ↳ app/controllers/application_controller.rb:59:in 'Enumerable#map'
+  Rendering layout layouts/application.html.erb
+  Rendering reports/ci_summary.html.erb within layouts/application
+  Rendered reports/ci_summary.html.erb within layouts/application (Duration: 0.2ms | GC: 0.0ms)
+  [1m[36mChatRoom Load (0.1ms)[0m  [1m[34mSELECT "chat_rooms".* FROM "chat_rooms" WHERE "chat_rooms"."archived" = FALSE ORDER BY "chat_rooms"."room_type" ASC, "chat_rooms"."name" ASC /*action='ci_summary',application='DevTeam',controller='reports'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" IN (5, 3, 1, 2, 4) /*action='ci_summary',application='DevTeam',controller='reports'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  Rendered layouts/_sidebar.html.erb (Duration: 8.6ms | GC: 6.3ms)
+  [1m[36mNotification Load (0.0ms)[0m  [1m[34mSELECT "notifications".* FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' ORDER BY "notifications"."created_at" DESC LIMIT 15 /*action='ci_summary',application='DevTeam',controller='reports'*/[0m
+  ↳ app/views/layouts/_notifications_panel.html.erb:14
+  Rendered layouts/_notifications_panel.html.erb (Duration: 0.9ms | GC: 0.3ms)
+  Rendered layout layouts/application.html.erb (Duration: 10.8ms | GC: 7.1ms)
+Completed 200 OK in 27ms (Views: 11.6ms | ActiveRecord: 0.9ms (12 queries, 0 cached) | GC: 15.0ms)
+
+
+Started GET "/projects/5/deployments" for ::1 at 2026-05-22 22:48:03 +0300
+Processing by DeploymentsController#index as HTML
+  Parameters: {"project_id" => "5"}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 ORDER BY "users"."id" ASC LIMIT 1 /*action='index',application='DevTeam',controller='deployments'*/[0m
+  [1m[36mNotification Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' AND "notifications"."read_at" IS NULL /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/controllers/application_controller.rb:21:in 'ApplicationController#set_notification_count'
+  [1m[36mCiRun Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "ci_runs" GROUP BY "ci_runs"."project_id" /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/controllers/application_controller.rb:29:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "deployments" GROUP BY "deployments"."project_id" /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/controllers/application_controller.rb:33:in 'Enumerable#map'
+  [1m[36mPullRequest Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "pull_requests"."project_id" AS "pull_requests_project_id" FROM "pull_requests" WHERE "pull_requests"."status" = 0 GROUP BY "pull_requests"."project_id" /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/controllers/application_controller.rb:37:in 'ApplicationController#load_sidebar_data'
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/controllers/application_controller.rb:42:in 'Enumerable#map'
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (5, 3, 1, 2, 4) AND "documents"."doc_type" IN (1, 2, 4) /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/controllers/application_controller.rb:43:in 'ApplicationController#load_sidebar_data'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" ORDER BY "ci_runs"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/controllers/application_controller.rb:58:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.1ms)[0m  [1m[34mSELECT "deployments".* FROM "deployments" ORDER BY "deployments"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/controllers/application_controller.rb:59:in 'Enumerable#map'
+  [1m[36mProject Load (0.0ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" = 5 LIMIT 1 /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/controllers/deployments_controller.rb:32:in 'DeploymentsController#set_project'
+  Rendering layout layouts/application.html.erb
+  Rendering deployments/index.html.erb within layouts/application
+  Rendered deployments/index.html.erb within layouts/application (Duration: 0.2ms | GC: 0.0ms)
+  [1m[36mChatRoom Load (0.1ms)[0m  [1m[34mSELECT "chat_rooms".* FROM "chat_rooms" WHERE "chat_rooms"."archived" = FALSE ORDER BY "chat_rooms"."room_type" ASC, "chat_rooms"."name" ASC /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" IN (5, 3, 1, 2, 4) /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  Rendered layouts/_sidebar.html.erb (Duration: 3.1ms | GC: 0.3ms)
+  [1m[36mNotification Load (0.1ms)[0m  [1m[34mSELECT "notifications".* FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' ORDER BY "notifications"."created_at" DESC LIMIT 15 /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/views/layouts/_notifications_panel.html.erb:14
+  Rendered layouts/_notifications_panel.html.erb (Duration: 0.8ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 4.9ms | GC: 0.3ms)
+Completed 200 OK in 17ms (Views: 5.4ms | ActiveRecord: 1.1ms (13 queries, 0 cached) | GC: 1.1ms)
+
+
+Started GET "/projects/5/deployments?locale=en" for ::1 at 2026-05-22 22:48:24 +0300
+Processing by DeploymentsController#index as HTML
+  Parameters: {"locale" => "en", "project_id" => "5"}
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 ORDER BY "users"."id" ASC LIMIT 1 /*action='index',application='DevTeam',controller='deployments'*/[0m
+  [1m[36mNotification Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' AND "notifications"."read_at" IS NULL /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/controllers/application_controller.rb:21:in 'ApplicationController#set_notification_count'
+  [1m[36mCiRun Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "ci_runs" GROUP BY "ci_runs"."project_id" /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/controllers/application_controller.rb:29:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "deployments" GROUP BY "deployments"."project_id" /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/controllers/application_controller.rb:33:in 'Enumerable#map'
+  [1m[36mPullRequest Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "pull_requests"."project_id" AS "pull_requests_project_id" FROM "pull_requests" WHERE "pull_requests"."status" = 0 GROUP BY "pull_requests"."project_id" /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/controllers/application_controller.rb:37:in 'ApplicationController#load_sidebar_data'
+  [1m[36mProject Load (0.0ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/controllers/application_controller.rb:42:in 'Enumerable#map'
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (5, 3, 1, 2, 4) AND "documents"."doc_type" IN (1, 2, 4) /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/controllers/application_controller.rb:43:in 'ApplicationController#load_sidebar_data'
+  [1m[36mCiRun Load (0.0ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" ORDER BY "ci_runs"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/controllers/application_controller.rb:58:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT "deployments".* FROM "deployments" ORDER BY "deployments"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/controllers/application_controller.rb:59:in 'Enumerable#map'
+  [1m[36mProject Load (0.0ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" = 5 LIMIT 1 /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/controllers/deployments_controller.rb:32:in 'DeploymentsController#set_project'
+  Rendering layout layouts/application.html.erb
+  Rendering deployments/index.html.erb within layouts/application
+  Rendered deployments/index.html.erb within layouts/application (Duration: 0.0ms | GC: 0.0ms)
+  [1m[36mChatRoom Load (0.0ms)[0m  [1m[34mSELECT "chat_rooms".* FROM "chat_rooms" WHERE "chat_rooms"."archived" = FALSE ORDER BY "chat_rooms"."room_type" ASC, "chat_rooms"."name" ASC /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  [1m[36mProject Load (0.0ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" IN (5, 3, 1, 2, 4) /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  Rendered layouts/_sidebar.html.erb (Duration: 1.7ms | GC: 0.1ms)
+  [1m[36mNotification Load (0.0ms)[0m  [1m[34mSELECT "notifications".* FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' ORDER BY "notifications"."created_at" DESC LIMIT 15 /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/views/layouts/_notifications_panel.html.erb:14
+  Rendered layouts/_notifications_panel.html.erb (Duration: 0.5ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 2.6ms | GC: 0.1ms)
+Completed 200 OK in 7ms (Views: 2.7ms | ActiveRecord: 0.4ms (13 queries, 0 cached) | GC: 0.3ms)
+
+
+Started GET "/projects/5/deployments?locale=he" for ::1 at 2026-05-22 22:48:26 +0300
+Processing by DeploymentsController#index as HTML
+  Parameters: {"locale" => "he", "project_id" => "5"}
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 ORDER BY "users"."id" ASC LIMIT 1 /*action='index',application='DevTeam',controller='deployments'*/[0m
+  [1m[36mNotification Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' AND "notifications"."read_at" IS NULL /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/controllers/application_controller.rb:21:in 'ApplicationController#set_notification_count'
+  [1m[36mCiRun Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "ci_runs" GROUP BY "ci_runs"."project_id" /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/controllers/application_controller.rb:29:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "deployments" GROUP BY "deployments"."project_id" /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/controllers/application_controller.rb:33:in 'Enumerable#map'
+  [1m[36mPullRequest Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "pull_requests"."project_id" AS "pull_requests_project_id" FROM "pull_requests" WHERE "pull_requests"."status" = 0 GROUP BY "pull_requests"."project_id" /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/controllers/application_controller.rb:37:in 'ApplicationController#load_sidebar_data'
+  [1m[36mProject Load (0.0ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/controllers/application_controller.rb:42:in 'Enumerable#map'
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (5, 3, 1, 2, 4) AND "documents"."doc_type" IN (1, 2, 4) /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/controllers/application_controller.rb:43:in 'ApplicationController#load_sidebar_data'
+  [1m[36mCiRun Load (0.0ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" ORDER BY "ci_runs"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/controllers/application_controller.rb:58:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT "deployments".* FROM "deployments" ORDER BY "deployments"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/controllers/application_controller.rb:59:in 'Enumerable#map'
+  [1m[36mProject Load (0.0ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" = 5 LIMIT 1 /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/controllers/deployments_controller.rb:32:in 'DeploymentsController#set_project'
+  Rendering layout layouts/application.html.erb
+  Rendering deployments/index.html.erb within layouts/application
+  Rendered deployments/index.html.erb within layouts/application (Duration: 0.0ms | GC: 0.0ms)
+  [1m[36mChatRoom Load (0.0ms)[0m  [1m[34mSELECT "chat_rooms".* FROM "chat_rooms" WHERE "chat_rooms"."archived" = FALSE ORDER BY "chat_rooms"."room_type" ASC, "chat_rooms"."name" ASC /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  [1m[36mProject Load (0.0ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" IN (5, 3, 1, 2, 4) /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  Rendered layouts/_sidebar.html.erb (Duration: 2.2ms | GC: 0.5ms)
+  [1m[36mNotification Load (0.0ms)[0m  [1m[34mSELECT "notifications".* FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' ORDER BY "notifications"."created_at" DESC LIMIT 15 /*action='index',application='DevTeam',controller='deployments'*/[0m
+  ↳ app/views/layouts/_notifications_panel.html.erb:14
+  Rendered layouts/_notifications_panel.html.erb (Duration: 0.5ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 3.2ms | GC: 0.5ms)
+Completed 200 OK in 8ms (Views: 3.3ms | ActiveRecord: 0.5ms (13 queries, 0 cached) | GC: 0.7ms)
+
+
+Started GET "/chat_rooms/7" for ::1 at 2026-05-22 22:48:28 +0300
+Processing by ChatRoomsController#show as HTML
+  Parameters: {"id" => "7"}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 ORDER BY "users"."id" ASC LIMIT 1 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  [1m[36mNotification Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' AND "notifications"."read_at" IS NULL /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:21:in 'ApplicationController#set_notification_count'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT MAX(id) as id FROM "ci_runs" GROUP BY "ci_runs"."project_id" /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:29:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "deployments" GROUP BY "deployments"."project_id" /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:33:in 'Enumerable#map'
+  [1m[36mPullRequest Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "pull_requests"."project_id" AS "pull_requests_project_id" FROM "pull_requests" WHERE "pull_requests"."status" = 0 GROUP BY "pull_requests"."project_id" /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:37:in 'ApplicationController#load_sidebar_data'
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:42:in 'Enumerable#map'
+  [1m[36mDocument Load (0.2ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (5, 3, 1, 2, 4) AND "documents"."doc_type" IN (1, 2, 4) /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:43:in 'ApplicationController#load_sidebar_data'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" ORDER BY "ci_runs"."updated_at" DESC LIMIT 8 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:58:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.1ms)[0m  [1m[34mSELECT "deployments".* FROM "deployments" ORDER BY "deployments"."updated_at" DESC LIMIT 8 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:59:in 'Enumerable#map'
+  [1m[36mChatRoom Load (0.1ms)[0m  [1m[34mSELECT "chat_rooms".* FROM "chat_rooms" WHERE "chat_rooms"."archived" = FALSE AND "chat_rooms"."id" = 7 LIMIT 1 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/chat_rooms_controller.rb:40:in 'ChatRoomsController#set_chat_room'
+  [1m[36mChatMessage Load (0.1ms)[0m  [1m[34mSELECT "chat_messages".* FROM "chat_messages" WHERE "chat_messages"."chat_room_id" = 7 ORDER BY "chat_messages"."created_at" DESC LIMIT 100 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/chat_rooms_controller.rb:18:in 'ChatRoomsController#show'
+  Rendering layout layouts/application.html.erb
+  Rendering chat_rooms/show.html.erb within layouts/application
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" = 3 LIMIT 1 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/views/chat_rooms/show.html.erb:14
+  Rendered chat_rooms/show.html.erb within layouts/application (Duration: 1.3ms | GC: 0.0ms)
+  [1m[36mChatRoom Load (0.1ms)[0m  [1m[34mSELECT "chat_rooms".* FROM "chat_rooms" WHERE "chat_rooms"."archived" = FALSE ORDER BY "chat_rooms"."room_type" ASC, "chat_rooms"."name" ASC /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" IN (5, 3, 1, 2, 4) /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  Rendered layouts/_sidebar.html.erb (Duration: 3.3ms | GC: 0.0ms)
+  [1m[36mNotification Load (0.1ms)[0m  [1m[34mSELECT "notifications".* FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' ORDER BY "notifications"."created_at" DESC LIMIT 15 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/views/layouts/_notifications_panel.html.erb:14
+  Rendered layouts/_notifications_panel.html.erb (Duration: 1.0ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 6.6ms | GC: 0.0ms)
+Completed 200 OK in 19ms (Views: 6.7ms | ActiveRecord: 1.2ms (15 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/chat_rooms/9" for ::1 at 2026-05-22 22:48:29 +0300
+Processing by ChatRoomsController#show as HTML
+  Parameters: {"id" => "9"}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 ORDER BY "users"."id" ASC LIMIT 1 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  [1m[36mNotification Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' AND "notifications"."read_at" IS NULL /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:21:in 'ApplicationController#set_notification_count'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT MAX(id) as id FROM "ci_runs" GROUP BY "ci_runs"."project_id" /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:29:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "deployments" GROUP BY "deployments"."project_id" /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:33:in 'Enumerable#map'
+  [1m[36mPullRequest Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "pull_requests"."project_id" AS "pull_requests_project_id" FROM "pull_requests" WHERE "pull_requests"."status" = 0 GROUP BY "pull_requests"."project_id" /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:37:in 'ApplicationController#load_sidebar_data'
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:42:in 'Enumerable#map'
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (5, 3, 1, 2, 4) AND "documents"."doc_type" IN (1, 2, 4) /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:43:in 'ApplicationController#load_sidebar_data'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" ORDER BY "ci_runs"."updated_at" DESC LIMIT 8 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:58:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.1ms)[0m  [1m[34mSELECT "deployments".* FROM "deployments" ORDER BY "deployments"."updated_at" DESC LIMIT 8 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/application_controller.rb:59:in 'Enumerable#map'
+  [1m[36mChatRoom Load (0.1ms)[0m  [1m[34mSELECT "chat_rooms".* FROM "chat_rooms" WHERE "chat_rooms"."archived" = FALSE AND "chat_rooms"."id" = 9 LIMIT 1 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/chat_rooms_controller.rb:40:in 'ChatRoomsController#set_chat_room'
+  [1m[36mChatMessage Load (0.1ms)[0m  [1m[34mSELECT "chat_messages".* FROM "chat_messages" WHERE "chat_messages"."chat_room_id" = 9 ORDER BY "chat_messages"."created_at" DESC LIMIT 100 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/controllers/chat_rooms_controller.rb:18:in 'ChatRoomsController#show'
+  Rendering layout layouts/application.html.erb
+  Rendering chat_rooms/show.html.erb within layouts/application
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" = 5 LIMIT 1 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/views/chat_rooms/show.html.erb:14
+  Rendered chat_rooms/show.html.erb within layouts/application (Duration: 1.1ms | GC: 0.0ms)
+  [1m[36mChatRoom Load (0.1ms)[0m  [1m[34mSELECT "chat_rooms".* FROM "chat_rooms" WHERE "chat_rooms"."archived" = FALSE ORDER BY "chat_rooms"."room_type" ASC, "chat_rooms"."name" ASC /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" IN (5, 3, 1, 2, 4) /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  Rendered layouts/_sidebar.html.erb (Duration: 3.2ms | GC: 0.4ms)
+  [1m[36mNotification Load (0.1ms)[0m  [1m[34mSELECT "notifications".* FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' ORDER BY "notifications"."created_at" DESC LIMIT 15 /*action='show',application='DevTeam',controller='chat_rooms'*/[0m
+  ↳ app/views/layouts/_notifications_panel.html.erb:14
+  Rendered layouts/_notifications_panel.html.erb (Duration: 0.7ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 5.7ms | GC: 0.4ms)
+Completed 200 OK in 19ms (Views: 5.8ms | ActiveRecord: 1.2ms (15 queries, 0 cached) | GC: 3.0ms)
+
+
+Started GET "/documents" for ::1 at 2026-05-22 22:48:45 +0300
+Processing by AllDocumentsController#index as HTML
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 ORDER BY "users"."id" ASC LIMIT 1 /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  [1m[36mNotification Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' AND "notifications"."read_at" IS NULL /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/application_controller.rb:21:in 'ApplicationController#set_notification_count'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT MAX(id) as id FROM "ci_runs" GROUP BY "ci_runs"."project_id" /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/application_controller.rb:29:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.1ms)[0m  [1m[34mSELECT MAX(id) as id FROM "deployments" GROUP BY "deployments"."project_id" /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/application_controller.rb:33:in 'Enumerable#map'
+  [1m[36mPullRequest Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "pull_requests"."project_id" AS "pull_requests_project_id" FROM "pull_requests" WHERE "pull_requests"."status" = 0 GROUP BY "pull_requests"."project_id" /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/application_controller.rb:37:in 'ApplicationController#load_sidebar_data'
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/application_controller.rb:42:in 'Enumerable#map'
+  [1m[36mDocument Load (0.2ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (5, 3, 1, 2, 4) AND "documents"."doc_type" IN (1, 2, 4) /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/application_controller.rb:43:in 'ApplicationController#load_sidebar_data'
+  [1m[36mCiRun Load (0.2ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" ORDER BY "ci_runs"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/application_controller.rb:58:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.1ms)[0m  [1m[34mSELECT "deployments".* FROM "deployments" ORDER BY "deployments"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/application_controller.rb:59:in 'Enumerable#map'
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" ORDER BY "documents"."updated_at" DESC LIMIT 200 /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/all_documents_controller.rb:15:in 'Enumerable#group_by'
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" IN (5, 4, 3, 2, 1) /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/all_documents_controller.rb:15:in 'Enumerable#group_by'
+  [1m[36mDocument Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "documents"."doc_type" AS "documents_doc_type" FROM "documents" GROUP BY "documents"."doc_type" /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/controllers/all_documents_controller.rb:16:in 'AllDocumentsController#index'
+  Rendering layout layouts/application.html.erb
+  Rendering all_documents/index.html.erb within layouts/application
+  Rendered all_documents/index.html.erb within layouts/application (Duration: 3.2ms | GC: 0.3ms)
+  [1m[36mChatRoom Load (0.1ms)[0m  [1m[34mSELECT "chat_rooms".* FROM "chat_rooms" WHERE "chat_rooms"."archived" = FALSE ORDER BY "chat_rooms"."room_type" ASC, "chat_rooms"."name" ASC /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" IN (5, 3, 1, 2, 4) /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  Rendered layouts/_sidebar.html.erb (Duration: 4.0ms | GC: 0.5ms)
+  [1m[36mNotification Load (0.1ms)[0m  [1m[34mSELECT "notifications".* FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' ORDER BY "notifications"."created_at" DESC LIMIT 15 /*action='index',application='DevTeam',controller='all_documents'*/[0m
+  ↳ app/views/layouts/_notifications_panel.html.erb:14
+  Rendered layouts/_notifications_panel.html.erb (Duration: 1.0ms | GC: 0.3ms)
+  Rendered layout layouts/application.html.erb (Duration: 9.4ms | GC: 1.1ms)
+Completed 200 OK in 24ms (Views: 9.5ms | ActiveRecord: 1.7ms (15 queries, 0 cached) | GC: 1.6ms)
+
+
+Started GET "/notifications" for ::1 at 2026-05-22 22:48:45 +0300
+Processing by NotificationsController#index as HTML
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 ORDER BY "users"."id" ASC LIMIT 1 /*action='index',application='DevTeam',controller='notifications'*/[0m
+  [1m[36mNotification Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' AND "notifications"."read_at" IS NULL /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/controllers/application_controller.rb:21:in 'ApplicationController#set_notification_count'
+  [1m[36mCiRun Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "ci_runs" GROUP BY "ci_runs"."project_id" /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/controllers/application_controller.rb:29:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "deployments" GROUP BY "deployments"."project_id" /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/controllers/application_controller.rb:33:in 'Enumerable#map'
+  [1m[36mPullRequest Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "pull_requests"."project_id" AS "pull_requests_project_id" FROM "pull_requests" WHERE "pull_requests"."status" = 0 GROUP BY "pull_requests"."project_id" /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/controllers/application_controller.rb:37:in 'ApplicationController#load_sidebar_data'
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/controllers/application_controller.rb:42:in 'Enumerable#map'
+  [1m[36mDocument Load (0.3ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (5, 3, 1, 2, 4) AND "documents"."doc_type" IN (1, 2, 4) /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/controllers/application_controller.rb:43:in 'ApplicationController#load_sidebar_data'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" ORDER BY "ci_runs"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/controllers/application_controller.rb:58:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT "deployments".* FROM "deployments" ORDER BY "deployments"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/controllers/application_controller.rb:59:in 'Enumerable#map'
+  Rendering layout layouts/application.html.erb
+  Rendering notifications/index.html.erb within layouts/application
+  Rendered notifications/index.html.erb within layouts/application (Duration: 0.0ms | GC: 0.0ms)
+  [1m[36mChatRoom Load (0.1ms)[0m  [1m[34mSELECT "chat_rooms".* FROM "chat_rooms" WHERE "chat_rooms"."archived" = FALSE ORDER BY "chat_rooms"."room_type" ASC, "chat_rooms"."name" ASC /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" IN (5, 3, 1, 2, 4) /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  Rendered layouts/_sidebar.html.erb (Duration: 2.6ms | GC: 0.1ms)
+  [1m[36mNotification Load (0.1ms)[0m  [1m[34mSELECT "notifications".* FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' ORDER BY "notifications"."created_at" DESC LIMIT 15 /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/views/layouts/_notifications_panel.html.erb:14
+  Rendered layouts/_notifications_panel.html.erb (Duration: 1.1ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 4.8ms | GC: 0.1ms)
+Completed 200 OK in 12ms (Views: 4.8ms | ActiveRecord: 1.0ms (12 queries, 0 cached) | GC: 0.3ms)
+
+
+Started GET "/meetings" for ::1 at 2026-05-22 22:48:45 +0300
+Processing by MeetingsController#index as HTML
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 ORDER BY "users"."id" ASC LIMIT 1 /*action='index',application='DevTeam',controller='meetings'*/[0m
+  [1m[36mNotification Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' AND "notifications"."read_at" IS NULL /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:21:in 'ApplicationController#set_notification_count'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT MAX(id) as id FROM "ci_runs" GROUP BY "ci_runs"."project_id" /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:29:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.1ms)[0m  [1m[34mSELECT MAX(id) as id FROM "deployments" GROUP BY "deployments"."project_id" /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:33:in 'Enumerable#map'
+  [1m[36mPullRequest Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "pull_requests"."project_id" AS "pull_requests_project_id" FROM "pull_requests" WHERE "pull_requests"."status" = 0 GROUP BY "pull_requests"."project_id" /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:37:in 'ApplicationController#load_sidebar_data'
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:42:in 'Enumerable#map'
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (5, 3, 1, 2, 4) AND "documents"."doc_type" IN (1, 2, 4) /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:43:in 'ApplicationController#load_sidebar_data'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" ORDER BY "ci_runs"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:58:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.1ms)[0m  [1m[34mSELECT "deployments".* FROM "deployments" ORDER BY "deployments"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/controllers/application_controller.rb:59:in 'Enumerable#map'
+  Rendering layout layouts/application.html.erb
+  Rendering meetings/index.html.erb within layouts/application
+  [1m[36mMeeting Load (0.1ms)[0m  [1m[34mSELECT "meetings".* FROM "meetings" ORDER BY "meetings"."scheduled_at" DESC /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/views/meetings/index.html.erb:9
+  Rendered meetings/index.html.erb within layouts/application (Duration: 0.6ms | GC: 0.0ms)
+  [1m[36mChatRoom Load (0.1ms)[0m  [1m[34mSELECT "chat_rooms".* FROM "chat_rooms" WHERE "chat_rooms"."archived" = FALSE ORDER BY "chat_rooms"."room_type" ASC, "chat_rooms"."name" ASC /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" IN (5, 3, 1, 2, 4) /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  Rendered layouts/_sidebar.html.erb (Duration: 2.3ms | GC: 0.0ms)
+  [1m[36mNotification Load (0.1ms)[0m  [1m[34mSELECT "notifications".* FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' ORDER BY "notifications"."created_at" DESC LIMIT 15 /*action='index',application='DevTeam',controller='meetings'*/[0m
+  ↳ app/views/layouts/_notifications_panel.html.erb:14
+  Rendered layouts/_notifications_panel.html.erb (Duration: 0.8ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 4.2ms | GC: 0.0ms)
+Completed 200 OK in 15ms (Views: 4.3ms | ActiveRecord: 1.2ms (13 queries, 0 cached) | GC: 1.4ms)
+
+
+Started GET "/notifications" for ::1 at 2026-05-22 22:48:54 +0300
+Processing by NotificationsController#index as HTML
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 ORDER BY "users"."id" ASC LIMIT 1 /*action='index',application='DevTeam',controller='notifications'*/[0m
+  [1m[36mNotification Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' AND "notifications"."read_at" IS NULL /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/controllers/application_controller.rb:21:in 'ApplicationController#set_notification_count'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT MAX(id) as id FROM "ci_runs" GROUP BY "ci_runs"."project_id" /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/controllers/application_controller.rb:29:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "deployments" GROUP BY "deployments"."project_id" /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/controllers/application_controller.rb:33:in 'Enumerable#map'
+  [1m[36mPullRequest Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "pull_requests"."project_id" AS "pull_requests_project_id" FROM "pull_requests" WHERE "pull_requests"."status" = 0 GROUP BY "pull_requests"."project_id" /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/controllers/application_controller.rb:37:in 'ApplicationController#load_sidebar_data'
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/controllers/application_controller.rb:42:in 'Enumerable#map'
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (5, 3, 1, 2, 4) AND "documents"."doc_type" IN (1, 2, 4) /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/controllers/application_controller.rb:43:in 'ApplicationController#load_sidebar_data'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" ORDER BY "ci_runs"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/controllers/application_controller.rb:58:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.1ms)[0m  [1m[34mSELECT "deployments".* FROM "deployments" ORDER BY "deployments"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/controllers/application_controller.rb:59:in 'Enumerable#map'
+  Rendering layout layouts/application.html.erb
+  Rendering notifications/index.html.erb within layouts/application
+  Rendered notifications/index.html.erb within layouts/application (Duration: 0.0ms | GC: 0.0ms)
+  [1m[36mChatRoom Load (0.1ms)[0m  [1m[34mSELECT "chat_rooms".* FROM "chat_rooms" WHERE "chat_rooms"."archived" = FALSE ORDER BY "chat_rooms"."room_type" ASC, "chat_rooms"."name" ASC /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" IN (5, 3, 1, 2, 4) /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/views/layouts/_sidebar.html.erb:51
+  Rendered layouts/_sidebar.html.erb (Duration: 3.7ms | GC: 0.0ms)
+  [1m[36mNotification Load (0.1ms)[0m  [1m[34mSELECT "notifications".* FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' ORDER BY "notifications"."created_at" DESC LIMIT 15 /*action='index',application='DevTeam',controller='notifications'*/[0m
+  ↳ app/views/layouts/_notifications_panel.html.erb:14
+  Rendered layouts/_notifications_panel.html.erb (Duration: 1.0ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 5.9ms | GC: 0.0ms)
+Completed 200 OK in 15ms (Views: 6.0ms | ActiveRecord: 1.0ms (12 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/today" for ::1 at 2026-05-22 22:48:54 +0300
+Processing by TodayController#index as HTML
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 ORDER BY "users"."id" ASC LIMIT 1 /*action='index',application='DevTeam',controller='today'*/[0m
+  [1m[36mNotification Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' AND "notifications"."read_at" IS NULL /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:21:in 'ApplicationController#set_notification_count'
+  [1m[36mCiRun Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "ci_runs" GROUP BY "ci_runs"."project_id" /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:29:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "deployments" GROUP BY "deployments"."project_id" /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:33:in 'Enumerable#map'
+  [1m[36mPullRequest Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "pull_requests"."project_id" AS "pull_requests_project_id" FROM "pull_requests" WHERE "pull_requests"."status" = 0 GROUP BY "pull_requests"."project_id" /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:37:in 'ApplicationController#load_sidebar_data'
+  [1m[36mProject Load (0.0ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:42:in 'Enumerable#map'
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (5, 3, 1, 2, 4) AND "documents"."doc_type" IN (1, 2, 4) /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:43:in 'ApplicationController#load_sidebar_data'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" ORDER BY "ci_runs"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:58:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.1ms)[0m  [1m[34mSELECT "deployments".* FROM "deployments" ORDER BY "deployments"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/application_controller.rb:59:in 'Enumerable#map'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" WHERE "ci_runs"."triggered_by_id" = 1 AND "ci_runs"."status" = 3 ORDER BY "ci_runs"."created_at" DESC LIMIT 5 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:37:in 'TodayController#index'
+  [1m[36mMeeting Load (0.1ms)[0m  [1m[34mSELECT DISTINCT "meetings".* FROM "meetings" INNER JOIN "meeting_attendees" ON "meeting_attendees"."meeting_id" = "meetings"."id" WHERE "meetings"."scheduled_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999' AND "meetings"."status" != 3 AND ("meeting_attendees"."user_id" = 1 OR "meetings"."organizer_id" = 1) ORDER BY "meetings"."scheduled_at" ASC /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:59:in 'TodayController#index'
+  [1m[36mTicket Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "tickets" WHERE "tickets"."assignee_id" = 1 AND "tickets"."status" NOT IN (5, 6) /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:84:in 'TodayController#index'
+  [1m[36mCiRun Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "ci_runs" WHERE "ci_runs"."triggered_by_id" = 1 AND ("ci_runs"."started_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999' OR "ci_runs"."created_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999') /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:86:in 'TodayController#index'
+  [1m[36mDeployment Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "deployments" WHERE "deployments"."deployed_by_id" = 1 AND "deployments"."created_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999' /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:87:in 'TodayController#index'
+  [1m[36mDocument Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM (SELECT 1 AS one FROM "documents" WHERE "documents"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND "documents"."updated_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999' LIMIT 10) AS subquery_for_count /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:88:in 'TodayController#index'
+  [1m[36mMilestone Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND "milestones"."due_date" = '2026-05-22' /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:89:in 'TodayController#index'
+  [1m[36mMilestone Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "milestones" WHERE "milestones"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND (due_date < '2026-05-22') AND "milestones"."status" != 2 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/controllers/today_controller.rb:89:in 'TodayController#index'
+  Rendering layout layouts/application.html.erb
+  Rendering today/index.html.erb within layouts/application
+  [1m[36mTicket Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "tickets" WHERE "tickets"."assignee_id" = 1 AND "tickets"."status" NOT IN (5, 6) LIMIT 1 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/views/today/index.html.erb:76
+  [1m[36mMilestone Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "milestones" WHERE "milestones"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND "milestones"."due_date" = '2026-05-22' LIMIT 1 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/views/today/index.html.erb:101
+  [1m[36mMilestone Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "milestones" WHERE "milestones"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND (due_date < '2026-05-22') AND "milestones"."status" != 2 LIMIT 1 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/views/today/index.html.erb:101
+  [1m[36mDocument Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "documents" WHERE "documents"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND "documents"."updated_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999' LIMIT 1 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/views/today/index.html.erb:135
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (SELECT DISTINCT "tickets"."project_id" FROM "tickets" WHERE "tickets"."assignee_id" = 1) AND "documents"."updated_at" BETWEEN '2026-05-21 21:00:00' AND '2026-05-22 20:59:59.999999' ORDER BY "documents"."updated_at" DESC LIMIT 10 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/views/today/index.html.erb:138
+  [1m[36mProject Load (0.0ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" = 5 /*action='index',application='DevTeam',controller='today'*/[0m
+  ↳ app/views/today/index.html.erb:138
+  Rendered today/index.html.erb within layouts/application (Duration: 3.4ms | GC: 0.3ms)
+  Rendered layout layouts/application.html.erb (Duration: 3.5ms | GC: 0.3ms)
+Completed 500 Internal Server Error in 19ms (ActiveRecord: 1.3ms (23 queries, 0 cached) | GC: 2.2ms)
+
+
+  
+ActionView::Template::Error (undefined method 'project_document_path' for an instance of #<Class:0x000000012884b100>)
+Caused by: NoMethodError (undefined method 'project_document_path' for an instance of #<Class:0x000000012884b100>)
+
+Information for: ActionView::Template::Error (undefined method 'project_document_path' for an instance of #<Class:0x000000012884b100>):
+    138:           <div class="d-flex justify-content-between py-1" style="border-bottom: 1px solid #f5f5f5;">
+    139:             <div>
+    140:               <%= link_to doc.title, project_document_path(doc.project, doc) %>
+    141:               <span class="badge bg-light text-dark is-small ms-1"><%= doc.project.name %></span>
+    142:               <span class="badge bg-info text-dark is-light is-small ms-1"><%= doc.doc_type.to_s.humanize %></span>
+    143:             </div>
+    144:             <span class="text-muted fs-7"><%= doc.author&.display_name %> · <%= l(doc.updated_at, format: :short) %></span>
+  
+app/views/today/index.html.erb:141
+app/views/today/index.html.erb:138
+
+Information for cause: NoMethodError (undefined method 'project_document_path' for an instance of #<Class:0x000000012884b100>):
+  
+app/views/today/index.html.erb:141
+app/views/today/index.html.erb:138
+Started GET "/projects" for ::1 at 2026-05-22 22:49:13 +0300
+Processing by ProjectsController#index as HTML
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 ORDER BY "users"."id" ASC LIMIT 1 /*action='index',application='DevTeam',controller='projects'*/[0m
+  [1m[36mNotification Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' AND "notifications"."read_at" IS NULL /*action='index',application='DevTeam',controller='projects'*/[0m
+  ↳ app/controllers/application_controller.rb:21:in 'ApplicationController#set_notification_count'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT MAX(id) as id FROM "ci_runs" GROUP BY "ci_runs"."project_id" /*action='index',application='DevTeam',controller='projects'*/[0m
+  ↳ app/controllers/application_controller.rb:29:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT MAX(id) as id FROM "deployments" GROUP BY "deployments"."project_id" /*action='index',application='DevTeam',controller='projects'*/[0m
+  ↳ app/controllers/application_controller.rb:33:in 'Enumerable#map'
+  [1m[36mPullRequest Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "pull_requests"."project_id" AS "pull_requests_project_id" FROM "pull_requests" WHERE "pull_requests"."status" = 0 GROUP BY "pull_requests"."project_id" /*action='index',application='DevTeam',controller='projects'*/[0m
+  ↳ app/controllers/application_controller.rb:37:in 'ApplicationController#load_sidebar_data'
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC /*action='index',application='DevTeam',controller='projects'*/[0m
+  ↳ app/controllers/application_controller.rb:42:in 'Enumerable#map'
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (5, 3, 1, 2, 4) AND "documents"."doc_type" IN (1, 2, 4) /*action='index',application='DevTeam',controller='projects'*/[0m
+  ↳ app/controllers/application_controller.rb:43:in 'ApplicationController#load_sidebar_data'
+  [1m[36mCiRun Load (0.0ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" ORDER BY "ci_runs"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='projects'*/[0m
+  ↳ app/controllers/application_controller.rb:58:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.0ms)[0m  [1m[34mSELECT "deployments".* FROM "deployments" ORDER BY "deployments"."updated_at" DESC LIMIT 8 /*action='index',application='DevTeam',controller='projects'*/[0m
+  ↳ app/controllers/application_controller.rb:59:in 'Enumerable#map'
+  Rendering layout layouts/application.html.erb
+  Rendering projects/index.html.erb within layouts/application
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" ORDER BY "projects"."name" ASC /*action='index',application='DevTeam',controller='projects'*/[0m
+  ↳ app/views/projects/index.html.erb:10
+  Rendered projects/index.html.erb within layouts/application (Duration: 1.7ms | GC: 0.4ms)
+  Rendered layout layouts/application.html.erb (Duration: 1.8ms | GC: 0.4ms)
+Completed 500 Internal Server Error in 10ms (ActiveRecord: 0.6ms (10 queries, 0 cached) | GC: 0.7ms)
+
+
+  
+ActionView::Template::Error (undefined method 'project_ci_dashboard_path' for an instance of #<Class:0x000000012884b100>)
+Caused by: NoMethodError (undefined method 'project_ci_dashboard_path' for an instance of #<Class:0x000000012884b100>)
+
+Information for: ActionView::Template::Error (undefined method 'project_ci_dashboard_path' for an instance of #<Class:0x000000012884b100>):
+    18:           </div>
+    19:           <div class="level-right">
+    20:             <%= link_to "CI", project_ci_dashboard_path(project), class: "btn btn-secondary btn-sm is-light" %>
+    21:           </div>
+    22:         </div>
+    23:         <p class="fs-7 mb-3"><%= project.description&.truncate(120) %></p>
+    24:         <div class="d-flex flex-wrap gap-1">
+  
+app/views/projects/index.html.erb:21
+app/views/projects/index.html.erb:10
+
+Information for cause: NoMethodError (undefined method 'project_ci_dashboard_path' for an instance of #<Class:0x000000012884b100>):
+  
+app/views/projects/index.html.erb:21
+app/views/projects/index.html.erb:10
+Started GET "/projects/1" for ::1 at 2026-05-22 22:49:17 +0300
+Processing by ProjectsController#show as HTML
+  Parameters: {"id" => "1"}
+  [1m[36mUser Load (0.2ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 ORDER BY "users"."id" ASC LIMIT 1 /*action='show',application='DevTeam',controller='projects'*/[0m
+  [1m[36mNotification Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "notifications" WHERE "notifications"."recipient_id" = 1 AND "notifications"."recipient_type" = 'User' AND "notifications"."read_at" IS NULL /*action='show',application='DevTeam',controller='projects'*/[0m
+  ↳ app/controllers/application_controller.rb:21:in 'ApplicationController#set_notification_count'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT MAX(id) as id FROM "ci_runs" GROUP BY "ci_runs"."project_id" /*action='show',application='DevTeam',controller='projects'*/[0m
+  ↳ app/controllers/application_controller.rb:29:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.1ms)[0m  [1m[34mSELECT MAX(id) as id FROM "deployments" GROUP BY "deployments"."project_id" /*action='show',application='DevTeam',controller='projects'*/[0m
+  ↳ app/controllers/application_controller.rb:33:in 'Enumerable#map'
+  [1m[36mPullRequest Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) AS "count_all", "pull_requests"."project_id" AS "pull_requests_project_id" FROM "pull_requests" WHERE "pull_requests"."status" = 0 GROUP BY "pull_requests"."project_id" /*action='show',application='DevTeam',controller='projects'*/[0m
+  ↳ app/controllers/application_controller.rb:37:in 'ApplicationController#load_sidebar_data'
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."active" = TRUE ORDER BY "projects"."name" ASC /*action='show',application='DevTeam',controller='projects'*/[0m
+  ↳ app/controllers/application_controller.rb:42:in 'Enumerable#map'
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" IN (5, 3, 1, 2, 4) AND "documents"."doc_type" IN (1, 2, 4) /*action='show',application='DevTeam',controller='projects'*/[0m
+  ↳ app/controllers/application_controller.rb:43:in 'ApplicationController#load_sidebar_data'
+  [1m[36mCiRun Load (0.1ms)[0m  [1m[34mSELECT "ci_runs".* FROM "ci_runs" ORDER BY "ci_runs"."updated_at" DESC LIMIT 8 /*action='show',application='DevTeam',controller='projects'*/[0m
+  ↳ app/controllers/application_controller.rb:58:in 'Enumerable#map'
+  [1m[36mDeployment Load (0.1ms)[0m  [1m[34mSELECT "deployments".* FROM "deployments" ORDER BY "deployments"."updated_at" DESC LIMIT 8 /*action='show',application='DevTeam',controller='projects'*/[0m
+  ↳ app/controllers/application_controller.rb:59:in 'Enumerable#map'
+  [1m[36mProject Load (0.0ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."id" = 1 LIMIT 1 /*action='show',application='DevTeam',controller='projects'*/[0m
+  ↳ app/controllers/projects_controller.rb:59:in 'ProjectsController#set_project'
+  Rendering layout layouts/application.html.erb
+  Rendering projects/show.html.erb within layouts/application
+  Rendered projects/show.html.erb within layouts/application (Duration: 1.4ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 1.5ms | GC: 0.0ms)
+Completed 500 Internal Server Error in 14ms (ActiveRecord: 0.9ms (10 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+ActionView::Template::Error (undefined method 'project_ci_dashboard_path' for an instance of #<Class:0x000000012884b100>)
+Caused by: NoMethodError (undefined method 'project_ci_dashboard_path' for an instance of #<Class:0x000000012884b100>)
+
+Information for: ActionView::Template::Error (undefined method 'project_ci_dashboard_path' for an instance of #<Class:0x000000012884b100>):
+    10:   <div class="level-right">
+    11:     <%= link_to "Edit", edit_project_path(@project), class: "btn btn-secondary btn-sm is-warning" %>
+    12:     <%= link_to "CI Dashboard", project_ci_dashboard_path(@project), class: "btn btn-secondary btn-sm is-dark" %>
+    13:   </div>
+    14: </div>
+    15: 
+    16: <p class="mb-4"><%= @project.description %></p>
+  
+app/views/projects/show.html.erb:13
+
+Information for cause: NoMethodError (undefined method 'project_ci_dashboard_path' for an instance of #<Class:0x000000012884b100>):
+  
+app/views/projects/show.html.erb:13
+[Sentry::SessionFlusher] thread killed
+Shutting down background worker
+[Sentry::MetricEventBuffer] Initialized buffer with max_items=1000, flush_interval=5s
+Initializing the Sentry background worker with 7 threads
+  [1m[36mProject Count (2.8ms)[0m  [1m[34mSELECT COUNT(*) FROM "projects" /*application='DevTeam'*/[0m
+[Sentry::SessionFlusher] thread killed
+Shutting down background worker
+[Sentry::SessionFlusher] thread killed
+Shutting down background worker
+[Sentry::SessionFlusher] thread killed
+Shutting down background worker
+[Sentry::MetricEventBuffer] Initialized buffer with max_items=1000, flush_interval=5s
+Initializing the Sentry background worker with 7 threads
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='DevTeam'*/[0m
