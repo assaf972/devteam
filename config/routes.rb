@@ -102,7 +102,7 @@ Rails.application.routes.draw do
   # project-scoped meeting index (e.g. linked from project page)
   get "projects/:project_id/meetings", to: "meetings#index", as: :project_meetings
 
-  resources :notifications, only: [ :index ] do
+  resources :notifications do
     collection { post :mark_all_read }
     member { patch :mark_read }
   end

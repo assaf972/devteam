@@ -35,8 +35,8 @@
           </div>
         </div>
         <div class="level-right">
-          <%= link_to "Edit", edit_ticket_path(@ticket), class: "btn btn-secondary btn-sm is-warning" %>
-          <%= link_to "Delete", ticket_path(@ticket), data: { turbo_method: :delete, turbo_confirm: "Delete this ticket?" }, class: "btn btn-secondary btn-sm is-danger" %>
+          <%= link_to t("common.actions.edit"), edit_ticket_path(@ticket), class: "btn btn-secondary btn-sm is-warning" %>
+          <%= link_to t("common.delete"), ticket_path(@ticket), data: { turbo_method: :delete, turbo_confirm: t("common.confirm_delete") }, class: "btn btn-secondary btn-sm is-danger" %>
         </div>
       </div>
 

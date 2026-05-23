@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Automatic Testing Strategy - Multi Stack</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f3ef;
+      --ink: #0f172a;
+      --ink-soft: #334155;
+      --panel: #fffdf8;
+      --line: #d6d3cd;
+      --brand: #0f766e;
+      --brand-2: #be123c;
+      --brand-3: #b45309;
+      --ok: #166534;
+      --warn: #92400e;
+      --fail: #991b1b;
+      --radius: 16px;
+      --shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 10%, rgba(15, 118, 110, 0.12), transparent 42%),
+        radial-gradient(circle at 88% 30%, rgba(190, 18, 60, 0.09), transparent 35%),
+        radial-gradient(circle at 40% 90%, rgba(180, 83, 9, 0.10), transparent 38%),
+        var(--bg);
+      line-height: 1.45;
+    }
+
+    .shell {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 26px 18px 60px;
+    }
+
+    .hero {
+      border: 1px solid var(--line);
+      border-radius: calc(var(--radius) + 6px);
+      padding: 34px 28px;
+      background: linear-gradient(145deg, #fefaf0 0%, #f5f3ef 50%, #f4f7f6 100%);
+      box-shadow: var(--shadow);
+      animation: rise 0.8s ease both;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(1.8rem, 3.1vw, 2.8rem);
+      letter-spacing: 0.01em;
+    }
+
+    .hero p {
+      margin: 0;
+      font-size: 1rem;
+      color: var(--ink-soft);
+      max-width: 80ch;
+    }
+
+    .chip-row {
+      margin-top: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .chip {
+      border: 1px dashed var(--line);
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: 0.84rem;
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .section {
+      margin-top: 24px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      animation: rise 0.9s ease both;
+    }
+
+    .section h2 {
+      margin: 0 0 14px;
+      font-size: 1.42rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+      background: #fffcf6;
+    }
+
+    .card h3 {
+      margin: 0 0 6px;
+      font-size: 1rem;
+    }
+
+    .card p {
+      margin: 0;
+      font-size: 0.92rem;
+      color: var(--ink-soft);
+    }
+
+    .span-4 { grid-column: span 4; }
+    .span-6 { grid-column: span 6; }
+    .span-12 { grid-column: span 12; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+    }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f3efe7;
+      font-weight: 700;
+    }
+
+    .mono {
+      font-family: "IBM Plex Mono", "Courier New", monospace;
+      font-size: 0.86rem;
+    }
+
+    .legend {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+      font-size: 0.86rem;
+      color: var(--ink-soft);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      display: inline-block;
+      margin-right: 6px;
+    }
+
+    .ok { background: var(--ok); }
+    .warn { background: var(--warn); }
+    .fail { background: var(--fail); }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .step {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      background: #fff;
+      text-align: center;
+      font-size: 0.86rem;
+    }
+
+    .footer {
+      margin-top: 14px;
+      font-size: 0.88rem;
+      color: var(--ink-soft);
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(7px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 920px) {
+      .span-4, .span-6 { grid-column: span 12; }
+      .flow { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 560px) {
+      .shell { padding: 12px 10px 30px; }
+      .section { padding: 14px; }
+      .flow { grid-template-columns: 1fr; }
+      .chip { font-size: 0.8rem; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <h1>Automatic Testing Platform for Rails, Bun, and .NET</h1>
+      <p>
+        Standardized quality strategy for all products: BDD for backend business rules,
+        Playwright for end to end UI, unified pass/fail summaries in CI, and k6 based load/stress validation.
+      </p>
+      <div class="chip-row">
+        <span class="chip">BDD: Cucumber / SpecFlow</span>
+        <span class="chip">Unit/API: RSpec, bun:test, xUnit</span>
+        <span class="chip">UI: Playwright</span>
+        <span class="chip">Reports: Allure + JUnit XML</span>
+        <span class="chip">Perf: k6 + Grafana</span>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>1) Chosen Solution by Technology</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Project Type</th>
+            <th>Backend BDD</th>
+            <th>Unit/API Tests</th>
+            <th>UI Tests</th>
+            <th>Reporting</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Rails</td>
+            <td class="mono">cucumber-rails + Gherkin</td>
+            <td class="mono">RSpec + request specs</td>
+            <td class="mono">Playwright (web UI)</td>
+            <td class="mono">RSpec JUnit + Cucumber JSON + Allure</td>
+          </tr>
+          <tr>
+            <td>Bun apps</td>
+            <td class="mono">cucumber-js</td>
+            <td class="mono">bun:test (unit + service tests)</td>
+            <td class="mono">Playwright</td>
+            <td class="mono">JUnit XML + Allure aggregation</td>
+          </tr>
+          <tr>
+            <td>.NET apps</td>
+            <td class="mono">SpecFlow (Gherkin)</td>
+            <td class="mono">xUnit + WebApplicationFactory</td>
+            <td class="mono">Playwright for .NET or Node runner</td>
+            <td class="mono">TRX/JUnit + Allure</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="legend">
+        <span><span class="dot ok"></span>One Gherkin language across stacks</span>
+        <span><span class="dot warn"></span>Stack specific runners</span>
+        <span><span class="dot fail"></span>No custom in house framework needed</span>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>2) Test Pyramid and Scope</h2>
+      <div class="grid">
+        <article class="card span-4">
+          <h3>Unit Layer (fast gate)</h3>
+          <p>Runs on every push. Validates domain logic, transformers, validators, policies.</p>
+        </article>
+        <article class="card span-4">
+          <h3>API/Service Layer</h3>
+          <p>Contract + integration tests for controllers/endpoints. Includes DB and auth scenarios.</p>
+        </article>
+        <article class="card span-4">
+          <h3>BDD Layer</h3>
+          <p>Business workflows in Gherkin. Shared language with product and QA teams.</p>
+        </article>
+        <article class="card span-6">
+          <h3>UI E2E Layer</h3>
+          <p>Playwright smoke and regression packs. Focus on critical user journeys and cross browser checks.</p>
+        </article>
+        <article class="card span-6">
+          <h3>Performance Layer</h3>
+          <p>k6 load and stress profiles. Triggered nightly and before production deployment windows.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>3) CI Reporting Summary (Passed vs Failed)</h2>
+      <div class="flow">
+        <div class="step"><strong>1</strong><br>Execute jobs</div>
+        <div class="step"><strong>2</strong><br>Export JUnit/JSON</div>
+        <div class="step"><strong>3</strong><br>Merge in Allure</div>
+        <div class="step"><strong>4</strong><br>Publish dashboard</div>
+        <div class="step"><strong>5</strong><br>Notify team channels</div>
+      </div>
+      <table style="margin-top: 14px;">
+        <thead>
+          <tr>
+            <th>Report Need</th>
+            <th>Tool</th>
+            <th>Delivered Output</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Build gate status</td>
+            <td class="mono">JUnit XML</td>
+            <td>Exact pass/fail counts per suite and per job</td>
+          </tr>
+          <tr>
+            <td>Readable trends</td>
+            <td class="mono">Allure Report</td>
+            <td>History, flaky tests, failure categories, owner view</td>
+          </tr>
+          <tr>
+            <td>Pull request visibility</td>
+            <td class="mono">CI annotations</td>
+            <td>Inline failure detail and test links</td>
+          </tr>
+          <tr>
+            <td>Executive summary</td>
+            <td class="mono">Daily digest job</td>
+            <td>"X passed / Y failed / Z skipped" by project</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>4) Load and Stress Architecture</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Layer</th>
+            <th>Selected Tool</th>
+            <th>Why</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Test execution</td>
+            <td class="mono">k6</td>
+            <td>Developer friendly JS syntax, CI ready, deterministic scenarios</td>
+          </tr>
+          <tr>
+            <td>Metrics storage</td>
+            <td class="mono">InfluxDB (or Prometheus via remote write)</td>
+            <td>Time series retention and quick querying</td>
+          </tr>
+          <tr>
+            <td>Visualization</td>
+            <td class="mono">Grafana</td>
+            <td>Latency/error/concurrency dashboards by service</td>
+          </tr>
+          <tr>
+            <td>Alerting</td>
+            <td class="mono">Grafana Alerting + CI quality gates</td>
+            <td>Automatic fail when SLO thresholds are breached</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="footer">
+        Recommended policy: every release candidate must pass smoke load profile (p95 latency and error rate) before deployment approval.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2>5) What We Generated for You</h2>
+      <div class="grid">
+        <article class="card span-6">
+          <h3>Rails Blueprints</h3>
+          <p class="mono">docs/testing_blueprints/rails/features/customer_lifecycle.feature<br>docs/testing_blueprints/rails/spec/requests/customers_api_spec.rb</p>
+        </article>
+        <article class="card span-6">
+          <h3>Bun Blueprints</h3>
+          <p class="mono">docs/testing_blueprints/bun/features/customer_workflow.feature<br>docs/testing_blueprints/bun/tests/customer.service.test.ts</p>
+        </article>
+        <article class="card span-6">
+          <h3>.NET Blueprints</h3>
+          <p class="mono">docs/testing_blueprints/dotnet/Features/CustomerWorkflow.feature<br>docs/testing_blueprints/dotnet/Tests/CustomerApiTests.cs</p>
+        </article>
+        <article class="card span-6">
+          <h3>Shared UI + Performance</h3>
+          <p class="mono">docs/testing_blueprints/ui/playwright/customer-portal.spec.ts<br>docs/testing_blueprints/performance/k6/customer-api-load.js</p>
+        </article>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

@@ -29,9 +29,6 @@ class ApplicationController < ActionController::Base
     latest_ci_ids = CiRun.select("MAX(id) as id").group(:project_id).map(&:id)
     @sidebar_latest_ci = CiRun.where(id: latest_ci_ids).index_by(&:project_id)
 
-    # Chat rooms for sidebar channel list
-    @sidebar_chat_rooms = ChatRoom.active.includes(:project).order(:room_type, :name)
-
     # Current sprint for sidebar (first active sprint across user's projects)
     @sidebar_current_sprint = Sprint.current
                                     .joins(:project)

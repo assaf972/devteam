@@ -8,7 +8,7 @@
       <% count = @project.documents.templates.count %>
       <% if count > 0 %><span class="badge bg-warning text-dark ms-1"><%= count %></span><% end %>
     <% end %>
-    <%= link_to "New Document", new_project_document_path(@project), class: "btn btn-primary" %>
+    <%= link_to t("buttons.new_document"), new_project_document_path(@project), class: "btn btn-primary" %>
   </div>
 </div>
 
@@ -50,7 +50,7 @@
               </div>
             </div>
             <div class="level-right">
-              <%= link_to "Edit", edit_document_path(doc), class: "btn btn-secondary btn-sm is-light" %>
+              <%= link_to t("common.actions.edit"), edit_document_path(doc), class: "btn btn-secondary btn-sm is-light" %>
             </div>
           </div>
           <p class="fs-7 mb-0 mt-1"><%= doc.summary&.truncate(150) %></p>

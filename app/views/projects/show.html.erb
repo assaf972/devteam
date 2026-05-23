@@ -8,7 +8,7 @@
     </div>
   </div>
   <div class="level-right">
-    <%= link_to "Edit", edit_project_path(@project), class: "btn btn-secondary btn-sm is-warning" %>
+    <%= link_to t("common.actions.edit"), edit_project_path(@project), class: "btn btn-secondary btn-sm is-warning" %>
     <% if @project.repo_url.present? %>
       <%= link_to "Repository ↗", @project.repo_url, target: "_blank", rel: "noopener noreferrer", class: "btn btn-secondary btn-sm is-light" %>
     <% end %>

@@ -6,8 +6,8 @@
     </div>
   </div>
   <div class="level-right">
-    <%= link_to "Edit", edit_customer_path(@customer), class: "btn btn-warning is-light me-2" %>
-    <%= link_to "New Support Ticket", new_customer_customer_ticket_path(@customer), class: "btn btn-primary me-2" %>
+    <%= link_to t("common.actions.edit"), edit_customer_path(@customer), class: "btn btn-warning is-light me-2" %>
+    <%= link_to t("buttons.new_support_ticket"), new_customer_customer_ticket_path(@customer), class: "btn btn-primary me-2" %>
     <%= link_to "Add Installation", new_customer_installation_path(@customer), class: "btn btn-success is-light" %>
   </div>
 </div>

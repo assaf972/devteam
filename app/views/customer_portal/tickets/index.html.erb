@@ -6,7 +6,7 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
   <h1 class="fw-bold mb-0"><%= icon %> <%= label %></h1>
-  <%= link_to "＋ #{is_story ? 'New Story' : 'New Ticket'}",
+  <%= link_to "＋ #{is_story ? t('buttons.new_story') : t('buttons.new_ticket')}",
               new_customer_portal_ticket_path(type: @type),
               class: "btn btn-primary" %>
 </div>

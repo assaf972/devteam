@@ -73,25 +73,6 @@
 
   <hr class="sidebar-divider">
 
-  <%# ── Chat Channels ─────────────────────────────────────────────────── %>
-  <div class="sidebar-section-label">
-    <%= t('sidebar.channels_label') %>
-    <%= link_to new_chat_room_path, class: "text-white", style: "opacity:0.4;font-size:1.1em;line-height:1;", title: t('sidebar.channels_label') do %>+<% end %>
-  </div>
-
-  <% @sidebar_chat_rooms.each do |room| %>
-    <%= link_to chat_room_path(room),
-          class: "sidebar-channel #{params[:id].to_s == room.id.to_s && controller_name == 'chat_rooms' ? 'is-active' : ''}" do %>
-      <span class="channel-hash">#</span>
-      <span class="channel-name"><%= room.name %></span>
-      <% if room.project %>
-        <span style="font-size:0.65em;opacity:0.5;flex-shrink:0;"><%= room.project.name.truncate(8) %></span>
-      <% end %>
-    <% end %>
-  <% end %>
-
-  <hr class="sidebar-divider">
-
   <%# ── Projects ───────────────────────────────────────────────────────── %>
   <div class="sidebar-section-label">
     <%= t('sidebar.projects_label') %>

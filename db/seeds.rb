@@ -908,6 +908,53 @@ end
 puts "  ✓ #{deployments_data.size} deployments"
 
 # ─────────────────────────────────────────────────────────────────
+# CI runs + test results (for dashboards/reports)
+# ─────────────────────────────────────────────────────────────────
+ci_statuses = %i[passed failed passed running cancelled passed error passed]
+
+projects.each_with_index do |project, project_index|
+  project_tickets = Ticket.where(project: project).order(:id).to_a
+
+  8.times do |i|
+    build_number = "#{project_index + 1}#{format('%03d', i + 1)}"
+    status = ci_statuses[i % ci_statuses.size]
+    started_at = Time.current - (project_index * 2 + i + 2).days - rand(0..8).hours
+    finished_at = %i[passed failed error cancelled].include?(status) ? started_at + rand(4..18).minutes : nil
+    ticket = project_tickets[i % project_tickets.size]
+
+    ci_run = CiRun.find_or_create_by!(project: project, build_number: build_number) do |run|
+      run.ticket = ticket
+      run.triggered_by = [ noam, dana, oren, avi, team_lead ].compact.sample
+      run.status = status
+      run.branch_name = ticket&.branch_name.presence || "feature/demo-#{project.id}-#{i}"
+      run.commit_sha = SecureRandom.hex(20)
+      run.started_at = started_at
+      run.finished_at = finished_at
+      run.log_url = "http://jenkins.local/job/#{project.name.parameterize}/#{build_number}/console"
+    end
+
+    suites = [ "unit", "integration", "e2e" ]
+    suites.each_with_index do |suite_name, suite_idx|
+      total = 30 + rand(15..35)
+      failed = status == :failed && suite_idx == 1 ? rand(1..4) : (status == :error ? rand(2..6) : rand(0..1))
+      skipped = rand(0..3)
+      passed = [ total - failed - skipped, 0 ].max
+
+      TestResult.find_or_create_by!(ci_run: ci_run, suite_name: "#{project.name} #{suite_name}") do |tr|
+        tr.total = total
+        tr.passed = passed
+        tr.failed = failed
+        tr.skipped = skipped
+        tr.duration_ms = rand(5000..160000)
+        tr.xml_report = "<testsuite name='#{suite_name}' tests='#{total}' failures='#{failed}' skipped='#{skipped}'/>"
+      end
+    end
+  end
+end
+
+puts "  ✓ CI runs and test results seeded for reports"
+
+# ─────────────────────────────────────────────────────────────────
 # Meetings  (standups, planning, reviews, retros, demos)
 # ─────────────────────────────────────────────────────────────────
 meetings_data = [
@@ -1013,5 +1060,134 @@ meetings_data.each do |m|
 end
 
 puts "  ✓ #{meetings_data.size} meetings with attendees"
+
+# ─────────────────────────────────────────────────────────────────
+# Demo notifications (debug + exception) for each project
+# ─────────────────────────────────────────────────────────────────
+demo_recipients = [ admin, team_lead, qa_user, noam, dana, oren, avi, pm_user ].compact.uniq
+
+debug_templates = [
+  "Background sync completed in %{duration}ms for %{project}",
+  "Webhook payload accepted for %{project}; queue depth=%{queue_depth}",
+  "CI status poll updated for %{project}: latest build #%{build_number}",
+  "Deploy marker processed for %{project} in %{duration}ms"
+]
+
+exception_templates = [
+  {
+    error: "NoMethodError: undefined method `[]' for nil:NilClass",
+    backtrace: "app/services/sync_pull_request_service.rb:41:in `parse_payload'\napp/jobs/sync_pull_request_job.rb:12:in `perform'\nlib/tasks/sync.rake:8:in `block (2 levels) in <main>'"
+  },
+  {
+    error: "ActiveRecord::RecordInvalid: Validation failed: Email can't be blank",
+    backtrace: "app/models/customer.rb:19:in `create_from_webhook!'\napp/controllers/webhooks_controller.rb:64:in `exception'\nconfig/routes.rb:127:in `block in <main>'"
+  },
+  {
+    error: "Faraday::TimeoutError: execution expired",
+    backtrace: "app/services/gitea_service.rb:27:in `post'\napp/services/ticket_branch_service.rb:29:in `try_create_gitea_branch'\napp/controllers/tickets_controller.rb:88:in `assign'"
+  }
+]
+
+projects.each_with_index do |project, idx|
+  recipient = demo_recipients[idx % demo_recipients.size]
+
+  debug_message = format(
+    debug_templates[idx % debug_templates.size],
+    duration: rand(45..480),
+    project: project.name,
+    queue_depth: rand(0..25),
+    build_number: rand(1000..9999)
+  )
+
+  Notification.where(
+    recipient: recipient,
+    message: debug_message
+  ).first_or_create! do |n|
+    n.type = "Notification"
+    n.params = {
+      "project_id" => project.id,
+      "project_name" => project.name,
+      "severity" => "debug",
+      "url" => "/projects/#{project.id}"
+    }
+    n.read_at = [ nil, Time.current - rand(1..72).hours ].sample
+  end
+
+  exception_info = exception_templates[idx % exception_templates.size]
+  exception_message = "Exception in #{project.name} while processing background job"
+
+  Notification.where(
+    recipient: recipient,
+    message: exception_message
+  ).first_or_create! do |n|
+    n.type = "Notification"
+    n.error_message = exception_info[:error]
+    n.backtrace = exception_info[:backtrace]
+    n.params = {
+      "project_id" => project.id,
+      "project_name" => project.name,
+      "severity" => "error",
+      "url" => "/projects/#{project.id}",
+      "message" => exception_message,
+      "error_message" => exception_info[:error]
+    }
+    n.read_at = nil
+  end
+end
+
+puts "  ✓ Demo notifications created for #{projects.size} projects"
+
+# ─────────────────────────────────────────────────────────────────
+# Fake Pull Requests per project
+# ─────────────────────────────────────────────────────────────────
+pr_statuses = %w[open review merged closed]
+
+projects.each do |project|
+  project_tickets = Ticket.where(project: project).order(:id).limit(6)
+  next if project_tickets.blank?
+
+  3.times do |i|
+    ticket = project_tickets[i % project_tickets.size]
+    status = pr_statuses[i % pr_statuses.size]
+    pr_number = 1000 + (project.id * 10) + i
+
+    title = case i
+    when 0 then "Improve error handling for #{project.name} workflows"
+    when 1 then "Add test coverage for #{project.name} critical paths"
+    else "Refactor background jobs and logging in #{project.name}"
+    end
+
+    PullRequest.where(project: project, pr_number: pr_number).first_or_create! do |pr|
+      pr.ticket = ticket
+      pr.title = title
+      pr.description = "Auto-generated demo PR for #{project.name}. Includes bug fixes, tests, and observability updates."
+      pr.status = status
+      pr.author = [ noam, dana, oren, avi, team_lead ].compact.sample&.name || "System"
+      pr.gitea_url = "http://gitea.local/devteam/#{project.name.parameterize}/pulls/#{pr_number}"
+      pr.code_changed = "Updated service layer, controller guards, and serializer mappings."
+      pr.test_code = "Added request specs + UI checks and improved edge-case coverage."
+      pr.build_errors = (status == "closed" ? "CI flaky test detected on pipeline ##{rand(3000..5000)}" : nil)
+      pr.synced_at = Time.current - rand(1..96).hours
+      pr.merged_at = status == "merged" ? Time.current - rand(1..72).hours : nil
+      pr.files_changed = [
+        "app/services/#{project.name.parameterize(separator: '_')}_service.rb",
+        "app/controllers/#{project.name.parameterize(separator: '_')}_controller.rb",
+        "spec/requests/#{project.name.parameterize(separator: '_')}_api_spec.rb"
+      ]
+      pr.pr_comments_data = [
+        { "author" => "qa-bot", "body" => "Regression checks passed in staging." },
+        { "author" => "team-lead", "body" => "Please verify null handling for external payload." }
+      ]
+      pr.latest_test_results = {
+        "total" => 48 + rand(1..30),
+        "passed" => 45 + rand(1..25),
+        "failed" => rand(0..2),
+        "skipped" => rand(0..3)
+      }
+    end
+  end
+end
+
+puts "  ✓ Fake pull requests seeded for all projects"
 
 puts "✅ Seed complete!"

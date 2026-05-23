@@ -6,8 +6,8 @@
     <p class="subfw-bold fs-6 text-muted"><%= current_customer.display_name %> · <%= Date.today.strftime("%B %-d, %Y") %></p>
   </div>
   <div class="btn btn-secondarys">
-    <%= link_to "＋ New Ticket",  new_customer_portal_ticket_path(type: "support"),          class: "btn btn-primary" %>
-    <%= link_to "＋ New Story",   new_customer_portal_ticket_path(type: "feature_request"),   class: "btn btn-primary is-light" %>
+    <%= link_to "＋ #{t('buttons.new_ticket')}",  new_customer_portal_ticket_path(type: "support"),        class: "btn btn-primary" %>
+    <%= link_to "＋ #{t('buttons.new_story')}",   new_customer_portal_ticket_path(type: "feature_request"), class: "btn btn-primary is-light" %>
   </div>
 </div>
 

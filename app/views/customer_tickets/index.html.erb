@@ -8,7 +8,7 @@
     </div>
   </div>
   <div class="level-right">
-    <%= link_to "New Ticket", new_customer_customer_ticket_path(@customer), class: "btn btn-primary" %>
+    <%= link_to t("buttons.new_ticket"), new_customer_customer_ticket_path(@customer), class: "btn btn-primary" %>
   </div>
 </div>
 
@@ -36,7 +36,7 @@
           <td><%= ct.assigned_to&.display_name || "—" %></td>
           <td><%= ct.created_at.strftime("%d/%m/%Y") %></td>
           <td class="text-end">
-            <%= link_to "View", customer_customer_ticket_path(@customer, ct), class: "btn btn-secondary btn-sm is-info is-light" %>
+            <%= link_to t("common.view"), customer_customer_ticket_path(@customer, ct), class: "btn btn-secondary btn-sm is-info is-light" %>
           </td>
         </tr>
       <% end %>

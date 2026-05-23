@@ -10,7 +10,7 @@
     </div>
   </div>
   <div class="level-right">
-    <%= link_to "Edit", edit_customer_customer_ticket_path(@customer, @customer_ticket), class: "btn btn-warning is-light me-2" %>
+    <%= link_to t("common.actions.edit"), edit_customer_customer_ticket_path(@customer, @customer_ticket), class: "btn btn-warning is-light me-2" %>
     <% unless @customer_ticket.status_resolved? || @customer_ticket.status_closed? %>
       <%= button_to "Mark Resolved", resolve_customer_customer_ticket_path(@customer, @customer_ticket),
           method: :patch, class: "btn btn-success is-light" %>

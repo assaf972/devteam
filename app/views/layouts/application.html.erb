@@ -38,7 +38,7 @@
           </span>
 
           <div class="topbar-search">
-            <input class="form-control form-control-sm" type="search" placeholder="🔍 Jump to...">
+            <input class="form-control form-control-sm" type="search" placeholder="🔍 Jump to..." autocomplete="off">
           </div>
 
           <%# Language switcher %>
@@ -47,6 +47,7 @@
 
           <%# Notifications toggle %>
           <button class="topbar-panel-toggle is-active"
+                  data-sidebar-target="toggleButton"
                   data-action="click->sidebar#togglePanel"
                   title="Toggle notifications">
             🔔<% if @unread_notification_count > 0 %>
@@ -74,8 +75,10 @@
       </div>
 
       <%# ── Right notifications panel ────────────────────────────────── %>
-      <aside class="app-right-panel" id="rightPanel">
-        <%= render 'layouts/notifications_panel' %>
+      <aside class="app-right-panel" id="rightPanel" data-sidebar-target="panel">
+        <%= render 'layouts/notifications_panel',
+              panel_notifications: @panel_notifications,
+              panel_activity: @panel_activity %>
       </aside>
 
     </div>

@@ -16,7 +16,7 @@
       <p class="fw-semibold fs-6 mb-0"><%= @next_meeting.title %></p>
       <p class="fs-7">
         <%= l(@next_meeting.scheduled_at, format: :short) %>
-        <%= link_to "→ #{t('today.join')}", @next_meeting.jitsi_url, target: "_blank", rel: "noopener", class: "ms-2 text-primary" if @next_meeting.jitsi_room.present? %>
+        <%= link_to "→ #{t('common.actions.join')}", @next_meeting.jitsi_url, target: "_blank", rel: "noopener", class: "ms-2 text-primary" if @next_meeting.jitsi_room.present? %>
       </p>
     </div>
   <% end %>
@@ -171,7 +171,7 @@
             <div class="d-flex align-items-center">
               <%= status_tag(meeting.status) %>
               <% if meeting.jitsi_room.present? && meeting.status != "completed" %>
-                <%= link_to "🎥 Join", meeting.jitsi_url, target: "_blank", rel: "noopener", class: "btn btn-secondary btn-sm is-info ms-2" %>
+                <%= link_to "🎥 #{t('common.actions.join')}", meeting.jitsi_url, target: "_blank", rel: "noopener", class: "btn btn-secondary btn-sm is-info ms-2" %>
               <% end %>
             </div>
           </div>

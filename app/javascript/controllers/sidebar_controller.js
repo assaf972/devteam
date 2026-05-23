@@ -2,7 +2,11 @@ import { Controller } from "@hotwired/stimulus"
 
 // Handles collapsible project sections + panel toggle in the sidebar
 export default class extends Controller {
-    static targets = ["project", "panel"]
+    static targets = ["project", "panel", "toggleButton"]
+
+    connect() {
+        this.restorePanelState()
+    }
 
     toggleProject(event) {
         const header = event.currentTarget
@@ -10,11 +14,17 @@ export default class extends Controller {
         if (project) project.classList.toggle("is-open")
     }
 
-    togglePanel() {
-        const panel = document.getElementById("rightPanel")
-        if (panel) {
-            panel.classList.toggle("is-hidden")
-            this.element.querySelector(".topbar-panel-toggle")?.classList.toggle("is-active")
-        }
+    togglePanel(event) {
+        if (event) event.preventDefault()
+
+        const hidden = this.panelTarget.classList.toggle("is-hidden")
+        this.toggleButtonTarget.classList.toggle("is-active", !hidden)
+        localStorage.setItem("devteam.rightPanelHidden", hidden ? "1" : "0")
+    }
+
+    restorePanelState() {
+        const hidden = localStorage.getItem("devteam.rightPanelHidden") === "1"
+        this.panelTarget.classList.toggle("is-hidden", hidden)
+        this.toggleButtonTarget.classList.toggle("is-active", !hidden)
     }
 }

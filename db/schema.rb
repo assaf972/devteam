@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_23_074939) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_23_113000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -290,7 +290,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_23_074939) do
   end
 
   create_table "notifications", force: :cascade do |t|
+    t.text "backtrace"
     t.datetime "created_at", null: false
+    t.text "error_message"
+    t.text "message"
     t.text "params"
     t.datetime "read_at"
     t.bigint "recipient_id"
