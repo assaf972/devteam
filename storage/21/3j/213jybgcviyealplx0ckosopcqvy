@@ -1,0 +1,22 @@
+# Spike Specification: Evaluate ActionCable for real-time chat vs Turbo Streams polling
+
+**Project:** DevTeam Hub
+**Kind:** Spike
+**Priority:** Low
+**Dev estimate:** 16.0h
+**QA estimate:** 0.0h
+
+## Overview
+
+Investigate whether replacing the current Turbo Frames + form-submit chat with ActionCable WebSocket broadcasts would improve UX without adding operational complexity (Redis pub/sub, cable config). Document latency, resource usage, and deployment implications.
+
+## Acceptance Criteria
+
+- [ ] Implementation matches the described behaviour
+- [ ] Unit tests cover the main code paths
+- [ ] QA sign-off on the acceptance criteria
+- [ ] Documentation updated if applicable
+
+## Technical Notes
+
+_To be filled in by the assigned developer._

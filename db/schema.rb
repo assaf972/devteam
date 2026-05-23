@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_23_113000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_23_121000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -419,12 +419,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_23_113000) do
   end
 
   create_table "tickets", force: :cascade do |t|
+    t.string "actual_hours"
     t.integer "actual_velocity"
     t.bigint "assignee_id"
     t.string "branch_name"
     t.datetime "created_at", null: false
     t.text "description"
     t.decimal "dev_estimate_hours", precision: 6, scale: 2
+    t.integer "estimated_by_id"
     t.text "how_to_reproduce"
     t.integer "kind", default: 0, null: false
     t.integer "latest_ci_run_id"
@@ -443,6 +445,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_23_113000) do
     t.string "title"
     t.datetime "updated_at", null: false
     t.index ["assignee_id"], name: "index_tickets_on_assignee_id"
+    t.index ["estimated_by_id"], name: "index_tickets_on_estimated_by_id"
     t.index ["kind"], name: "index_tickets_on_kind"
     t.index ["level"], name: "index_tickets_on_level"
     t.index ["milestone_id"], name: "index_tickets_on_milestone_id"
@@ -516,5 +519,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_23_113000) do
   add_foreign_key "tickets", "projects"
   add_foreign_key "tickets", "sprints"
   add_foreign_key "tickets", "users", column: "assignee_id"
+  add_foreign_key "tickets", "users", column: "estimated_by_id"
   add_foreign_key "tickets", "users", column: "owner_id"
 end

@@ -107,6 +107,11 @@
   </div>
   <div class="row mb-3">
     <div class="col-3">
+      <%= f.input :actual_hours,
+            label: "Actual Work (e.g. 2d 4h)",
+            input_html: { class: "form-control", placeholder: "2d 4h" } %>
+    </div>
+    <div class="col-3">
       <%= f.input :pr_url,
             label: "PR URL",
             as: :url,
@@ -171,7 +176,7 @@
 
 <% end %>
 
-<script>
+<script nonce="<%= request.content_security_policy_nonce %>">
   (function () {
     // Trix: load existing HTML content into each editor
     document.addEventListener("trix-initialize", function(event) {

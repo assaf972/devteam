@@ -21,7 +21,7 @@
 
     <%# Profile form %>
     <%= simple_form_for @user, url: profile_path, method: :patch,
-          wrapper: :bootstrap5,
+          wrapper: :vertical_form,
           html: { class: "card shadow-sm" } do |f| %>
 
       <div class="card-header fw-semibold">

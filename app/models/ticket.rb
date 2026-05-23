@@ -3,6 +3,7 @@ class Ticket < ApplicationRecord
   belongs_to :sprint, optional: true
   belongs_to :assignee, class_name: "User", optional: true
   belongs_to :owner, class_name: "User", optional: true
+  belongs_to :estimated_by, class_name: "User", optional: true
   belongs_to :milestone, optional: true
 
   has_many :comments, as: :commentable
@@ -49,6 +50,32 @@ class Ticket < ApplicationRecord
 
   def bug_kind?
     bug_fix? || hotfix?
+  end
+
+  # Parses values like "2d 4h", "5h", or "16" into hour units.
+  # 1 day is treated as 8 hours for reporting consistency.
+  def actual_hours_in_hours
+    return nil if actual_hours.blank?
+
+    normalized = actual_hours.to_s.downcase.strip
+    total = 0.0
+    matched = false
+
+    normalized.scan(/(\d+(?:\.\d+)?)\s*d/) do |val|
+      total += val.first.to_f * 8.0
+      matched = true
+    end
+
+    normalized.scan(/(\d+(?:\.\d+)?)\s*h/) do |val|
+      total += val.first.to_f
+      matched = true
+    end
+
+    return total.round(2) if matched
+
+    Float(normalized)
+  rescue ArgumentError, TypeError
+    nil
   end
 
   private

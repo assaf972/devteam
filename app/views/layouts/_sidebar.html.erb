@@ -100,6 +100,7 @@
   <%= link_to reports_deployment_summary_path, class: "sidebar-nav-item" do %><span class="nav-icon">🚀</span> <%= t('sidebar.reports.deployments') %><% end %>
   <%= link_to reports_test_coverage_path,      class: "sidebar-nav-item" do %><span class="nav-icon">✅</span> <%= t('sidebar.reports.test_coverage') %><% end %>
   <%= link_to reports_sprint_velocity_path,    class: "sidebar-nav-item" do %><span class="nav-icon">⚡</span> <%= t('sidebar.reports.velocity') %><% end %>
+  <%= link_to reports_estimation_accuracy_path, class: "sidebar-nav-item" do %><span class="nav-icon">🎯</span> <%= t('sidebar.reports.estimation_accuracy') %><% end %>
 
   <% if current_user.respond_to?(:admin?) && current_user.admin? %>
     <hr class="sidebar-divider">

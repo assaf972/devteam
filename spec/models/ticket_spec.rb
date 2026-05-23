@@ -8,6 +8,7 @@ RSpec.describe Ticket, type: :model do
   it { is_expected.to belong_to(:sprint).optional }
   it { is_expected.to belong_to(:assignee).optional }
   it { is_expected.to belong_to(:owner).optional }
+  it { is_expected.to belong_to(:estimated_by).optional }
   it { is_expected.to belong_to(:milestone).optional }
 
   it { is_expected.to have_many(:comments) }
@@ -72,6 +73,23 @@ RSpec.describe Ticket, type: :model do
       ticket.id   = 7
       ticket.title = "Crash on login"
       expect(ticket.branch_name_for_ticket).to eq("bugfix/T-7-crash-on-login")
+    end
+  end
+
+  describe "#actual_hours_in_hours" do
+    it "parses day and hour notation" do
+      ticket.actual_hours = "2d 4h"
+      expect(ticket.actual_hours_in_hours).to eq(20.0)
+    end
+
+    it "parses hour-only notation" do
+      ticket.actual_hours = "7.5h"
+      expect(ticket.actual_hours_in_hours).to eq(7.5)
+    end
+
+    it "returns nil for invalid values" do
+      ticket.actual_hours = "about tomorrow"
+      expect(ticket.actual_hours_in_hours).to be_nil
     end
   end
 end

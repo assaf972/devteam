@@ -188,6 +188,7 @@ he:
       deployments: "פריסות"
       test_coverage: "כיסוי בדיקות"
       velocity: "מהירות"
+      estimation_accuracy: "דיוק הערכות"
     admin:
       users: "משתמשים"
       clients: "לקוחות"

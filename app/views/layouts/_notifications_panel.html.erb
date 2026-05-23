@@ -70,7 +70,7 @@
       <div class="alert alert-secondary-entry">
         <div class="alert alert-secondary-type-badge ci">CI</div>
         <div class="alert alert-secondary-text">
-          <%= link_to "##{item[:obj].build_number}", project_ci_run_path(item[:obj].project_id, item[:obj]), style: "color:#2b6cb0;font-weight:600;" %>
+          <%= link_to "##{item[:obj].build_number}", ci_run_path(item[:obj]), style: "color:#2b6cb0;font-weight:600;" %>
           <span class="badge bg-secondary <%= ci_badge_class %> ms-1">
             <%= item[:obj].status %>
           </span>

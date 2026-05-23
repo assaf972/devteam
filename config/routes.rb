@@ -26,6 +26,7 @@ Rails.application.routes.draw do
   get "reports/deployment_summary"
   get "reports/test_coverage"
   get "reports/sprint_velocity"
+  get "reports/estimation_accuracy"
   devise_for :users, controllers: {
     sessions: "users/sessions",
     registrations: "users/registrations"
@@ -136,6 +137,7 @@ Rails.application.routes.draw do
     get :deployment_summary
     get :test_coverage
     get :sprint_velocity
+    get :estimation_accuracy
   end
 
   namespace :admin do

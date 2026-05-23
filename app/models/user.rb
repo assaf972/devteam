@@ -8,6 +8,7 @@ class User < ApplicationRecord
   enum :preferred_language, { en: "en", he: "he" }, prefix: :lang
 
   has_many :assigned_tickets, class_name: "Ticket", foreign_key: :assignee_id
+  has_many :estimated_tickets, class_name: "Ticket", foreign_key: :estimated_by_id
   has_many :triggered_ci_runs, class_name: "CiRun", foreign_key: :triggered_by_id
   has_many :deployments, foreign_key: :deployed_by_id
   has_many :authored_documents, class_name: "Document", foreign_key: :author_id

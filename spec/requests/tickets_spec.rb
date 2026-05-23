@@ -83,6 +83,15 @@ RSpec.describe "Tickets", type: :request do
         expect(ticket.reload.title).to eq("Updated title")
         expect(ticket.reload.status).to eq("in_progress")
       end
+
+      it "sets estimated_by to the current user" do
+        patch ticket_path(ticket), params: {
+          ticket: { dev_estimate_hours: "6.0", actual_hours: "1d 2h" }
+        }
+
+        expect(response).to redirect_to(ticket_path(ticket))
+        expect(ticket.reload.estimated_by_id).to eq(user.id)
+      end
     end
 
     context "updating estimate fields" do

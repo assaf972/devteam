@@ -43,13 +43,19 @@
       <h1 class="fw-bold fs-4 mt-2"><%= @ticket.title %></h1>
 
       <%# Estimations row %>
-      <% if @ticket.dev_estimate_hours.present? || @ticket.tester_estimate_hours.present? %>
+      <% if @ticket.dev_estimate_hours.present? || @ticket.tester_estimate_hours.present? || @ticket.actual_hours.present? %>
         <div class="d-flex flex-wrap gap-1 mb-2">
           <% if @ticket.dev_estimate_hours.present? %>
             <span class="badge bg-info text-dark is-light">🧑‍💻 Dev: <%= @ticket.dev_estimate_hours %>h</span>
           <% end %>
           <% if @ticket.tester_estimate_hours.present? %>
             <span class="badge bg-warning-subtle text-warning-emphasis">🧪 QA: <%= @ticket.tester_estimate_hours %>h</span>
+          <% end %>
+          <% if @ticket.actual_hours.present? %>
+            <span class="badge bg-success-subtle text-success-emphasis">⏱ Actual: <%= @ticket.actual_hours %></span>
+          <% end %>
+          <% if @ticket.estimated_by.present? %>
+            <span class="badge bg-light text-dark">Estimator: <%= @ticket.estimated_by.display_name %></span>
           <% end %>
         </div>
       <% end %>
@@ -187,7 +193,7 @@
             <%= f.text_area :body, class: "textarea", rows: 3,
                   placeholder: "Add a comment… (supports plain text)" %>
           </div>
-          <div class="">
+          <div>
             <%= f.submit "Comment", class: "btn btn-primary btn-sm" %>
           </div>
         <% end %>

@@ -35,7 +35,10 @@ class TicketsController < ApplicationController
 
   def update
     old_assignee_id = @ticket.assignee_id
-    if @ticket.update(ticket_params)
+    updated_attrs = ticket_params.to_h
+    updated_attrs["estimated_by_id"] = current_user.id
+
+    if @ticket.update(updated_attrs)
       # Auto-create branch when ticket is assigned for the first time
       if @ticket.assignee_id.present? && old_assignee_id != @ticket.assignee_id
         CreateBranchJob.perform_later(@ticket.id) if defined?(CreateBranchJob)
@@ -72,7 +75,7 @@ class TicketsController < ApplicationController
       :title, :description, :status, :priority, :kind, :level,
       :how_to_reproduce, :test_plan, :actual_velocity, :sprint_id, :assignee_id, :owner_id,
       :milestone_id, :story_points, :tag_list, :pr_number, :pr_url,
-      :dev_estimate_hours, :tester_estimate_hours,
+      :dev_estimate_hours, :tester_estimate_hours, :actual_hours,
       attachments: []
     )
   end

@@ -31,6 +31,7 @@ module Api
           pr_url:                ticket.pr_url,
           dev_estimate_hours:    ticket.dev_estimate_hours,
           tester_estimate_hours: ticket.tester_estimate_hours,
+          actual_hours:          ticket.actual_hours,
           project: {
             id:   ticket.project_id,
             name: ticket.project.name,
@@ -39,6 +40,7 @@ module Api
           },
           assignee: ticket.assignee && { id: ticket.assignee_id, name: ticket.assignee.display_name },
           owner:    ticket.owner    && { id: ticket.owner_id,    name: ticket.owner.display_name },
+          estimated_by: ticket.estimated_by && { id: ticket.estimated_by_id, name: ticket.estimated_by.display_name },
           branch_name: ticket.branch_name,
           created_at: ticket.created_at,
           updated_at: ticket.updated_at

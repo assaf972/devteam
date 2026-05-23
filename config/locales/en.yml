@@ -217,6 +217,7 @@ en:
       deployments: "Deployments"
       test_coverage: "Test Coverage"
       velocity: "Velocity"
+      estimation_accuracy: "Estimation Accuracy"
     admin:
       users: "Users"
       clients: "Clients"

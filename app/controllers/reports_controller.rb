@@ -124,6 +124,71 @@ class ReportsController < ApplicationController
     @recent_sprints = sprints_scope.order(created_at: :desc).limit(25)
   end
 
+  def estimation_accuracy
+    scoped_tickets = Ticket.includes(:project, :estimated_by, :assignee)
+                         .where(status: %i[done closed])
+                         .where.not(estimated_by_id: nil)
+                         .where.not(dev_estimate_hours: nil)
+                         .where.not(actual_hours: [ nil, "" ])
+
+    normalized = scoped_tickets.filter_map do |ticket|
+      actual_hours = ticket.actual_hours_in_hours
+      next if actual_hours.nil?
+
+      estimated_hours = ticket.dev_estimate_hours.to_f
+      variance_hours = (actual_hours - estimated_hours).round(2)
+      variance_pct = if estimated_hours.positive?
+        ((variance_hours / estimated_hours) * 100).round(1)
+      else
+        nil
+      end
+
+      {
+        ticket: ticket,
+        estimator: ticket.estimated_by,
+        estimated_hours: estimated_hours,
+        actual_hours: actual_hours,
+        variance_hours: variance_hours,
+        variance_pct: variance_pct
+      }
+    end
+
+    @total_evaluated_tickets = normalized.size
+    @total_estimated_hours = normalized.sum { |row| row[:estimated_hours] }.round(2)
+    @total_actual_hours = normalized.sum { |row| row[:actual_hours] }.round(2)
+    @overall_variance_hours = (@total_actual_hours - @total_estimated_hours).round(2)
+
+    grouped = normalized.group_by { |row| row[:estimator] }
+
+    @developer_rows = grouped.map do |estimator, rows|
+      estimated_total = rows.sum { |r| r[:estimated_hours] }
+      actual_total = rows.sum { |r| r[:actual_hours] }
+      variance_total = (actual_total - estimated_total).round(2)
+      mean_abs_pct = if rows.any? { |r| r[:variance_pct].present? }
+        rows.filter_map { |r| r[:variance_pct]&.abs }.sum / rows.filter_map { |r| r[:variance_pct]&.abs }.size
+      else
+        0.0
+      end
+
+      {
+        estimator: estimator,
+        tickets_count: rows.count,
+        estimated_total: estimated_total.round(2),
+        actual_total: actual_total.round(2),
+        variance_total: variance_total,
+        under_estimated_count: rows.count { |r| r[:variance_hours].positive? },
+        over_estimated_count: rows.count { |r| r[:variance_hours].negative? },
+        accuracy_score: [ (100.0 - mean_abs_pct).round(1), 0.0 ].max,
+        mean_abs_pct: mean_abs_pct.round(1)
+      }
+    end.sort_by { |row| -row[:tickets_count] }
+
+    @accuracy_by_developer = @developer_rows.to_h { |row| [ row[:estimator].display_name, row[:accuracy_score] ] }
+    @variance_by_developer = @developer_rows.to_h { |row| [ row[:estimator].display_name, row[:variance_total] ] }
+
+    @latest_estimation_tickets = normalized.sort_by { |row| -row[:ticket].updated_at.to_i }.first(35)
+  end
+
   private
 
   def percentage(numerator, denominator)

@@ -27,7 +27,7 @@ module Api
         attrs = params.require(:ticket).permit(
           :project_id, :title, :description, :status, :priority,
           :kind, :level, :how_to_reproduce, :assignee_id,
-          :owner_id, :dev_estimate_hours, :tester_estimate_hours
+          :owner_id, :dev_estimate_hours, :tester_estimate_hours, :actual_hours
         )
 
         ticket = Ticket.new(attrs)
@@ -44,7 +44,7 @@ module Api
       def update
         allowed = %w[
           title description status priority kind level how_to_reproduce
-          assignee_id owner_id pr_number pr_url dev_estimate_hours tester_estimate_hours
+          assignee_id owner_id pr_number pr_url dev_estimate_hours tester_estimate_hours actual_hours
         ]
         attrs   = params.require(:ticket).permit(*allowed)
 
