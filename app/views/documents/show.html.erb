@@ -44,13 +44,25 @@
   </div>
 <% end %>
 
-<div class="card p-3 mb-3 trix-content">
-  <%= sanitize @document.content,
-        tags: %w[h1 h2 h3 h4 h5 h6 p br strong em b i u s del ins
-                 ul ol li blockquote pre code a img figure figcaption
-                 table thead tbody tr th td hr div span],
-        attributes: %w[href src alt title class id style target rel] %>
-</div>
+<% full_html = @document.content.lstrip.start_with?("<!DOCTYPE", "<html") %>
+
+<% if full_html %>
+  <div class="ratio mb-3" style="--bs-aspect-ratio: 56.25%; min-height: 480px;">
+    <iframe src="<%= raw_document_path(@document) %>"
+            sandbox="allow-scripts allow-same-origin"
+            class="w-100 border rounded"
+            style="min-height: 480px;"
+            title="<%= h @document.title %>"></iframe>
+  </div>
+<% else %>
+  <div class="card p-3 mb-3 trix-content">
+    <%= sanitize @document.content,
+          tags: %w[h1 h2 h3 h4 h5 h6 p br strong em b i u s del ins
+                   ul ol li blockquote pre code a img figure figcaption
+                   table thead tbody tr th td hr div span],
+          attributes: %w[href src alt title class id style target rel] %>
+  </div>
+<% end %>
 
 <% if @document.tag_list.any? %>
   <div class="d-flex flex-wrap gap-1">

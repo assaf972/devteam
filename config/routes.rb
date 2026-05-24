@@ -90,6 +90,7 @@ Rails.application.routes.draw do
       member do
         post :save_as_template
         get  :new_from_template
+        get  :raw
       end
     end
     resources :branches, only: [ :index, :show ], shallow: true

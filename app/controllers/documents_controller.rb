@@ -1,6 +1,6 @@
 class DocumentsController < ApplicationController
   before_action :set_project, only: [ :index, :new, :create, :templates ]
-  before_action :set_document, only: [ :show, :edit, :update, :destroy, :save_as_template, :new_from_template ]
+  before_action :set_document, only: [ :show, :edit, :update, :destroy, :save_as_template, :new_from_template, :raw ]
 
   def index
     @documents = @project.documents.regular.includes(:author)
@@ -14,6 +14,11 @@ class DocumentsController < ApplicationController
   end
 
   def show; end
+
+  def raw
+    response.headers["X-Frame-Options"] = "SAMEORIGIN"
+    render html: @document.content.html_safe, layout: false, content_type: "text/html"
+  end
 
   def new
     @document  = @project.documents.build(author: current_user)
