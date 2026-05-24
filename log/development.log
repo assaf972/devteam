@@ -136313,3 +136313,13 @@ Initializing the Sentry background worker with 7 threads
   [1m[36mActiveStorage::Attachment Load (0.0ms)[0m  [1m[34mSELECT "active_storage_attachments".* FROM "active_storage_attachments" WHERE "active_storage_attachments"."record_id" = 8 AND "active_storage_attachments"."record_type" = 'User' AND "active_storage_attachments"."name" = 'avatar' LIMIT 1 /*application='DevTeam'*/[0m
 [Sentry::SessionFlusher] thread killed
 Shutting down background worker
+[Sentry::SessionFlusher] thread killed
+Shutting down background worker
+[Sentry::MetricEventBuffer] Initialized buffer with max_items=1000, flush_interval=5s
+Initializing the Sentry background worker with 7 threads
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='DevTeam'*/[0m
+[Sentry::SessionFlusher] thread killed
+Shutting down background worker
+[Sentry::MetricEventBuffer] Initialized buffer with max_items=1000, flush_interval=5s
+Initializing the Sentry background worker with 7 threads
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='DevTeam'*/[0m
