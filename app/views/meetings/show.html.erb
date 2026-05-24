@@ -136,11 +136,7 @@
 
       <% @meeting.attendees.each do |member| %>
         <div class="d-flex align-items-center gap-2 mb-1">
-          <span style="width:28px;height:28px;border-radius:50%;background:#6366f1;color:#fff;
-                       display:inline-flex;align-items:center;justify-content:center;
-                       font-size:0.7rem;font-weight:700;flex-shrink:0;">
-            <%= member.display_name.first.upcase %>
-          </span>
+          <%= user_avatar(member, size: 28, bg: "#6366f1") %>
           <span class="fs-7 flex-grow-1"><%= member.display_name %></span>
           <% if member.id == current_user.id %>
             <span class="badge bg-secondary fs-8">you</span>

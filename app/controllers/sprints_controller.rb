@@ -10,7 +10,7 @@ class SprintsController < ApplicationController
   end
 
   def show
-    @tickets       = @sprint.tickets.includes(:assignee).order(:status, :priority)
+    @tickets       = @sprint.tickets.includes(:assignee, :owner).order(:status, :priority)
     @meetings      = @sprint.meetings.order(:scheduled_at)
     @pull_requests = @sprint.pull_requests.includes(:ticket).order(created_at: :desc)
     @comments      = @sprint.comments.includes(:author).order(:created_at)

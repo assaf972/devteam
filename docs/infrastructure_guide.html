@@ -260,9 +260,13 @@
   <a href="#testing-legacy-dotnet"><span class="icon">🪟</span> Legacy .NET — Selenium</a>
   <a href="#testing-bun"><span class="icon">🟡</span> Bun / Node.js — Playwright</a>
 
+  <div class="sidebar-section">Code Review</div>
+  <a href="#code-review"><span class="icon">🔍</span> SonarQube + AI Review</a>
+
   <div class="sidebar-section">Observability</div>
   <a href="#monitoring"><span class="icon">🚨</span> Error Monitoring — Sentry</a>
   <a href="#monitoring-errbit"><span class="icon">🪲</span> Lightweight Alt — Errbit</a>
+  <a href="#logging"><span class="icon">📋</span> Unified Logging — Loki</a>
 
   <div class="sidebar-section">Reference</div>
   <a href="#env-vars"><span class="icon">🔑</span> Environment Variables</a>
@@ -287,6 +291,9 @@
       <span class="hero-tag">Docker</span>
       <span class="hero-tag">ASP.NET</span>
       <span class="hero-tag">Windows Server</span>
+      <span class="hero-tag">SonarQube</span>
+      <span class="hero-tag">Ollama AI</span>
+      <span class="hero-tag">Grafana Loki</span>
     </div>
   </div>
 
@@ -323,6 +330,14 @@
     <a class="toc-card" href="#monitoring">
       <span class="toc-icon">🚨</span>
       <div><div class="toc-title">Error Monitoring</div><div class="toc-desc">Self-hosted Sentry, Errbit and GlitchTip — catch exceptions across all stacks</div></div>
+    </a>
+    <a class="toc-card" href="#code-review">
+      <span class="toc-icon">🔍</span>
+      <div><div class="toc-title">Code Review — SonarQube + AI</div><div class="toc-desc">On-prem static analysis, Quality Gates, and AI-powered review via Ollama</div></div>
+    </a>
+    <a class="toc-card" href="#logging">
+      <span class="toc-icon">📋</span>
+      <div><div class="toc-title">Unified Logging — Grafana Loki</div><div class="toc-desc">Centralised log aggregation, JSON format, correlation IDs, Grafana dashboards</div></div>
     </a>
   </div>
 
@@ -2295,6 +2310,211 @@ docker compose exec web python manage.py createsuperuser
       </table>
     </div>
 
+    <!-- ══════════════════════════ CHAPTER 14 — CODE REVIEW ════════════════════════════ -->
+    <div class="chapter" id="code-review">
+      <div class="chapter-header">
+        <div class="chapter-icon" style="background:rgba(11,122,117,0.12);color:#0b7a75;">🔍</div>
+        <div>
+          <div class="chapter-num">Chapter 14</div>
+          <div class="chapter-title">Code Review &amp; Approval — SonarQube + Ollama AI</div>
+        </div>
+      </div>
+
+      <p>Automated code review in CI using <strong>SonarQube Community Edition</strong> for deterministic static analysis and Quality Gates, plus <strong>Ollama</strong> with open-source LLMs for AI-assisted review suggestions. Both run fully on-premises.</p>
+
+      <h2>Why This Stack</h2>
+      <table>
+        <thead><tr><th>Tool</th><th>Role</th><th>On-Prem</th><th>Cost</th></tr></thead>
+        <tbody>
+          <tr><td><strong>SonarQube CE</strong></td><td>Static analysis, Quality Gates, OWASP SAST, code smells, duplication</td><td>✅ Docker</td><td>Free</td></tr>
+          <tr><td><strong>Ollama</strong></td><td>AI review (logic bugs, design, naming, architecture)</td><td>✅ Docker</td><td>Free</td></tr>
+          <tr><td><strong>SonarLint</strong></td><td>IDE integration (VS Code, Visual Studio)</td><td>✅ Local</td><td>Free</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Language Coverage</h2>
+      <table>
+        <thead><tr><th>Project</th><th>Languages Analysed</th></tr></thead>
+        <tbody>
+          <tr><td>Print Server / TDI</td><td>C#, VB.NET</td></tr>
+          <tr><td>TDI2</td><td>C#, JavaScript, SQL, Razor</td></tr>
+          <tr><td>Digital Internet Services</td><td>TypeScript, JavaScript</td></tr>
+          <tr><td>Work Management System</td><td>TypeScript, JavaScript</td></tr>
+          <tr><td>DevTeam Hub</td><td>Ruby, JavaScript, HTML, CSS</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Docker Compose</h2>
+      <pre><code>version: "3.8"
+services:
+  sonarqube:
+    image: sonarqube:community
+    container_name: sonarqube
+    ports:
+      - "9100:9000"
+    environment:
+      SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: "true"
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_logs:/opt/sonarqube/logs
+      - sonarqube_extensions:/opt/sonarqube/extensions
+    restart: unless-stopped
+    mem_limit: 2g
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_models:/root/.ollama
+    restart: unless-stopped
+
+volumes:
+  sonarqube_data:
+  sonarqube_logs:
+  sonarqube_extensions:
+  ollama_models:</code></pre>
+
+      <h2>Jenkins Pipeline Integration</h2>
+      <pre><code>stage('SonarQube Analysis') {
+  steps {
+    sh """
+      docker run --rm --network host \\
+        -e SONAR_HOST_URL=http://sonarqube:9100 \\
+        -e SONAR_TOKEN=\${SONAR_TOKEN} \\
+        -v \${WORKSPACE}:/usr/src \\
+        sonarsource/sonar-scanner-cli \\
+        -Dsonar.projectBaseDir=/usr/src
+    """
+  }
+}
+
+stage('AI Review') {
+  steps {
+    sh 'ruby ci/ai_review.rb main'
+  }
+}</code></pre>
+
+      <h2>Quality Gate Thresholds</h2>
+      <table>
+        <thead><tr><th>Metric</th><th>Condition</th><th>Threshold</th></tr></thead>
+        <tbody>
+          <tr><td>New Code Coverage</td><td>less than</td><td><strong>70%</strong></td></tr>
+          <tr><td>New Duplicated Lines</td><td>greater than</td><td><strong>3%</strong></td></tr>
+          <tr><td>New Bugs</td><td>greater than</td><td><strong>0</strong></td></tr>
+          <tr><td>New Vulnerabilities</td><td>greater than</td><td><strong>0</strong></td></tr>
+          <tr><td>New Security Hotspots Reviewed</td><td>less than</td><td><strong>100%</strong></td></tr>
+        </tbody>
+      </table>
+
+      <div class="chart-wrap">
+        <div class="chart-title">Code Review Tools — Feature Comparison</div>
+        <canvas id="codeReviewChart"></canvas>
+      </div>
+
+      <p><strong>Full recommendation document:</strong> <a href="code_review_tools_recommendation.html">Code Review &amp; Approval Tools — Recommendation &amp; Implementation Guide</a></p>
+    </div>
+
+    <!-- ══════════════════════════ CHAPTER 15 — UNIFIED LOGGING ════════════════════════════ -->
+    <div class="chapter" id="logging">
+      <div class="chapter-header">
+        <div class="chapter-icon" style="background:rgba(74,144,217,0.12);color:#4a90d9;">📋</div>
+        <div>
+          <div class="chapter-num">Chapter 15</div>
+          <div class="chapter-title">Unified Logging — Grafana Loki + Promtail</div>
+        </div>
+      </div>
+
+      <p>All five managed projects ship logs in a <strong>unified JSON format</strong> to a self-hosted <strong>Grafana Loki</strong> cluster, visualised through <strong>Grafana</strong> dashboards.</p>
+
+      <div class="chart-wrap">
+        <div class="chart-title">Logging Stack Comparison</div>
+        <canvas id="loggingChart"></canvas>
+      </div>
+
+      <h3>Architecture</h3>
+      <pre>┌──────────────┐   ┌──────────────┐   ┌──────────────┐
+│  Rails App   │   │  ASP.NET     │   │  NestJS /    │
+│  (lograge)   │   │  (Serilog)   │   │  Next.js     │
+│  JSON stdout │   │  JSON file   │   │  (Pino)      │
+└──────┬───────┘   └──────┬───────┘   └──────┬───────┘
+       │                  │                  │
+       ▼                  ▼                  ▼
+ ┌──────────────────────────────────────────────────┐
+ │              Promtail  (log shipper)             │
+ │    Docker SD  ·  File tailing  ·  Label parsing  │
+ └────────────────────────┬─────────────────────────┘
+                          │ HTTP push
+                          ▼
+              ┌──────────────────────┐
+              │    Grafana Loki      │
+              │    :3100 (TSDB)      │
+              │   720 h retention    │
+              └──────────┬───────────┘
+                         │
+                         ▼
+              ┌──────────────────────┐
+              │    Grafana :3200     │
+              │  Dashboards & Alerts │
+              └──────────────────────┘</pre>
+
+      <h3>Unified JSON Schema</h3>
+      <pre>{
+  "timestamp":      "2026-06-15T10:23:45.123Z",
+  "level":          "info|warn|error|fatal|debug",
+  "service":        "devteam-hub",
+  "environment":    "production",
+  "host":           "srv-rail-01",
+  "correlation_id": "req-abc123",
+  "message":        "Ticket #42 created",
+  "context":        { "user_id": 5, "controller": "TicketsController" }
+}</pre>
+
+      <h3>Docker Services</h3>
+      <table>
+        <thead><tr><th>Service</th><th>Image</th><th>Port</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td>Loki</td><td><code>grafana/loki:3.4</code></td><td><code>3100</code></td><td>Log storage &amp; query engine (LogQL)</td></tr>
+          <tr><td>Promtail</td><td><code>grafana/promtail:3.4</code></td><td>—</td><td>Tail files &amp; Docker containers, ship to Loki</td></tr>
+          <tr><td>Grafana</td><td><code>grafana/grafana:11.6</code></td><td><code>3200</code></td><td>Dashboards, alerts, log exploration</td></tr>
+        </tbody>
+      </table>
+
+      <h3>API Endpoints</h3>
+      <table>
+        <thead><tr><th>Method</th><th>Endpoint</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>GET</code></td><td><code>/api/v1/logs</code></td><td>Query logs (filter by service, level, time range)</td></tr>
+          <tr><td><code>GET</code></td><td><code>/api/v1/logs/services</code></td><td>List available services</td></tr>
+          <tr><td><code>POST</code></td><td><code>/api/v1/logs/push</code></td><td>Push log entries to Loki</td></tr>
+          <tr><td><code>GET</code></td><td><code>/api/v1/logs/stats</code></td><td>Error/warn counts &amp; volume per service (24 h)</td></tr>
+        </tbody>
+      </table>
+
+      <h3>CLI Commands</h3>
+      <pre>dt logs                                # recent logs (all services)
+dt logs --service devteam-hub --level error  # filter by service and level
+dt logs --from "2h ago" --query timeout      # time range + text search
+dt logs services                             # list available services
+dt logs stats                                # 24 h error/warn summary
+dt logs-push --service tdi2 --message "Deploy ok"  # push entry</pre>
+
+      <h3>Per-Stack Configuration</h3>
+      <table>
+        <thead><tr><th>Stack</th><th>Library</th><th>Format</th></tr></thead>
+        <tbody>
+          <tr><td>Rails 8 (DevTeam Hub)</td><td><code>lograge</code> + JSON formatter</td><td>JSON to STDOUT</td></tr>
+          <tr><td>ASP.NET Core 10 (TDI2)</td><td><code>Serilog</code> + Serilog.Sinks.Grafana.Loki</td><td>JSON to file + HTTP push</td></tr>
+          <tr><td>.NET 4.8 (Print Server / TDI)</td><td><code>NLog</code> + NLog.Loki</td><td>JSON to file</td></tr>
+          <tr><td>NestJS (Digital Internet)</td><td><code>pino</code> + pino-loki</td><td>JSON to STDOUT + HTTP push</td></tr>
+          <tr><td>Next.js 16 (Work Mgmt)</td><td><code>pino</code> + pino-loki</td><td>JSON to STDOUT + HTTP push</td></tr>
+        </tbody>
+      </table>
+
+      <p><strong>Full recommendation document:</strong> <a href="unified_logging_recommendation.html">Unified Logging — Recommendation &amp; Implementation Guide</a></p>
+    </div>
+
     <!-- ══════════════════════════ CHAPTER 10 — PORTS ════════════════════════════ -->
     <div class="chapter" id="ports">
       <div class="chapter-header">
@@ -2323,6 +2543,10 @@ docker compose exec web python manage.py createsuperuser
           <tr><td>MinIO Console</td><td><code>9001</code></td><td>HTTP</td><td>Admin web UI</td></tr>
           <tr><td>Jitsi HTTPS</td><td><code>8443</code></td><td>HTTPS/WSS</td><td>Video &amp; signalling</td></tr>
           <tr><td>ASP.NET API</td><td><code>8080</code></td><td>HTTP</td><td>Adjust if running alongside Jenkins</td></tr>
+          <tr><td>SonarQube</td><td><code>9100</code></td><td>HTTP</td><td>Code review &amp; Quality Gate dashboard</td></tr>
+          <tr><td>Ollama (AI Review)</td><td><code>11434</code></td><td>HTTP</td><td>Local LLM API for AI code review</td></tr>
+          <tr><td>Grafana Loki</td><td><code>3100</code></td><td>HTTP</td><td>Log aggregation — LogQL query &amp; push API</td></tr>
+          <tr><td>Grafana (Logs)</td><td><code>3200</code></td><td>HTTP</td><td>Log dashboards &amp; alerting UI</td></tr>
         </tbody>
       </table>
     </div>
@@ -2424,11 +2648,11 @@ docker compose exec web python manage.py createsuperuser
   new Chart(document.getElementById('portsChart'), {
     type: 'bar',
     data: {
-      labels: ['Rails\n:5000', 'Gitea\n:3001', 'Jenkins\n:8080', 'MinIO S3\n:9000', 'MinIO UI\n:9001', 'Jitsi\n:8443', 'ASP.NET\n:8080'],
+      labels: ['Rails\n:5000', 'Gitea\n:3001', 'Jenkins\n:8080', 'MinIO S3\n:9000', 'MinIO UI\n:9001', 'Jitsi\n:8443', 'SonarQube\n:9100', 'Ollama\n:11434', 'Loki\n:3100', 'Grafana Logs\n:3200'],
       datasets: [{
         label: 'Port number',
-        data: [5000, 3001, 8080, 9000, 9001, 8443, 8080],
-        backgroundColor: ['#4a90d9','#27ae60','#e67e22','#f59e0b','#f59e0b','#0d9488','#8e44ad'],
+        data: [5000, 3001, 8080, 9000, 9001, 8443, 9100, 11434, 3100, 3200],
+        backgroundColor: ['#4a90d9','#27ae60','#e67e22','#f59e0b','#f59e0b','#0d9488','#0b7a75','#8e44ad','#2563eb','#2563eb'],
         borderRadius: 8
       }]
     },
@@ -2439,6 +2663,100 @@ docker compose exec web python manage.py createsuperuser
       scales: {
         x: { ticks: { font: { family: 'Inter' } } },
         y: { ticks: { font: { family: 'Inter', size: 11 } } }
+      }
+    }
+  });
+
+  // Code Review tools comparison chart
+  new Chart(document.getElementById('codeReviewChart'), {
+    type: 'radar',
+    data: {
+      labels: ['Language Coverage', 'On-Prem Deploy', 'Quality Gates', 'Security (SAST)', 'Dashboard', 'Gitea Integration', 'Jenkins Plugin', 'Price (10=free)'],
+      datasets: [
+        {
+          label: 'SonarQube CE',
+          data: [10, 10, 10, 9, 10, 8, 10, 10],
+          backgroundColor: 'rgba(11,122,117,0.15)',
+          borderColor: '#0b7a75',
+          borderWidth: 2,
+          pointBackgroundColor: '#0b7a75'
+        },
+        {
+          label: 'MegaLinter',
+          data: [9, 10, 4, 7, 2, 9, 8, 10],
+          backgroundColor: 'rgba(230,126,34,0.1)',
+          borderColor: '#e67e22',
+          borderWidth: 2,
+          pointBackgroundColor: '#e67e22'
+        },
+        {
+          label: 'Semgrep OSS',
+          data: [7, 10, 4, 10, 2, 5, 7, 10],
+          backgroundColor: 'rgba(142,68,173,0.1)',
+          borderColor: '#8e44ad',
+          borderWidth: 2,
+          pointBackgroundColor: '#8e44ad'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'bottom', labels: { font: { family: 'Inter', size: 11 } } } },
+      scales: {
+        r: {
+          min: 0, max: 10,
+          ticks: { stepSize: 2, font: { family: 'Inter' } },
+          grid: { color: 'rgba(18,37,43,0.08)' },
+          angleLines: { color: 'rgba(18,37,43,0.08)' },
+          pointLabels: { font: { family: 'Inter', size: 11 } }
+        }
+      }
+    }
+  });
+
+  // Logging stack comparison chart
+  new Chart(document.getElementById('loggingChart'), {
+    type: 'radar',
+    data: {
+      labels: ['Ease of Deploy', 'RAM Efficiency', 'Query Power', 'Multi-Language', 'Dashboard', 'On-Prem Ready', 'CI Integration', 'Price (10=free)'],
+      datasets: [
+        {
+          label: 'Grafana Loki',
+          data: [9, 10, 8, 9, 10, 10, 9, 10],
+          backgroundColor: 'rgba(37,99,235,0.15)',
+          borderColor: '#2563eb',
+          borderWidth: 2,
+          pointBackgroundColor: '#2563eb'
+        },
+        {
+          label: 'ELK Stack',
+          data: [4, 3, 10, 9, 9, 8, 8, 7],
+          backgroundColor: 'rgba(230,126,34,0.1)',
+          borderColor: '#e67e22',
+          borderWidth: 2,
+          pointBackgroundColor: '#e67e22'
+        },
+        {
+          label: 'Graylog',
+          data: [5, 5, 8, 7, 7, 8, 6, 9],
+          backgroundColor: 'rgba(142,68,173,0.1)',
+          borderColor: '#8e44ad',
+          borderWidth: 2,
+          pointBackgroundColor: '#8e44ad'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'bottom', labels: { font: { family: 'Inter', size: 11 } } } },
+      scales: {
+        r: {
+          min: 0, max: 10,
+          ticks: { stepSize: 2, font: { family: 'Inter' } },
+          grid: { color: 'rgba(18,37,43,0.08)' },
+          angleLines: { color: 'rgba(18,37,43,0.08)' },
+          pointLabels: { font: { family: 'Inter', size: 11 } }
+        }
       }
     }
   });

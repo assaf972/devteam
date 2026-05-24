@@ -7,6 +7,8 @@ class User < ApplicationRecord
   enum :role, { developer: 0, team_lead: 1, project_manager: 2, admin: 3, qa: 4 }, default: :developer
   enum :preferred_language, { en: "en", he: "he" }, prefix: :lang
 
+  has_one_attached :avatar
+
   has_many :assigned_tickets, class_name: "Ticket", foreign_key: :assignee_id
   has_many :estimated_tickets, class_name: "Ticket", foreign_key: :estimated_by_id
   has_many :triggered_ci_runs, class_name: "CiRun", foreign_key: :triggered_by_id
@@ -27,6 +29,7 @@ class User < ApplicationRecord
 
   validates :name, presence: true
   validates :email, presence: true, uniqueness: true
+  validate :acceptable_avatar
 
   before_create :generate_api_token
 
@@ -38,6 +41,15 @@ class User < ApplicationRecord
     name.presence || email.split("@").first
   end
 
+  def initials
+    parts = display_name.split
+    if parts.size >= 2
+      "#{parts.first[0]}#{parts.last[0]}".upcase
+    else
+      display_name.first(2).upcase
+    end
+  end
+
   def regenerate_api_token!
     update!(api_token: SecureRandom.hex(32))
   end
@@ -46,5 +58,17 @@ class User < ApplicationRecord
 
   def generate_api_token
     self.api_token ||= SecureRandom.hex(32)
+  end
+
+  def acceptable_avatar
+    return unless avatar.attached?
+
+    unless avatar.blob.content_type.in?(%w[image/png image/jpeg image/gif image/webp image/svg+xml])
+      errors.add(:avatar, "must be a PNG, JPEG, GIF, or WebP image")
+    end
+
+    if avatar.blob.byte_size > 5.megabytes
+      errors.add(:avatar, "must be less than 5 MB")
+    end
   end
 end

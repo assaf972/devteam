@@ -5,6 +5,34 @@
 puts "🌱 Seeding..."
 
 # ─────────────────────────────────────────────────────────────────
+# Helper: generate a default SVG avatar for a user
+# ─────────────────────────────────────────────────────────────────
+AVATAR_COLORS = %w[#4a90d9 #7b68ee #20c997 #fd7e14 #e83e8c #6366f1 #0d9488 #e67e22].freeze
+
+def generate_default_avatar(user, index)
+  return if user.avatar.attached?
+
+  parts    = user.display_name.split
+  initials = parts.size >= 2 ? "#{parts.first[0]}#{parts.last[0]}".upcase : user.display_name.first(2).upcase
+  bg       = AVATAR_COLORS[index % AVATAR_COLORS.size]
+
+  svg = <<~SVG
+    <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+      <rect width="200" height="200" rx="100" fill="#{bg}"/>
+      <text x="100" y="100" dy=".35em" text-anchor="middle"
+            font-family="Inter,Helvetica,Arial,sans-serif" font-size="80" font-weight="700"
+            fill="#ffffff">#{initials}</text>
+    </svg>
+  SVG
+
+  user.avatar.attach(
+    io:           StringIO.new(svg),
+    filename:     "#{user.display_name.parameterize}-avatar.svg",
+    content_type: "image/svg+xml"
+  )
+end
+
+# ─────────────────────────────────────────────────────────────────
 # Internal users (developers, leads, admin)
 # ─────────────────────────────────────────────────────────────────
 users_data = [
@@ -28,6 +56,14 @@ users = users_data.map do |attrs|
 end
 
 puts "  ✓ #{users.size} internal users"
+
+# Attach default avatars to users
+ActiveStorage::Current.url_options = { host: "localhost", port: 3000 }
+users.each_with_index do |u, i|
+  Rails.application.config.active_job.queue_adapter = :inline
+  generate_default_avatar(u, i)
+end
+puts "  ✓ default avatars attached"
 
 # ─────────────────────────────────────────────────────────────────
 # Customers (portal accounts — parent of CustomerUser)
@@ -1286,6 +1322,20 @@ docs_to_seed = [
     title:           "Stories Backlog",
     doc_type:        :user_story,
     summary:         "Product backlog of user stories and feature requests for DevTeam Hub.",
+    version_number:  "1.0"
+  },
+  {
+    file:            "docs/code_review_tools_recommendation.html",
+    title:           "Code Review & Approval Tools — Recommendation",
+    doc_type:        :architecture,
+    summary:         "Evaluation of code review tools for CI — SonarQube CE + Ollama AI recommendation with implementation guide.",
+    version_number:  "1.0"
+  },
+  {
+    file:            "docs/unified_logging_recommendation.html",
+    title:           "Unified Logging — Recommendation & Implementation",
+    doc_type:        :architecture,
+    summary:         "Unified log management with Grafana Loki + Promtail — format, tools, API, CLI, and CI integration.",
     version_number:  "1.0"
   }
 ]

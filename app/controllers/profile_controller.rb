@@ -28,11 +28,11 @@ class ProfileController < ApplicationController
   private
 
   def profile_params_without_password
-    params.require(:user).permit(:name, :preferred_language)
+    params.require(:user).permit(:name, :preferred_language, :avatar)
   end
 
   def profile_params_with_password
-    params.require(:user).permit(:name, :preferred_language,
+    params.require(:user).permit(:name, :preferred_language, :avatar,
                                  :current_password, :password, :password_confirmation)
   end
 end

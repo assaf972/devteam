@@ -41,10 +41,14 @@
         <% end %>
 
         <div class="chat-msg <%= is_continuation ? 'is-continuation' : '' %>">
-          <div class="chat-msg-avatar"
-               style="background:<%= ["#4a90d9","#7b68ee","#20c997","#fd7e14","#e83e8c"].rotate(msg.user_id % 5).first %>;">
-            <%= msg.user.display_name.first.upcase %>
-          </div>
+          <% if msg.user.avatar.attached? %>
+            <%= user_avatar(msg.user, size: 32, css_class: "chat-msg-avatar") %>
+          <% else %>
+            <div class="chat-msg-avatar"
+                 style="background:<%= ["#4a90d9","#7b68ee","#20c997","#fd7e14","#e83e8c"].rotate(msg.user_id % 5).first %>;">
+              <%= msg.user.initials %>
+            </div>
+          <% end %>
           <div class="chat-msg-body">
             <% unless is_continuation %>
               <div class="chat-msg-meta">

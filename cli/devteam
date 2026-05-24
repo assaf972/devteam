@@ -535,7 +535,106 @@ class DevTeamCLI < Thor
     say ""
   end
 
+  # ─── Logs ────────────────────────────────────────────────────────────────────
+
+  desc "logs [SUBCOMMAND]", "Query and manage application logs"
+  long_desc "Query unified logs from Grafana Loki via DevTeam Hub API.\nSubcommands: services, stats, push"
+  option :service,  type: :string,  desc: "Filter by service name (e.g. devteam-hub, tdi2)"
+  option :level,    type: :string,  desc: "Filter by log level (debug/info/warn/error/fatal)"
+  option :from,     type: :string,  desc: "Start time (ISO 8601 or relative, e.g. '2h ago')"
+  option :to,       type: :string,  desc: "End time (ISO 8601)"
+  option :query,    type: :string,  desc: "Full-text search in log messages"
+  option :limit,    type: :numeric, default: 50, desc: "Max entries to return"
+  option :json,     type: :boolean, default: false, desc: "Output raw JSON"
+  def logs(subcommand = nil)
+    require_auth!
+
+    case subcommand
+    when "services"
+      resp = DevTeam.api(:get, "/logs/services")
+      say "\n  Available log services:"
+      (resp["services"] || []).each { |s| say "    • #{s}" }
+      say ""
+    when "stats"
+      resp = DevTeam.api(:get, "/logs/stats")
+      say "\n  #{DevTeam.paint(:bold, 'Log Statistics (last 24h)')}"
+      say "  Errors:   #{DevTeam.paint(:red, resp['error_count_24h'].to_s)}"
+      say "  Warnings: #{DevTeam.paint(:yellow, resp['warn_count_24h'].to_s)}"
+      if resp["volume_by_service"]
+        say "\n  Volume by service:"
+        resp["volume_by_service"].each { |svc, count| say "    #{svc.ljust(25)} #{count}" }
+      end
+      say ""
+    when "push"
+      say DevTeam.paint(:red, "  Use: dt logs push --service <name> --level <level> --message <msg>")
+      say "  Or use the push subcommand directly."
+    else
+      query_logs
+    end
+  end
+
+  desc "logs-push", "Push a log entry to Loki"
+  option :service,  type: :string,  required: true, desc: "Service name"
+  option :level,    type: :string,  default: "info", desc: "Log level"
+  option :message,  type: :string,  required: true, desc: "Log message"
+  option :env,      type: :string,  default: "production", desc: "Environment"
+  def logs_push
+    require_auth!
+    DevTeam.api(:post, "/logs/push", body: {
+      entries: [ {
+        timestamp:   Time.now.utc.iso8601,
+        service:     options[:service],
+        level:       options[:level],
+        message:     options[:message],
+        environment: options[:env]
+      } ]
+    })
+    say DevTeam.paint(:green, "  ✓ Log entry pushed")
+  end
+
   private
+
+  def query_logs
+    params = {}
+    params[:service] = options[:service] if options[:service]
+    params[:level]   = options[:level]   if options[:level]
+    params[:from]    = options[:from]    if options[:from]
+    params[:to]      = options[:to]      if options[:to]
+    params[:query]   = options[:query]   if options[:query]
+    params[:limit]   = options[:limit]
+
+    query_string = params.map { |k, v| "#{k}=#{URI.encode_www_form_component(v.to_s)}" }.join("&")
+    resp = DevTeam.api(:get, "/logs?#{query_string}")
+    logs = resp["logs"] || []
+
+    if logs.empty?
+      say DevTeam.paint(:yellow, "  No logs found.")
+      return
+    end
+
+    if options[:json]
+      puts JSON.pretty_generate(logs)
+    else
+      say ""
+      logs.each do |l|
+        ts    = l["timestamp"].to_s[11..22]
+        level = (l["level"] || "info").upcase.ljust(5)
+        svc   = (l["service"] || "?").ljust(16)
+        msg   = l["message"] || l.to_json
+
+        color = case l["level"]
+        when "error", "fatal" then :red
+        when "warn"           then :yellow
+        when "debug"          then :cyan
+        else :white
+        end
+
+        say "  #{ts}  #{DevTeam.paint(color, level)}  #{DevTeam.paint(:bold, svc)}  #{msg}"
+      end
+      say "\n  #{DevTeam.paint(:bold, logs.size.to_s)} entries"
+      say ""
+    end
+  end
 
   def require_auth!
     return if DevTeam.token

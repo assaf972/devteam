@@ -324,6 +324,8 @@
   <a href="#architecture">ארכיטקטורה</a>
   <a href="#tools">כלים</a>
   <a href="#security">אבטחה</a>
+  <a href="#code-review">סקירת קוד</a>
+  <a href="#logging">לוגים</a>
   <a href="#git-view">Git</a>
   <a href="#ci-view">בדיקות</a>
   <a href="#deploy-view">פריסות</a>
@@ -370,6 +372,8 @@
       <a href="#deploy-tools" class="toc-item"><div class="toc-num">6</div>פריסות ו-Versioning</a>
       <a href="#monitoring" class="toc-item"><div class="toc-num">7</div>ניטור ותגובה לאירועים</div></a>
       <a href="#security" class="toc-item"><div class="toc-num">8</div>אבטחת המערכת</a>
+      <a href="#code-review" class="toc-item"><div class="toc-num">8b</div>סקירת קוד אוטומטית</a>
+      <a href="#logging" class="toc-item"><div class="toc-num">8c</div>לוגים מרכזיים — Grafana Loki</a>
       <a href="#git-view" class="toc-item"><div class="toc-num">9</div>תצוגת Git & Pull Requests</a>
       <a href="#ci-view" class="toc-item"><div class="toc-num">10</div>תצוגת CI & סטטוס בדיקות</a>
       <a href="#deploy-view" class="toc-item"><div class="toc-num">11</div>תצוגת פריסות</a>
@@ -603,6 +607,45 @@
         <strong style="color:#fff;">Production:</strong> PostgreSQL<br><br>
         כל הנתונים — כרטיסים, מסמכים, CI runs, deployments, messages — מאוחסנים על שרת ארגוני פנימי.
         גיבויים, replication ו-retention policies בשליטה מלאה של הארגון.
+      </div>
+    </div>
+    <div class="card card-dark">
+      <div class="card-icon">🔍</div>
+      <div class="card-title">SonarQube — סקירת קוד</div>
+      <div class="card-desc">
+        ניתוח סטטי אוטומטי עם Quality Gates.<br><br>
+        <strong style="color:#fff;">שימוש:</strong><br>
+        בדיקת באגים, code smells, כיסוי קוד ו-OWASP SAST — לכל push ב-Jenkins Pipeline.
+        <br><br>
+        <strong style="color:#fff;">שפות:</strong> Ruby, C#, VB.NET, TypeScript, JS, SQL, HTML
+      </div>
+    </div>
+    <div class="card card-dark">
+      <div class="card-icon">🤖</div>
+      <div class="card-title">Ollama — AI Code Review</div>
+      <div class="card-desc">
+        סקירת קוד מבוססת AI — 100% מקומית.<br><br>
+        <strong style="color:#fff;">מודל:</strong> Qwen2.5-Coder 32B<br>
+        <strong style="color:#fff;">שימוש:</strong><br>
+        מבצע סקירת diff על כל PR — בודק לוגיקה, ארכיטקטורה, שמות ודפוסים. התגובה נכתבת ישירות ב-Gitea.
+      </div>
+    </div>
+    <div class="card card-dark">
+      <div class="card-icon">📋</div>
+      <div class="card-title">Grafana Loki — לוגים</div>
+      <div class="card-desc">
+        איסוף לוגים מרכזי מכל הפרויקטים.<br><br>
+        <strong style="color:#fff;">שימוש:</strong><br>
+        פורמט JSON אחיד, correlation IDs, סינון לפי רמות (labels), 30 ימי retention. קל: 256 MB RAM.
+      </div>
+    </div>
+    <div class="card card-dark">
+      <div class="card-icon">📊</div>
+      <div class="card-title">Grafana — Dashboards</div>
+      <div class="card-desc">
+        דשבורדים והתראות ללוגים.<br><br>
+        <strong style="color:#fff;">שימוש:</strong><br>
+        סינון errors ו-warnings בזמן אמת, נפח לוגים לפי service, LogQL queries, התראות Slack.
       </div>
     </div>
   </div>
@@ -920,6 +963,144 @@
   </div>
 </div>
 </div>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     8b. CODE REVIEW
+     ══════════════════════════════════════════════════════════════════════ -->
+<section id="code-review">
+  <div class="section">
+    <div class="section-badge">08b — סקירת קוד</div>
+    <div class="section-title">סקירת קוד אוטומטית — SonarQube + AI</div>
+    <div class="section-sub">ניתוח סטטי מלא וסקירה מבוססת AI לכל השפות — פועל 100% On-Premises</div>
+
+    <div class="two-col">
+      <div>
+        <h3 style="font-size:1rem;font-weight:700;margin-bottom:1rem;">סקירת קוד בשני שלבים</h3>
+        <table class="styled-table">
+          <thead><tr><th>כלי</th><th>תפקיד</th><th>עלות</th></tr></thead>
+          <tbody>
+            <tr><td>🔍 SonarQube CE</td><td>ניתוח סטטי, Quality Gates, OWASP SAST, code smells</td><td>חינם</td></tr>
+            <tr><td>🤖 Ollama AI</td><td>סקירת AI מקומית — לוגיקה, ארכיטקטורה, שמות, דפוסים</td><td>חינם</td></tr>
+            <tr><td>💻 SonarLint</td><td>תוסף IDE — VS Code ו-Visual Studio</td><td>חינם</td></tr>
+          </tbody>
+        </table>
+
+        <h3 style="font-size:1rem;font-weight:700;margin-top:1.5rem;margin-bottom:1rem;">שפות נתמכות</h3>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+          <span class="badge badge-green">Ruby</span>
+          <span class="badge badge-green">C#</span>
+          <span class="badge badge-green">VB.NET</span>
+          <span class="badge badge-green">TypeScript</span>
+          <span class="badge badge-green">JavaScript</span>
+          <span class="badge badge-green">SQL</span>
+          <span class="badge badge-green">HTML/CSS</span>
+          <span class="badge badge-green">Razor</span>
+        </div>
+
+        <h3 style="font-size:1rem;font-weight:700;margin-top:1.5rem;margin-bottom:1rem;">Quality Gate — חסימת מיזוג</h3>
+        <table class="styled-table">
+          <thead><tr><th>מדד</th><th>סף</th></tr></thead>
+          <tbody>
+            <tr><td>כיסוי קוד חדש</td><td>≥ 70%</td></tr>
+            <tr><td>באגים חדשים</td><td>0</td></tr>
+            <tr><td>פגיעויות חדשות</td><td>0</td></tr>
+            <tr><td>שכפול קוד</td><td>≤ 3%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="chart-card">
+          <div class="chart-title">השוואת כלי סקירת קוד</div>
+          <canvas id="codeReviewPresChart" height="280"></canvas>
+        </div>
+
+        <div style="background:rgba(11,122,117,0.08);border:1px solid rgba(11,122,117,0.2);border-radius:12px;padding:1.25rem;margin-top:1rem;">
+          <h4 style="font-size:0.9rem;font-weight:700;color:#0b7a75;margin-bottom:.5rem;">🏗️ ארכיטקטורה</h4>
+          <pre style="background:#1a1d2e;color:#e6edf3;padding:1rem;border-radius:8px;font-size:0.78rem;direction:ltr;text-align:left;margin:0;"><code>Gitea ─webhook─▸ Jenkins ──▸ SonarQube (:9100)
+                     │              │
+                     ▼              ▼
+                  Ollama (:11434)  Quality Gate
+                     │             pass/fail
+                     ▼              │
+                  AI Review ───────▸│
+                  Comment     Post to PR</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     8c. UNIFIED LOGGING
+     ══════════════════════════════════════════════════════════════════════ -->
+<section id="logging">
+  <div class="section">
+    <div class="section-badge">08c — לוגים</div>
+    <div class="section-title">לוגים מרכזיים — Grafana Loki + Promtail</div>
+    <div class="section-sub">כל 5 הפרויקטים שולחים לוגים בפורמט JSON אחיד ל-Grafana Loki — עם dashboards, התראות וקורלציה בין שירותים</div>
+
+    <div class="cols" style="gap:1.5rem;margin-top:1.5rem;">
+      <div style="flex:1;">
+        <h3 style="font-size:1rem;font-weight:700;margin-bottom:1rem;">ארכיטקטורה</h3>
+        <pre style="background:#1a1d2e;color:#e6edf3;padding:1rem;border-radius:8px;font-size:0.72rem;direction:ltr;text-align:left;margin:0;line-height:1.6;"><code>Rails (lograge)  ──┐
+ASP.NET (Serilog)──┼─▸ Promtail ─▸ Loki :3100 ─▸ Grafana :3200
+NestJS (Pino)    ──┘        (shipper)    (storage)     (dashboards)
+Next.js (Pino)   ──┘
+.NET 4.8 (NLog)  ──┘</code></pre>
+
+        <div style="margin-top:1rem;">
+          <h3 style="font-size:1rem;font-weight:700;margin-bottom:.75rem;">פורמט JSON אחיד</h3>
+          <pre style="background:#1a1d2e;color:#e6edf3;padding:1rem;border-radius:8px;font-size:0.72rem;direction:ltr;text-align:left;margin:0;line-height:1.5;"><code>{
+  "timestamp":      "2026-06-15T10:23:45.123Z",
+  "level":          "info",
+  "service":        "devteam-hub",
+  "correlation_id": "req-abc123",
+  "message":        "Ticket #42 created",
+  "context":        { "user_id": 5 }
+}</code></pre>
+        </div>
+      </div>
+      <div style="flex:1;">
+        <div class="chart-wrap" style="margin:0;">
+          <div class="chart-title">השוואת כלי לוגים</div>
+          <canvas id="loggingPresChart" height="280"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:1.5rem;">
+      <h3 style="font-size:1rem;font-weight:700;margin-bottom:.75rem;">פקודות CLI</h3>
+      <pre style="background:#1a1d2e;color:#e6edf3;padding:1rem;border-radius:8px;font-size:0.78rem;direction:ltr;text-align:left;margin:0;line-height:1.5;"><code>$ dt logs --service devteam-hub --level error
+  10:23:45  ERROR  devteam-hub       Ticket creation failed: DB timeout
+  10:19:12  ERROR  devteam-hub       Redis connection refused
+  2 entries
+
+$ dt logs services
+  Available log services:
+    • devteam-hub
+    • tdi2
+    • print-server
+    • digital-internet
+    • work-management
+
+$ dt logs stats
+  Log Statistics (last 24h)
+  Errors:   12
+  Warnings: 47</code></pre>
+    </div>
+
+    <div style="background:rgba(37,99,235,0.08);border:1px solid rgba(37,99,235,0.2);border-radius:12px;padding:1.25rem;margin-top:1rem;">
+      <h4 style="font-size:0.9rem;font-weight:700;color:#2563eb;margin-bottom:.5rem;">📊 למה Grafana Loki?</h4>
+      <p style="color:rgba(255,255,255,.7);font-size:.85rem;line-height:1.7;margin:0;">
+        <strong style="color:#fff;">256 MB RAM</strong> (vs 4–16 GB ל-ELK) ·
+        <strong style="color:#fff;">$0/שנה</strong> ·
+        ללא אינדוקס תוכן (labels בלבד) ·
+        HTTP Push API לכל שפה ·
+        Promtail עובד גם על Windows
+      </p>
+    </div>
+  </div>
+</section>
 
 <!-- ══════════════════════════════════════════════════════════════════════
      9. GIT VIEW
@@ -1420,7 +1601,17 @@
       <div class="s-desc">8 שכבות: Devise, Pundit, CSRF, HMAC Webhook, בידוד פורטל, Strong Params, CSP, Modern Browser</div>
     </div>
     <div class="summary-tile">
-      <div class="s-icon">💬</div>
+      <div class="s-icon">�</div>
+      <div class="s-title">סקירת קוד אוטומטית</div>
+      <div class="s-desc">SonarQube Quality Gates + סקירת AI מקומית עם Ollama — כל השפות, אפס עלות, 100% On-Prem</div>
+    </div>
+    <div class="summary-tile">
+      <div class="s-icon">📋</div>
+      <div class="s-title">לוגים מרכזיים</div>
+      <div class="s-desc">Grafana Loki + Promtail — פורמט JSON אחיד, correlation IDs, דשבורדים והתראות</div>
+    </div>
+    <div class="summary-tile">
+      <div class="s-icon">�💬</div>
       <div class="s-title">ממשק Slack-style</div>
       <div class="s-desc">סרגל צד עם Projects, Channels, CI dots — עיצוב מוכר שמפתחים אוהבים</div>
     </div>
@@ -1440,6 +1631,8 @@
     <h3 style="color:#fff;font-size:1rem;font-weight:700;margin-bottom:1.25rem;">כיסוי פיצ'רים — מצב נוכחי</h3>
     <div class="feat-bar-row"><div class="feat-name" style="color:#fff;">ניהול פרויקטים</div><div class="feat-track"><div class="feat-fill" style="width:95%;background:var(--green);"></div></div><div class="feat-pct">95%</div></div>
     <div class="feat-bar-row"><div class="feat-name" style="color:#fff;">CI/CD Monitoring</div><div class="feat-track"><div class="feat-fill" style="width:90%;background:var(--green);"></div></div><div class="feat-pct">90%</div></div>
+    <div class="feat-bar-row"><div class="feat-name" style="color:#fff;">סקירת קוד אוטומטית</div><div class="feat-track"><div class="feat-fill" style="width:90%;background:var(--green);"></div></div><div class="feat-pct">90%</div></div>
+    <div class="feat-bar-row"><div class="feat-name" style="color:#fff;">לוגים מרכזיים</div><div class="feat-track"><div class="feat-fill" style="width:70%;background:var(--orange);"></div></div><div class="feat-pct">70%</div></div>
     <div class="feat-bar-row"><div class="feat-name" style="color:#fff;">ניהול כרטיסים</div><div class="feat-track"><div class="feat-fill" style="width:92%;background:var(--green);"></div></div><div class="feat-pct">92%</div></div>
     <div class="feat-bar-row"><div class="feat-name" style="color:#fff;">פריסות</div><div class="feat-track"><div class="feat-fill" style="width:88%;background:var(--green);"></div></div><div class="feat-pct">88%</div></div>
     <div class="feat-bar-row"><div class="feat-name" style="color:#fff;">מסמכים טכניים</div><div class="feat-track"><div class="feat-fill" style="width:85%;background:var(--blue);"></div></div><div class="feat-pct">85%</div></div>
@@ -1453,7 +1646,7 @@
 <!-- FOOTER -->
 <footer>
   <div style="margin-bottom:.5rem;">🚀 <strong style="color:rgba(255,255,255,.7);">DevTeam Hub</strong> — פלטפורמת ניהול פיתוח תוך-ארגונית</div>
-  <div>Built with Ruby on Rails 8.1 · Gitea · Jenkins · Jitsi · Bulma · Hotwire</div>
+  <div>Built with Ruby on Rails 8.1 · Gitea · Jenkins · SonarQube · Ollama · Grafana Loki · Jitsi · Bulma · Hotwire</div>
   <div style="margin-top:.5rem;font-size:.72rem;">כל הנתונים והקוד נשארים ברשת הארגונית שלך · אפס תלות בענן</div>
 </footer>
 
@@ -1617,6 +1810,92 @@
       responsive: true,
       plugins: { legend: { display: false } },
       scales: { x: { beginAtZero: true } }
+    }
+  });
+
+  // 8. Code Review tools comparison — radar
+  new Chart(document.getElementById('codeReviewPresChart'), {
+    type: 'radar',
+    data: {
+      labels: ['כיסוי שפות', 'On-Prem', 'Quality Gates', 'אבטחה (SAST)', 'דשבורד', 'Gitea', 'Jenkins', 'מחיר (10=חינם)'],
+      datasets: [
+        {
+          label: 'SonarQube CE',
+          data: [10, 10, 10, 9, 10, 8, 10, 10],
+          backgroundColor: 'rgba(11,122,117,0.15)',
+          borderColor: '#0b7a75',
+          borderWidth: 2,
+          pointBackgroundColor: '#0b7a75'
+        },
+        {
+          label: 'Ollama AI',
+          data: [10, 10, 3, 7, 2, 8, 8, 10],
+          backgroundColor: 'rgba(123,104,238,0.1)',
+          borderColor: '#7b68ee',
+          borderWidth: 2,
+          pointBackgroundColor: '#7b68ee'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } },
+      scales: {
+        r: {
+          min: 0, max: 10,
+          ticks: { display: false },
+          grid: { color: 'rgba(0,0,0,0.06)' },
+          angleLines: { color: 'rgba(0,0,0,0.06)' },
+          pointLabels: { font: { size: 10 } }
+        }
+      }
+    }
+  });
+
+  // Logging tools comparison chart
+  new Chart(document.getElementById('loggingPresChart'), {
+    type: 'radar',
+    data: {
+      labels: ['קלות התקנה', 'יעילות RAM', 'חיפוש (LogQL)', 'רב-שפות', 'Dashboards', 'On-Prem', 'CI אינטגרציה', 'מחיר (10=חינם)'],
+      datasets: [
+        {
+          label: 'Grafana Loki',
+          data: [9, 10, 8, 9, 10, 10, 9, 10],
+          backgroundColor: 'rgba(37,99,235,0.15)',
+          borderColor: '#2563eb',
+          borderWidth: 2,
+          pointBackgroundColor: '#2563eb'
+        },
+        {
+          label: 'ELK Stack',
+          data: [4, 3, 10, 9, 9, 8, 8, 7],
+          backgroundColor: 'rgba(230,126,34,0.1)',
+          borderColor: '#e67e22',
+          borderWidth: 2,
+          pointBackgroundColor: '#e67e22'
+        },
+        {
+          label: 'Graylog',
+          data: [5, 5, 8, 7, 7, 8, 6, 9],
+          backgroundColor: 'rgba(142,68,173,0.1)',
+          borderColor: '#8e44ad',
+          borderWidth: 2,
+          pointBackgroundColor: '#8e44ad'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } },
+      scales: {
+        r: {
+          min: 0, max: 10,
+          ticks: { stepSize: 2 },
+          grid: { color: 'rgba(0,0,0,0.06)' },
+          angleLines: { color: 'rgba(0,0,0,0.06)' },
+          pointLabels: { font: { size: 10 } }
+        }
+      }
     }
   });
 </script>

@@ -13,6 +13,12 @@ Rails.application.routes.draw do
       resources :deployments, only: %i[index show create update]
       resources :projects, only: %i[index show]
       post "checkout", to: "checkout#create"
+
+      # Logs — Loki proxy
+      get  "logs",          to: "logs#index"
+      get  "logs/services", to: "logs#services"
+      post "logs/push",     to: "logs#push"
+      get  "logs/stats",    to: "logs#stats"
     end
   end
 

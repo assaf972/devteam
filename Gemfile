@@ -46,6 +46,9 @@ gem "noticed", "~> 2.0"
 gem "sentry-ruby"
 gem "sentry-rails"
 
+# Structured logging
+gem "lograge"
+
 # Markdown rendering for documents
 gem "redcarpet"
 
