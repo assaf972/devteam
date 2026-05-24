@@ -23,7 +23,8 @@ export default class extends Controller {
     }
 
     restorePanelState() {
-        const hidden = localStorage.getItem("devteam.rightPanelHidden") === "1"
+        const stored = localStorage.getItem("devteam.rightPanelHidden")
+        const hidden = stored !== "0"
         this.panelTarget.classList.toggle("is-hidden", hidden)
         this.toggleButtonTarget.classList.toggle("is-active", !hidden)
     }

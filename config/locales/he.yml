@@ -29,6 +29,12 @@ he:
     created: "הכרטיס נוצר בהצלחה."
     updated: "הכרטיס עודכן בהצלחה."
     deleted: "הכרטיס נמחק."
+    filtered:
+      mine: "הכרטיסים שלי"
+      late: "כרטיסים באיחור"
+      backlog_list: "Backlog"
+      current_sprint: "כרטיסי ספרינט נוכחי"
+      empty: "לא נמצאו כרטיסים."
     statuses:
       backlog: "Backlog"
       open: "פתוח"
@@ -189,6 +195,12 @@ he:
       test_coverage: "כיסוי בדיקות"
       velocity: "מהירות"
       estimation_accuracy: "דיוק הערכות"
+    tickets_label: "כרטיסים"
+    tickets:
+      my_tickets: "הכרטיסים שלי"
+      late: "כרטיסים באיחור"
+      backlog: "Backlog"
+      current_sprint: "ספרינט נוכחי"
     admin:
       users: "משתמשים"
       clients: "לקוחות"

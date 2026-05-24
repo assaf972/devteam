@@ -55,6 +55,12 @@ Rails.application.routes.draw do
   get "dashboard", to: "dashboard#index", as: :dashboard
   get "today",     to: "today#index",     as: :today
   get "calendar",  to: "calendar#index",  as: :calendar
+
+  # ── Ticket views (cross-project) ────────────────────────────────────────
+  get "tickets/mine",           to: "tickets#mine",           as: :my_tickets
+  get "tickets/late",           to: "tickets#late",           as: :late_tickets
+  get "tickets/backlog",        to: "tickets#backlog_list",   as: :backlog_tickets
+  get "tickets/current_sprint", to: "tickets#current_sprint", as: :current_sprint_tickets
   get "calendar/events", to: "calendar#events", as: :calendar_events
 
   resources :customers do

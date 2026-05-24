@@ -117,6 +117,11 @@
             as: :url,
             input_html: { class: "form-control", placeholder: "http://gitea.local/..." } %>
     </div>
+    <div class="col-3">
+      <%= f.input :pr_number,
+            label: "PR Number",
+            input_html: { class: "form-control", min: 1 } %>
+    </div>
   </div>
 
   <%# ── How to Reproduce (bug_fix / hotfix only) ────────────────────── %>

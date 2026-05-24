@@ -9,6 +9,40 @@ class TicketsController < ApplicationController
     @tickets = @tickets.tagged_with(params[:tag]) if params[:tag].present?
   end
 
+  def mine
+    @tickets = Ticket.where(assignee: current_user)
+                     .includes(:assignee, :sprint, :project)
+                     .order(priority: :desc, created_at: :desc)
+    render :filtered_list
+  end
+
+  def late
+    @tickets = Ticket.joins(:sprint)
+                     .where(sprints: { end_date: ...Date.current })
+                     .where.not(status: [ :done, :closed ])
+                     .includes(:assignee, :sprint, :project)
+                     .order(priority: :desc, created_at: :desc)
+    render :filtered_list
+  end
+
+  def backlog_list
+    @tickets = Ticket.where(status: :backlog)
+                     .includes(:assignee, :sprint, :project)
+                     .order(priority: :desc, created_at: :desc)
+    render :filtered_list
+  end
+
+  def current_sprint
+    sprint = Sprint.current.first
+    @tickets = if sprint
+                 sprint.tickets.includes(:assignee, :sprint, :project)
+                       .order(priority: :desc, created_at: :desc)
+    else
+                 Ticket.none
+    end
+    render :filtered_list
+  end
+
   def show
     @comments   = @ticket.comments.includes(:author).order(created_at: :asc)
     @ci_runs    = @ticket.ci_runs.includes(:test_results).order(created_at: :desc).limit(10)

@@ -46,7 +46,7 @@
           <%= link_to "🇺🇸", url_for(locale: :en), class: "btn btn-sm btn-link text-white px-1" %>
 
           <%# Notifications toggle %>
-          <button class="topbar-panel-toggle is-active"
+          <button class="topbar-panel-toggle"
                   data-sidebar-target="toggleButton"
                   data-action="click->sidebar#togglePanel"
                   title="Toggle notifications">
@@ -75,7 +75,7 @@
       </div>
 
       <%# ── Right notifications panel ────────────────────────────────── %>
-      <aside class="app-right-panel" id="rightPanel" data-sidebar-target="panel">
+      <aside class="app-right-panel is-hidden" id="rightPanel" data-sidebar-target="panel">
         <%= render 'layouts/notifications_panel',
               panel_notifications: @panel_notifications,
               panel_activity: @panel_activity %>
