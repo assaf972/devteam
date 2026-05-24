@@ -136323,3 +136323,739 @@ Shutting down background worker
 [Sentry::MetricEventBuffer] Initialized buffer with max_items=1000, flush_interval=5s
 Initializing the Sentry background worker with 7 threads
   [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='DevTeam'*/[0m
+[Sentry::MetricEventBuffer] Initialized buffer with max_items=1000, flush_interval=5s
+Initializing the Sentry background worker with 7 threads
+  [1m[36mProject Pluck (0.1ms)[0m  [1m[34mSELECT "projects"."id", "projects"."name" FROM "projects" /*application='DevTeam'*/[0m
+[Sentry::SessionFlusher] thread killed
+Shutting down background worker
+[Sentry::MetricEventBuffer] Initialized buffer with max_items=1000, flush_interval=5s
+Initializing the Sentry background worker with 7 threads
+  [1m[36mUser Load (0.1ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."role" = 3 ORDER BY "users"."id" ASC LIMIT 1 /*application='DevTeam'*/[0m
+[Sentry::SessionFlusher] thread killed
+Shutting down background worker
+[Sentry::MetricEventBuffer] Initialized buffer with max_items=1000, flush_interval=5s
+Initializing the Sentry background worker with 7 threads
+  [1m[36mProject Load (0.1ms)[0m  [1m[34mSELECT "projects".* FROM "projects" WHERE "projects"."name" = 'DevTeam Hub' LIMIT 1 /*application='DevTeam'*/[0m
+  [1m[36mUser Load (0.0ms)[0m  [1m[34mSELECT "users".* FROM "users" WHERE "users"."id" = 1 LIMIT 1 /*application='DevTeam'*/[0m
+  [1m[36mDocument Load (0.1ms)[0m  [1m[34mSELECT "documents".* FROM "documents" WHERE "documents"."project_id" = 5 AND "documents"."title" = 'Jenkins CI — Solution Architecture & Setup Guide' LIMIT 1 /*application='DevTeam'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='DevTeam'*/[0m
+  [1m[36mDocument Create (1.1ms)[0m  [1m[32mINSERT INTO "documents" ("author_id", "content", "created_at", "doc_type", "is_template", "project_id", "summary", "template_id", "title", "updated_at", "version_number") VALUES (1, '# Jenkins CI — Solution Architecture & Setup Guide
+
+## Overview
+
+This document describes how the DevTeam uses Jenkins as the Continuous Integration
+platform across all active projects. It covers the overall architecture, required
+plugins, per-project `Jenkinsfile` configurations, and the Windows Server installation
+procedure.
+
+Jenkins is installed on a dedicated Windows Server. Each project defines its pipeline
+in a `Jenkinsfile` at the repository root. Jenkins detects changes via GitHub webhooks
+and reports build results back to DevTeam Hub through the `/webhooks/jenkins` endpoint,
+which updates CI run records and broadcasts live status updates over Turbo Streams.
+
+---
+
+## 1. CI Flow
+
+```
+Developer pushes branch
+        ↓
+GitHub webhook triggers Jenkins
+        ↓
+Jenkins: checkout → restore deps → lint → test → build artifact
+        ↓
+Artifact archived (installers / dist / publish/)
+        ↓
+Deploy to staging  (main branch only)
+        ↓
+POST /webhooks/jenkins  →  DevTeam Hub updates CI run record
+        ↓
+Slack notification to #ci-notifications
+```
+
+---
+
+## 2. Installing Jenkins on Windows Server
+
+### Prerequisites
+
+| Requirement | Minimum |
+|-------------|---------|
+| OS | Windows Server 2019 or 2022 |
+| CPU | 4 cores |
+| RAM | 8 GB (4 GB minimum) |
+| Disk | 100 GB (builds accumulate quickly) |
+| Java | Java 17 LTS (Eclipse Temurin) |
+| Ports | 8080 (HTTP), 50000 (inbound agent) |
+
+### Step 1 — Install Java 17
+
+```powershell
+winget install EclipseAdoptium.Temurin.17.JDK
+
+# Persist JAVA_HOME for the machine
+[System.Environment]::SetEnvironmentVariable(
+    "JAVA_HOME",
+    "C:\Program Files\Eclipse Adoptium\jdk-17",
+    "Machine"
+)
+$env:PATH += ";$env:JAVA_HOME\bin"
+
+java -version   # verify
+```
+
+### Step 2 — Download and Install Jenkins
+
+```powershell
+# Download the latest stable Windows installer
+Invoke-WebRequest -Uri "https://get.jenkins.io/windows/latest" -OutFile "jenkins.msi"
+
+# Silent install — registers Jenkins as a Windows Service automatically
+Start-Process msiexec.exe -ArgumentList "/i jenkins.msi /quiet" -Wait
+
+# Jenkins service starts automatically; check status
+Get-Service -Name "Jenkins"
+```
+
+### Step 3 — Initial Setup Wizard
+
+1. Open `http://localhost:8080` in a browser.
+2. Retrieve the one-time admin password:
+   ```powershell
+   Get-Content "C:\ProgramData\Jenkins\.jenkins\secrets\initialAdminPassword"
+   ```
+3. Select **Install suggested plugins** — this installs Git, Pipeline, Blue Ocean, etc.
+4. Install the additional plugins listed in Section 3.
+5. Create the first admin user.
+6. Set the **Jenkins URL** to your server hostname, e.g. `http://jenkins.devteam.local:8080`.
+
+### Step 4 — Ensure Automatic Startup
+
+```powershell
+Set-Service -Name "Jenkins" -StartupType Automatic
+Restart-Service -Name "Jenkins"
+```
+
+### Step 5 — Open Firewall Rules
+
+```powershell
+# Web UI
+New-NetFirewallRule -DisplayName "Jenkins HTTP" -Direction Inbound `
+    -Protocol TCP -LocalPort 8080 -Action Allow
+
+# Jenkins agent JNLP port
+New-NetFirewallRule -DisplayName "Jenkins Agent" -Direction Inbound `
+    -Protocol TCP -LocalPort 50000 -Action Allow
+```
+
+### Step 6 — Install Build Toolchains
+
+#### Ruby 3.4 (for Rails projects)
+
+```powershell
+winget install RubyInstallerTeam.RubyWithDevKit.3.4
+# Bundler
+gem install bundler
+```
+
+#### .NET SDK 8 (for TDI2 / WMS)
+
+```powershell
+winget install Microsoft.DotNet.SDK.8
+dotnet --version   # verify
+```
+
+#### .NET Framework Build Tools (for Print Server / TDI)
+
+```powershell
+# Visual Studio Build Tools 2022 with .NET Framework workloads
+winget install Microsoft.VisualStudio.2022.BuildTools
+# Workloads to select: ".NET desktop build tools", "MSBuild"
+```
+
+#### Node.js 20 LTS (for Digital Internet Services)
+
+```powershell
+winget install OpenJS.NodeJS.LTS
+node --version   # verify
+```
+
+#### NuGet CLI
+
+```powershell
+Invoke-WebRequest -Uri "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" `
+    -OutFile "C:\tools\nuget.exe"
+[System.Environment]::SetEnvironmentVariable("PATH", $env:PATH + ";C:\tools", "Machine")
+```
+
+### Step 7 — GitHub Integration
+
+1. Create a GitHub Personal Access Token with scopes: `repo`, `admin:repo_hook`.
+2. In Jenkins → **Manage Jenkins → Credentials → System → Global**:
+   add a **Secret text** credential with ID `github-token`.
+3. In **Manage Jenkins → System → GitHub**:
+   add a GitHub Server pointing to `https://api.github.com` using `github-token`.
+4. Jenkins now auto-creates webhooks on multi-branch pipeline jobs.
+
+---
+
+## 3. Required Plugins
+
+Install via **Manage Jenkins → Plugins → Available plugins**:
+
+| Plugin | Purpose |
+|--------|---------|
+| **Git** | Clone repositories |
+| **GitHub** | Webhook trigger + commit status |
+| **Pipeline** | Declarative `Jenkinsfile` support |
+| **Blue Ocean** | Modern pipeline UI |
+| **Multibranch Scan Webhook Trigger** | Trigger branch scans on push |
+| **NodeJS** | Node.js tool auto-install |
+| **MSBuild** | .NET Framework / MSBuild integration |
+| **JUnit** | Parse test result XML |
+| **HTML Publisher** | Publish coverage/test HTML reports |
+| **HTTP Request** | POST webhook to DevTeam Hub |
+| **Slack Notification** | Team Slack alerts |
+| **Credentials Binding** | Inject secrets as env vars |
+| **SSH Agent** | SSH key injection for deploys |
+| **Timestamper** | Add timestamps to console output |
+| **Workspace Cleanup** | `cleanWs()` step |
+| **OWASP Dependency-Check** | CVE scanning |
+| **Email Extension (Email-ext)** | Failure email notifications |
+| **Configuration as Code (JCasC)** | Manage config in YAML |
+
+---
+
+## 4. Jenkins Configuration as Code (`jenkins.yaml`)
+
+Place this file in `C:\ProgramData\Jenkins\.jenkins\` and set the
+environment variable `CASC_JENKINS_CONFIG` to point to it.
+
+```yaml
+jenkins:
+  systemMessage: "DevTeam CI — managed by JCasC"
+  numExecutors: 4
+  scmCheckoutRetryCount: 2
+  globalNodeProperties:
+    - envVars:
+        env:
+          - key: DEVTEAM_WEBHOOK_URL
+            value: "http://devteam.local/webhooks/jenkins"
+          - key: DEVTEAM_WEBHOOK_TOKEN
+            value: "${DEVTEAM_WEBHOOK_TOKEN}"
+
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - string:
+              id: "github-token"
+              description: "GitHub PAT"
+              secret: "${GITHUB_TOKEN}"
+          - string:
+              id: "devteam-webhook-token"
+              description: "DevTeam Hub webhook token"
+              secret: "${DEVTEAM_WEBHOOK_TOKEN}"
+          - usernamePassword:
+              id: "nuget-server"
+              username: "${NUGET_USER}"
+              password: "${NUGET_PASS}"
+              description: "Internal NuGet feed"
+
+unclassified:
+  slackNotifier:
+    teamDomain: "devteam-workspace"
+    tokenCredentialId: "slack-token"
+    room: "#ci-notifications"
+  gitHubPluginConfig:
+    configs:
+      - name: "GitHub"
+        apiUrl: "https://api.github.com"
+        credentialsId: "github-token"
+        manageHooks: true
+```
+
+---
+
+## 5. Per-Project Jenkinsfile Configurations
+
+### 5.1 Print Server / TDI
+
+**Stack:** C# · .NET Framework · MSBuild · NuGet · NUnit
+
+Add a `Jenkinsfile` at the root of the `print-server-tdi` repository:
+
+```groovy
+// Jenkinsfile — Print Server / TDI
+pipeline {
+    agent { label ''windows'' }
+
+    options {
+        timestamps()
+        cleanWs()
+        buildDiscarder(logRotator(numToKeepStr: ''20''))
+    }
+
+    environment {
+        SOLUTION_FILE = ''PrintServer.sln''
+        NUGET_CONFIG  = ''NuGet.Config''
+    }
+
+    stages {
+        stage(''Checkout'') {
+            steps { checkout scm }
+        }
+
+        stage(''Restore NuGet Packages'') {
+            steps {
+                bat ''nuget restore %SOLUTION_FILE% -ConfigFile %NUGET_CONFIG%''
+            }
+        }
+
+        stage(''Build'') {
+            steps {
+                bat """
+                    msbuild %SOLUTION_FILE% ^
+                        /p:Configuration=Release ^
+                        /p:Platform="Any CPU" ^
+                        /m /verbosity:minimal
+                """
+            }
+        }
+
+        stage(''Test'') {
+            steps {
+                bat ''nunit3-console.exe tests\\PrintServer.Tests\\bin\\Release\\PrintServer.Tests.dll --result=TestResults.xml''
+            }
+            post {
+                always { junit ''TestResults.xml'' }
+            }
+        }
+
+        stage(''Package Installer'') {
+            when { branch ''main'' }
+            steps {
+                bat ''"C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe" setup\\PrintServer.iss''
+                archiveArtifacts artifacts: ''setup/Output/*.exe'', fingerprint: true
+            }
+        }
+
+        stage(''Notify DevTeam'') {
+            steps {
+                script {
+                    httpRequest(
+                        url: env.DEVTEAM_WEBHOOK_URL,
+                        httpMode: ''POST'',
+                        contentType: ''APPLICATION_JSON'',
+                        requestBody: """{"token":"${env.DEVTEAM_WEBHOOK_TOKEN}","ref":"${env.GIT_BRANCH}","status":"${currentBuild.result ?: ''SUCCESS''}","build_url":"${env.BUILD_URL}"}"""
+                    )
+                }
+            }
+        }
+    }
+
+    post {
+        failure { slackSend(color: ''danger'', message: ":x: Print Server / TDI build #${env.BUILD_NUMBER} FAILED — ${env.BUILD_URL}") }
+        success { slackSend(color: ''good'',   message: ":white_check_mark: Print Server / TDI build #${env.BUILD_NUMBER} passed") }
+    }
+}
+```
+
+---
+
+### 5.2 TDI2
+
+**Stack:** C# · .NET 8 SDK · xUnit · dotnet CLI
+
+```groovy
+// Jenkinsfile — TDI2
+pipeline {
+    agent { label ''windows'' }
+
+    options {
+        timestamps()
+        cleanWs()
+        buildDiscarder(logRotator(numToKeepStr: ''20''))
+    }
+
+    environment {
+        DOTNET_CLI_TELEMETRY_OPTOUT = ''1''
+        DOTNET_NOLOGO               = ''1''
+    }
+
+    stages {
+        stage(''Checkout'') { steps { checkout scm } }
+
+        stage(''Restore'')  { steps { bat ''dotnet restore'' } }
+
+        stage(''Build'') {
+            steps { bat ''dotnet build --configuration Release --no-restore'' }
+        }
+
+        stage(''Test'') {
+            steps {
+                bat ''dotnet test --no-build --configuration Release --logger "trx;LogFileName=TestResults.trx" --results-directory TestResults''
+            }
+            post {
+                always { mstest testResultsFile: ''TestResults\\*.trx'' }
+            }
+        }
+
+        stage(''Publish'') {
+            when { branch ''main'' }
+            steps {
+                bat ''dotnet publish src\\TDI2 --configuration Release --output publish\\''
+                archiveArtifacts artifacts: ''publish/**/*'', fingerprint: true
+            }
+        }
+
+        stage(''Security Scan'') {
+            steps {
+                dependencyCheck(
+                    additionalArguments: ''--scan . --format XML --out dependency-check-report'',
+                    odcInstallation: ''OWASP Dependency-Check''
+                )
+                dependencyCheckPublisher pattern: ''dependency-check-report.xml''
+            }
+        }
+
+        stage(''Notify DevTeam'') {
+            steps {
+                script {
+                    httpRequest(
+                        url: env.DEVTEAM_WEBHOOK_URL,
+                        httpMode: ''POST'',
+                        contentType: ''APPLICATION_JSON'',
+                        requestBody: """{"token":"${env.DEVTEAM_WEBHOOK_TOKEN}","ref":"${env.GIT_BRANCH}","status":"${currentBuild.result ?: ''SUCCESS''}","build_url":"${env.BUILD_URL}"}"""
+                    )
+                }
+            }
+        }
+    }
+
+    post {
+        failure { slackSend(color: ''danger'', message: ":x: TDI2 build #${env.BUILD_NUMBER} FAILED — ${env.BUILD_URL}") }
+        success { slackSend(color: ''good'',   message: ":white_check_mark: TDI2 build #${env.BUILD_NUMBER} passed") }
+    }
+}
+```
+
+---
+
+### 5.3 Digital Internet Services
+
+**Stack:** Node.js 20 · Express · Jest · npm
+
+```groovy
+// Jenkinsfile — Digital Internet Services
+pipeline {
+    agent { label ''windows'' }
+
+    tools { nodejs ''NodeJS-20'' }
+
+    options {
+        timestamps()
+        cleanWs()
+        buildDiscarder(logRotator(numToKeepStr: ''20''))
+    }
+
+    stages {
+        stage(''Checkout'')             { steps { checkout scm } }
+        stage(''Install Dependencies'') { steps { bat ''npm ci'' } }
+
+        stage(''Lint'') {
+            steps { bat ''npm run lint'' }
+        }
+
+        stage(''Test'') {
+            steps {
+                bat ''npm test -- --ci --reporters=default --reporters=jest-junit''
+            }
+            post {
+                always { junit ''junit.xml'' }
+            }
+        }
+
+        stage(''Build'') {
+            steps { bat ''npm run build'' }
+        }
+
+        stage(''Security Audit'') {
+            steps { bat ''npm audit --audit-level=high'' }
+        }
+
+        stage(''Deploy Staging'') {
+            when { branch ''main'' }
+            steps {
+                withCredentials([sshUserPrivateKey(credentialsId: ''staging-ssh-dis'', keyFileVariable: ''SSH_KEY'')]) {
+                    bat ''rsync -avz --delete dist/ deploy@staging.dis.local:/var/www/dis/''
+                }
+            }
+        }
+
+        stage(''Notify DevTeam'') {
+            steps {
+                script {
+                    httpRequest(
+                        url: env.DEVTEAM_WEBHOOK_URL,
+                        httpMode: ''POST'',
+                        contentType: ''APPLICATION_JSON'',
+                        requestBody: """{"token":"${env.DEVTEAM_WEBHOOK_TOKEN}","ref":"${env.GIT_BRANCH}","status":"${currentBuild.result ?: ''SUCCESS''}","build_url":"${env.BUILD_URL}"}"""
+                    )
+                }
+            }
+        }
+    }
+
+    post {
+        failure { slackSend(color: ''danger'', message: ":x: DIS build #${env.BUILD_NUMBER} FAILED — ${env.BUILD_URL}") }
+        success { slackSend(color: ''good'',   message: ":white_check_mark: DIS build #${env.BUILD_NUMBER} passed") }
+    }
+}
+```
+
+---
+
+### 5.4 Work Management System
+
+**Stack:** Ruby on Rails · RSpec · PostgreSQL (test) · RuboCop
+
+```groovy
+// Jenkinsfile — Work Management System
+pipeline {
+    agent { label ''windows'' }
+
+    options {
+        timestamps()
+        cleanWs()
+        buildDiscarder(logRotator(numToKeepStr: ''20''))
+    }
+
+    environment {
+        RAILS_ENV    = ''test''
+        DATABASE_URL = credentials(''wms-test-database-url'')
+    }
+
+    stages {
+        stage(''Checkout'') { steps { checkout scm } }
+
+        stage(''Bundle Install'') {
+            steps { bat ''bundle install --jobs 4 --retry 3'' }
+        }
+
+        stage(''DB Setup'') {
+            steps {
+                bat ''bundle exec rails db:create''
+                bat ''bundle exec rails db:schema:load''
+            }
+        }
+
+        stage(''Lint'') {
+            steps { bat ''bundle exec rubocop --format progress'' }
+        }
+
+        stage(''Test'') {
+            steps {
+                bat ''bundle exec rspec --format RspecJunitFormatter --out rspec.xml --format progress''
+            }
+            post {
+                always {
+                    junit ''rspec.xml''
+                    publishHTML(target: [
+                        reportDir: ''coverage'', reportFiles: ''index.html'',
+                        reportName: ''SimpleCov Coverage''
+                    ])
+                }
+            }
+        }
+
+        stage(''Notify DevTeam'') {
+            steps {
+                script {
+                    httpRequest(
+                        url: env.DEVTEAM_WEBHOOK_URL,
+                        httpMode: ''POST'',
+                        contentType: ''APPLICATION_JSON'',
+                        requestBody: """{"token":"${env.DEVTEAM_WEBHOOK_TOKEN}","ref":"${env.GIT_BRANCH}","status":"${currentBuild.result ?: ''SUCCESS''}","build_url":"${env.BUILD_URL}"}"""
+                    )
+                }
+            }
+        }
+    }
+
+    post {
+        failure { slackSend(color: ''danger'', message: ":x: WMS build #${env.BUILD_NUMBER} FAILED — ${env.BUILD_URL}") }
+        success { slackSend(color: ''good'',   message: ":white_check_mark: WMS build #${env.BUILD_NUMBER} passed") }
+    }
+}
+```
+
+---
+
+### 5.5 DevTeam Hub
+
+**Stack:** Ruby on Rails 8 · RSpec · SQLite · esbuild · sass · Brakeman
+
+```groovy
+// Jenkinsfile — DevTeam Hub
+pipeline {
+    agent { label ''windows'' }
+
+    options {
+        timestamps()
+        cleanWs()
+        buildDiscarder(logRotator(numToKeepStr: ''20''))
+    }
+
+    environment {
+        RAILS_ENV = ''test''
+        CI        = ''true''
+    }
+
+    stages {
+        stage(''Checkout'') { steps { checkout scm } }
+
+        stage(''Install Dependencies'') {
+            parallel {
+                stage(''Gems'') { steps { bat ''bundle install --jobs 4 --retry 3'' } }
+                stage(''NPM'')  { steps { bat ''npm ci'' } }
+            }
+        }
+
+        stage(''Assets Precompile'') {
+            steps { bat ''bundle exec rails assets:precompile'' }
+        }
+
+        stage(''DB Setup'') {
+            steps { bat ''bundle exec rails db:create db:schema:load'' }
+        }
+
+        stage(''Lint & Security'') {
+            parallel {
+                stage(''RuboCop'') {
+                    steps { bat ''bundle exec rubocop --format progress'' }
+                }
+                stage(''Brakeman'') {
+                    steps { bat ''bundle exec brakeman -q --no-pager'' }
+                }
+            }
+        }
+
+        stage(''Test'') {
+            steps {
+                bat ''bundle exec rspec --format RspecJunitFormatter --out rspec.xml --format progress''
+            }
+            post {
+                always {
+                    junit ''rspec.xml''
+                    publishHTML(target: [
+                        reportDir: ''coverage'', reportFiles: ''index.html'',
+                        reportName: ''SimpleCov Coverage''
+                    ])
+                }
+            }
+        }
+
+        stage(''Notify Self'') {
+            steps {
+                script {
+                    httpRequest(
+                        url: env.DEVTEAM_WEBHOOK_URL,
+                        httpMode: ''POST'',
+                        contentType: ''APPLICATION_JSON'',
+                        requestBody: """{"token":"${env.DEVTEAM_WEBHOOK_TOKEN}","ref":"${env.GIT_BRANCH}","status":"${currentBuild.result ?: ''SUCCESS''}","build_url":"${env.BUILD_URL}"}"""
+                    )
+                }
+            }
+        }
+    }
+
+    post {
+        failure { slackSend(color: ''danger'', message: ":x: DevTeam Hub build #${env.BUILD_NUMBER} FAILED — ${env.BUILD_URL}") }
+        success { slackSend(color: ''good'',   message: ":white_check_mark: DevTeam Hub build #${env.BUILD_NUMBER} passed") }
+    }
+}
+```
+
+---
+
+## 6. DevTeam Hub Webhook Integration
+
+Jenkins notifies DevTeam Hub after every build by posting to `/webhooks/jenkins`.
+
+**Payload:**
+
+```json
+{
+  "token": "<DEVTEAM_WEBHOOK_TOKEN>",
+  "ref": "refs/heads/main",
+  "status": "SUCCESS",
+  "build_url": "http://jenkins.devteam.local:8080/job/devteam-hub/42/"
+}
+```
+
+DevTeam Hub uses this to:
+- Update the linked `CiRun` record''s status.
+- Broadcast a Turbo Stream update to all connected browsers showing the live CI status badge.
+- Trigger notifications if the build fails.
+
+Store the shared secret in Jenkins credentials as `devteam-webhook-token` and reference it
+via `env.DEVTEAM_WEBHOOK_TOKEN` (injected by the JCasC configuration above).
+
+---
+
+## 7. Shared Library
+
+Create a `jenkins-shared-library` repository and register it in
+**Manage Jenkins → System → Global Pipeline Libraries** (name: `devteam-shared`).
+
+```groovy
+// vars/notifyDevTeam.groovy
+def call(String status = null) {
+    def s = status ?: (currentBuild.result ?: ''SUCCESS'')
+    httpRequest(
+        url: env.DEVTEAM_WEBHOOK_URL,
+        httpMode: ''POST'',
+        contentType: ''APPLICATION_JSON'',
+        requestBody: """{
+            "token":"${env.DEVTEAM_WEBHOOK_TOKEN}",
+            "ref":"${env.GIT_BRANCH}",
+            "status":"${s}",
+            "build_url":"${env.BUILD_URL}"
+        }"""
+    )
+}
+```
+
+Then any Jenkinsfile can be simplified to:
+
+```groovy
+@Library(''devteam-shared'') _
+
+pipeline {
+    // ...
+    post {
+        always { notifyDevTeam() }
+    }
+}
+```
+
+---
+
+## 8. Backup & Maintenance
+
+| Task | Frequency | Command / Location |
+|------|-----------|-------------------|
+| Full backup of `JENKINS_HOME` | Daily | `robocopy C:\ProgramData\Jenkins\.jenkins D:\Backups\jenkins /MIR` |
+| Update Jenkins core | Monthly | Manage Jenkins → Updates |
+| Update plugins | Weekly | Manage Jenkins → Plugins → Updates tab |
+| Rotate webhook token | Quarterly | Update credential in Jenkins + env var on server |
+| Review disk usage | Monthly | Manage Jenkins → System Information → Disk Usage |
+| Prune old builds | Per sprint | Blue Ocean → each pipeline → delete old runs |
+', '2026-05-24 09:45:09.820862', 6, NULL, 5, NULL, NULL, 'Jenkins CI — Solution Architecture & Setup Guide', '2026-05-24 09:45:09.820862', '1.0') RETURNING "id" /*application='DevTeam'*/[0m
+  [1m[36mActsAsTaggableOn::Tagging Load (0.0ms)[0m  [1m[34mSELECT "taggings".* FROM "taggings" WHERE "taggings"."taggable_id" = 28 AND "taggings"."taggable_type" = 'Document' /*application='DevTeam'*/[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='DevTeam'*/[0m
+[Sentry::SessionFlusher] thread killed
+Shutting down background worker
+[Sentry::MetricEventBuffer] Initialized buffer with max_items=1000, flush_interval=5s
+Initializing the Sentry background worker with 7 threads
