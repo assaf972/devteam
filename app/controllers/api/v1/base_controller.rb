@@ -27,6 +27,9 @@ module Api
           kind:                  ticket.kind,
           level:                 ticket.level,
           how_to_reproduce:      ticket.how_to_reproduce,
+          test_plan:             ticket.test_plan,
+          story_points:          ticket.story_points,
+          actual_velocity:       ticket.actual_velocity,
           pr_number:             ticket.pr_number,
           pr_url:                ticket.pr_url,
           dev_estimate_hours:    ticket.dev_estimate_hours,
@@ -38,6 +41,7 @@ module Api
             repo_url: ticket.project.repo_url,
             default_branch: ticket.project.default_branch
           },
+          sprint: ticket.sprint && { id: ticket.sprint_id, name: ticket.sprint.name },
           assignee: ticket.assignee && { id: ticket.assignee_id, name: ticket.assignee.display_name },
           owner:    ticket.owner    && { id: ticket.owner_id,    name: ticket.owner.display_name },
           estimated_by: ticket.estimated_by && { id: ticket.estimated_by_id, name: ticket.estimated_by.display_name },

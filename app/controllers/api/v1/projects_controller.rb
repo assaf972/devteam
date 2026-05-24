@@ -24,6 +24,7 @@ module Api
           repo_url:       project.repo_url,
           default_branch: project.default_branch,
           tech_stack:     project.tech_stack,
+          members: project.members.order(:name).map { |u| { id: u.id, name: u.display_name, email: u.email } },
           tickets: project.tickets.where(assignee: current_api_user)
                           .order(updated_at: :desc)
                           .map { |t| render_ticket(t) }

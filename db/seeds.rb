@@ -1214,4 +1214,100 @@ end
 
 puts "  ✓ Fake pull requests seeded for all projects"
 
+# ─────────────────────────────────────────────────────────────────
+# Documents from docs/ folder
+# ─────────────────────────────────────────────────────────────────
+docs_to_seed = [
+  {
+    file:            "docs/cli_manual.html",
+    title:           "dt CLI Manual",
+    doc_type:        :runbook,
+    summary:         "Complete reference for the dt command-line client — setup, ticket management, CI, deployments, and logs.",
+    version_number:  "1.0"
+  },
+  {
+    file:            "docs/writing_specs_and_tickets.html",
+    title:           "Writing Specs & Tickets — Agile Best Practices",
+    doc_type:        :spec,
+    summary:         "Guide to writing clear, actionable tickets — user stories, acceptance criteria, ticket kinds, and anti-patterns.",
+    version_number:  "1.0"
+  },
+  {
+    file:            "docs/ticket_estimation_guide.html",
+    title:           "Ticket Estimation Guide",
+    doc_type:        :spec,
+    summary:         "Practical guide to story points, complexity levels, hour estimates, planning poker, and tracking velocity.",
+    version_number:  "1.0"
+  },
+  {
+    file:            "docs/api_reference.html",
+    title:           "API Reference",
+    doc_type:        :architecture,
+    summary:         "REST API documentation for DevTeam Hub — authentication, endpoints, request/response formats.",
+    version_number:  "1.0"
+  },
+  {
+    file:            "docs/infrastructure_guide.html",
+    title:           "Infrastructure Guide",
+    doc_type:        :architecture,
+    summary:         "Deployment architecture, Docker setup, CI/CD pipelines, and production operations guide.",
+    version_number:  "1.0"
+  },
+  {
+    file:            "docs/presentation.html",
+    title:           "DevTeam Hub Presentation",
+    doc_type:        :other,
+    summary:         "Overview presentation of the DevTeam Hub platform and capabilities.",
+    version_number:  "1.0"
+  },
+  {
+    file:            "docs/automatic_testing_presentation.html",
+    title:           "Automatic Testing Presentation",
+    doc_type:        :test_coverage,
+    summary:         "Presentation on automated testing strategies, frameworks, and best practices.",
+    version_number:  "1.0"
+  },
+  {
+    file:            "docs/project_overview.md",
+    title:           "Project Overview",
+    doc_type:        :spec,
+    summary:         "High-level overview of the DevTeam Hub project — goals, architecture, and roadmap.",
+    version_number:  "1.0"
+  },
+  {
+    file:            "docs/project_risks.md",
+    title:           "Project Risks",
+    doc_type:        :risk_management,
+    summary:         "Risk register for the DevTeam Hub project — identified risks, mitigations, and contingency plans.",
+    version_number:  "1.0"
+  },
+  {
+    file:            "docs/stories_backlog.md",
+    title:           "Stories Backlog",
+    doc_type:        :user_story,
+    summary:         "Product backlog of user stories and feature requests for DevTeam Hub.",
+    version_number:  "1.0"
+  }
+]
+
+devteam_project = projects[4]
+doc_count = 0
+
+docs_to_seed.each do |d|
+  filepath = Rails.root.join(d[:file])
+  next unless File.exist?(filepath)
+
+  doc = Document.find_or_create_by!(title: d[:title], project: devteam_project) do |doc|
+    doc.content        = File.read(filepath)
+    doc.doc_type       = d[:doc_type]
+    doc.summary        = d[:summary]
+    doc.version_number = d[:version_number]
+    doc.author         = admin
+    doc.is_template    = false
+  end
+  doc_count += 1
+end
+
+puts "  ✓ #{doc_count} documents seeded from docs/ folder"
+
 puts "✅ Seed complete!"

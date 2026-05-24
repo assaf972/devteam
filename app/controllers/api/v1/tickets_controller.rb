@@ -43,8 +43,9 @@ module Api
       # PATCH /api/v1/tickets/:id
       def update
         allowed = %w[
-          title description status priority kind level how_to_reproduce
-          assignee_id owner_id pr_number pr_url dev_estimate_hours tester_estimate_hours actual_hours
+          title description status priority kind level how_to_reproduce test_plan
+          assignee_id owner_id sprint_id milestone_id pr_number pr_url
+          story_points actual_velocity dev_estimate_hours tester_estimate_hours actual_hours
         ]
         attrs   = params.require(:ticket).permit(*allowed)
 
