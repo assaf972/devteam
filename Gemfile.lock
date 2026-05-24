@@ -302,7 +302,7 @@ GEM
       racc (~> 1.4)
     nokogiri (1.19.3-x86_64-linux-musl)
       racc (~> 1.4)
-    noticed (2.9.3)
+    noticed (3.0.0)
       rails (>= 6.1.0)
     orm_adapter (0.5.0)
     ostruct (0.6.3)
@@ -526,7 +526,7 @@ GEM
     websocket-extensions (0.1.5)
     xpath (3.2.0)
       nokogiri (~> 1.8)
-    zeitwerk (2.8.1)
+    zeitwerk (2.8.2)
 
 PLATFORMS
   aarch64-linux
@@ -563,7 +563,7 @@ DEPENDENCIES
   kamal
   kaminari
   lograge
-  noticed (~> 2.0)
+  noticed (~> 3.0)
   prawn
   prawn-table!
   propshaft
