@@ -63,6 +63,7 @@ Rails.application.routes.draw do
   get "calendar",  to: "calendar#index",  as: :calendar
 
   # ── Ticket views (cross-project) ────────────────────────────────────────
+  get "tickets",                to: "tickets#all",            as: :all_tickets
   get "tickets/mine",           to: "tickets#mine",           as: :my_tickets
   get "tickets/late",           to: "tickets#late",           as: :late_tickets
   get "tickets/backlog",        to: "tickets#backlog_list",   as: :backlog_tickets

@@ -83,12 +83,19 @@ he:
     created: "הכרטיס נוצר בהצלחה."
     updated: "הכרטיס עודכן בהצלחה."
     deleted: "הכרטיס נמחק."
+    all: "כל הכרטיסים"
     filtered:
       mine: "הכרטיסים שלי"
       late: "כרטיסים באיחור"
       backlog_list: "Backlog"
       current_sprint: "כרטיסי ספרינט נוכחי"
       empty: "לא נמצאו כרטיסים."
+    filters:
+      all_statuses: "כל הסטטוסים"
+      all_projects: "כל הפרויקטים"
+      all_assignees: "כל המשויכים"
+      all_owners: "כל הבעלים"
+      filter: "סנן"
     statuses:
       backlog: "Backlog"
       open: "פתוח"
@@ -132,6 +139,8 @@ he:
       demo: "הדגמה"
       one_on_one: "פגישה 1:1"
       other: "אחר"
+  sprints:
+    new_sprint: "ספרינט חדש"
   documents:
     types:
       spec: "מפרט"
@@ -255,10 +264,12 @@ he:
       estimation_accuracy: "דיוק הערכות"
     tickets_label: "כרטיסים"
     tickets:
+      all_tickets: "כל הכרטיסים"
       my_tickets: "הכרטיסים שלי"
       late: "כרטיסים באיחור"
       backlog: "Backlog"
       current_sprint: "ספרינט נוכחי"
+    new_project: "פרויקט חדש"
     admin:
       users: "משתמשים"
       clients: "לקוחות"

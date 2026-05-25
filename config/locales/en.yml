@@ -58,12 +58,19 @@ en:
     created: "Ticket created successfully."
     updated: "Ticket updated successfully."
     deleted: "Ticket deleted."
+    all: "All Tickets"
     filtered:
       mine: "My Tickets"
       late: "Late Tickets"
       backlog_list: "Backlog"
       current_sprint: "Current Sprint Tickets"
       empty: "No tickets found."
+    filters:
+      all_statuses: "All Statuses"
+      all_projects: "All Projects"
+      all_assignees: "All Assignees"
+      all_owners: "All Owners"
+      filter: "Filter"
     statuses:
       backlog: "Backlog"
       open: "Open"
@@ -107,6 +114,8 @@ en:
       demo: "Demo"
       one_on_one: "1:1"
       other: "Other"
+  sprints:
+    new_sprint: "New Sprint"
   documents:
     types:
       spec: "Specification"
@@ -230,10 +239,12 @@ en:
       estimation_accuracy: "Estimation Accuracy"
     tickets_label: "Tickets"
     tickets:
+      all_tickets: "All Tickets"
       my_tickets: "My Tickets"
       late: "Late Tickets"
       backlog: "Backlog"
       current_sprint: "Current Sprint"
+    new_project: "New Project"
     admin:
       users: "Users"
       clients: "Clients"

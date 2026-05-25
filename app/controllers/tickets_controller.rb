@@ -9,6 +9,17 @@ class TicketsController < ApplicationController
     @tickets = @tickets.tagged_with(params[:tag]) if params[:tag].present?
   end
 
+  def all
+    @tickets = Ticket.includes(:assignee, :owner, :sprint, :project)
+                     .order(priority: :desc, created_at: :desc)
+    @tickets = @tickets.where(status: params[:status]) if params[:status].present?
+    @tickets = @tickets.where(project_id: params[:project_id]) if params[:project_id].present?
+    @tickets = @tickets.where(assignee_id: params[:assignee_id]) if params[:assignee_id].present?
+    @tickets = @tickets.where(owner_id: params[:owner_id]) if params[:owner_id].present?
+    @projects = Project.order(:name)
+    @users = User.order(:name)
+  end
+
   def mine
     @tickets = Ticket.where(assignee: current_user)
                      .includes(:assignee, :sprint, :project)
