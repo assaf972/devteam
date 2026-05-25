@@ -1,4 +1,4 @@
-<%= form_with model: [@project, deployment], class: "needs-validation", novalidate: true do |f| %>
+<%= form_with model: deployment.persisted? ? deployment : [@project, deployment], class: "needs-validation", novalidate: true do |f| %>
   <% if deployment.errors.any? %>
     <div class="alert alert-danger">
       <ul class="mb-0">

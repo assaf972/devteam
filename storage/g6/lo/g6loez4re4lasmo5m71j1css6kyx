@@ -1,0 +1,22 @@
+# Story Specification: PostgreSQL full-text search for tickets and projects
+
+**Project:** Work Management System
+**Kind:** Story
+**Priority:** Medium
+**Dev estimate:** 16.0h
+**QA estimate:** 4.0h
+
+## Overview
+
+Add a tsvector column to the tickets table populated from title + description. Create a GIN index. Expose a /search endpoint backed by to_tsquery. Frontend: debounced search input with highlighted matches using ts_headline.
+
+## Acceptance Criteria
+
+- [ ] Implementation matches the described behaviour
+- [ ] Unit tests cover the main code paths
+- [ ] QA sign-off on the acceptance criteria
+- [ ] Documentation updated if applicable
+
+## Technical Notes
+
+_To be filled in by the assigned developer._

@@ -60,11 +60,12 @@
             <% end %>
           </td>
           <td class="text-end">
-            <%= link_to t("common.view"), customer, class: "btn btn-secondary btn-sm is-info is-light me-1" %>
-            <%= link_to t("common.edit"), edit_customer_path(customer), class: "btn btn-secondary btn-sm is-warning is-light me-1" %>
-            <%= button_to t("common.delete"), customer, method: :delete,
-                data: { turbo_confirm: t("common.confirm_delete") },
-                class: "btn btn-secondary btn-sm is-danger is-light" %>
+            <%= actions_dropdown do |d| %>
+              <% d.link t('common.view'), customer, icon: '👁' %>
+              <% d.link t('common.actions.edit'), edit_customer_path(customer), icon: '✏️' %>
+              <% d.divider %>
+              <% d.delete t('common.delete'), customer, confirm: t('common.confirm_delete') %>
+            <% end %>
           </td>
         </tr>
       <% end %>

@@ -183,7 +183,7 @@
       <h3 class="fw-bold fs-5 mb-3">🔀 Pull Requests (<%= @pull_requests.count %>)</h3>
       <% if @pull_requests.any? %>
         <table class="table w-100 fs-7">
-          <thead><tr><th>#</th><th>Title</th><th>Ticket</th><th>Status</th></tr></thead>
+          <thead><tr><th><%= t('table_headers.id') %></th><th><%= t('table_headers.title') %></th><th><%= t('table_headers.ticket') %></th><th><%= t('table_headers.status') %></th></tr></thead>
           <tbody>
             <% @pull_requests.each do |pr| %>
               <tr>

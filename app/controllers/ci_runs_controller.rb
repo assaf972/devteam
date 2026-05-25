@@ -1,5 +1,6 @@
 class CiRunsController < ApplicationController
-  before_action :set_project
+  before_action :set_project, only: :index
+  before_action :set_ci_run, only: :show
 
   def index
     @ci_runs = @project.ci_runs
@@ -9,7 +10,6 @@ class CiRunsController < ApplicationController
   end
 
   def show
-    @ci_run = @project.ci_runs.find(params[:id])
     @test_results = @ci_run.test_results
   end
 
@@ -17,5 +17,10 @@ class CiRunsController < ApplicationController
 
   def set_project
     @project = Project.find(params[:project_id])
+  end
+
+  def set_ci_run
+    @ci_run = CiRun.find(params[:id])
+    @project = @ci_run.project
   end
 end

@@ -5,31 +5,44 @@
 puts "🌱 Seeding..."
 
 # ─────────────────────────────────────────────────────────────────
-# Helper: generate a default SVG avatar for a user
+# Helper: attach a fake face photo as avatar
+# Uses i.pravatar.cc for deterministic face images per user.
 # ─────────────────────────────────────────────────────────────────
-AVATAR_COLORS = %w[#4a90d9 #7b68ee #20c997 #fd7e14 #e83e8c #6366f1 #0d9488 #e67e22].freeze
+require "open-uri"
 
-def generate_default_avatar(user, index)
-  return if user.avatar.attached?
+# Map each user to a specific pravatar image ID for consistency.
+# IDs 1-70 are available on i.pravatar.cc.
+AVATAR_IMAGE_IDS = {
+  "assaf@devteam.local"  => 11,  # male
+  "yael@devteam.local"   => 5,   # female
+  "noam@devteam.local"   => 12,  # male
+  "dana@devteam.local"   => 9,   # female
+  "oren@devteam.local"   => 14,  # male
+  "michal@devteam.local" => 25,  # female
+  "tal@devteam.local"    => 33,  # male
+  "avi@devteam.local"    => 53   # male
+}.freeze
 
-  parts    = user.display_name.split
-  initials = parts.size >= 2 ? "#{parts.first[0]}#{parts.last[0]}".upcase : user.display_name.first(2).upcase
-  bg       = AVATAR_COLORS[index % AVATAR_COLORS.size]
+def attach_face_avatar(user, _index)
+  # Replace existing SVG avatars with real photos; keep user-uploaded non-SVG avatars
+  if user.avatar.attached?
+    return unless user.avatar.blob.content_type == "image/svg+xml"
+    user.avatar.purge
+  end
 
-  svg = <<~SVG
-    <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
-      <rect width="200" height="200" rx="100" fill="#{bg}"/>
-      <text x="100" y="100" dy=".35em" text-anchor="middle"
-            font-family="Inter,Helvetica,Arial,sans-serif" font-size="80" font-weight="700"
-            fill="#ffffff">#{initials}</text>
-    </svg>
-  SVG
+  img_id = AVATAR_IMAGE_IDS[user.email] || (user.id.to_i % 70) + 1
+  url    = "https://i.pravatar.cc/200?img=#{img_id}"
 
-  user.avatar.attach(
-    io:           StringIO.new(svg),
-    filename:     "#{user.display_name.parameterize}-avatar.svg",
-    content_type: "image/svg+xml"
-  )
+  begin
+    photo_data = URI.parse(url).open(read_timeout: 10).read
+    user.avatar.attach(
+      io:           StringIO.new(photo_data),
+      filename:     "#{user.display_name.parameterize}-avatar.jpg",
+      content_type: "image/jpeg"
+    )
+  rescue StandardError => e
+    puts "    ⚠ Could not download avatar for #{user.display_name}: #{e.message}"
+  end
 end
 
 # ─────────────────────────────────────────────────────────────────
@@ -57,13 +70,13 @@ end
 
 puts "  ✓ #{users.size} internal users"
 
-# Attach default avatars to users
+# Attach face photo avatars to users
 ActiveStorage::Current.url_options = { host: "localhost", port: 3000 }
 users.each_with_index do |u, i|
   Rails.application.config.active_job.queue_adapter = :inline
-  generate_default_avatar(u, i)
+  attach_face_avatar(u, i)
 end
-puts "  ✓ default avatars attached"
+puts "  ✓ face photo avatars attached"
 
 # ─────────────────────────────────────────────────────────────────
 # Customers (portal accounts — parent of CustomerUser)

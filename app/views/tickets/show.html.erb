@@ -97,7 +97,7 @@
       <h3 class="subfw-bold"><%= t('nav.ci') %></h3>
       <% if @ci_runs.any? %>
         <table class="table w-100 fs-7">
-          <thead><tr><th>Build</th><th>Branch</th><th>Status</th><th>Duration</th><th>Log</th></tr></thead>
+          <thead><tr><th><%= t('table_headers.build') %></th><th><%= t('table_headers.branch') %></th><th><%= t('table_headers.status') %></th><th><%= t('table_headers.duration') %></th><th><%= t('table_headers.log') %></th></tr></thead>
           <tbody>
             <% @ci_runs.each do |run| %>
               <tr>

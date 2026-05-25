@@ -39,7 +39,7 @@
       <% if @my_tickets.any? %>
         <table class="table table-hover w-100 fs-7">
           <thead>
-            <tr><th>#</th><th>Title</th><th>Project</th><th>Priority</th><th>Status</th></tr>
+            <tr><th><%= t('table_headers.id') %></th><th><%= t('table_headers.title') %></th><th><%= t('table_headers.project') %></th><th><%= t('table_headers.priority') %></th><th><%= t('table_headers.status') %></th></tr>
           </thead>
           <tbody>
             <% @my_tickets.each do |ticket| %>
@@ -66,7 +66,7 @@
       <% if @recent_ci_runs.any? %>
         <table class="table w-100 fs-7">
           <thead>
-            <tr><th>Build</th><th>Project</th><th>Branch</th><th>Status</th><th>When</th></tr>
+            <tr><th><%= t('table_headers.build') %></th><th><%= t('table_headers.project') %></th><th><%= t('table_headers.branch') %></th><th><%= t('table_headers.status') %></th><th><%= t('table_headers.when') %></th></tr>
           </thead>
           <tbody>
             <% @recent_ci_runs.each do |run| %>

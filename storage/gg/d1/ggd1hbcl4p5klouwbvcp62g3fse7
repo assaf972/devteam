@@ -1,0 +1,22 @@
+# Story Specification: Add PDF export for print queue jobs
+
+**Project:** Print Server / TDI
+**Kind:** Story
+**Priority:** Medium
+**Dev estimate:** 16.0h
+**QA estimate:** 4.0h
+
+## Overview
+
+Allow operators to export the current print queue as a PDF report including job ID, document name, page count, and submission time. The export should support filtering by printer and date range.
+
+## Acceptance Criteria
+
+- [ ] Implementation matches the described behaviour
+- [ ] Unit tests cover the main code paths
+- [ ] QA sign-off on the acceptance criteria
+- [ ] Documentation updated if applicable
+
+## Technical Notes
+
+_To be filled in by the assigned developer._

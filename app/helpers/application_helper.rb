@@ -1,4 +1,14 @@
 module ApplicationHelper
+  MARKDOWN_RENDERER = Redcarpet::Markdown.new(
+    Redcarpet::Render::HTML.new(hard_wrap: true, link_attributes: { target: "_blank", rel: "noopener" }),
+    autolink: true, tables: true, fenced_code_blocks: true,
+    strikethrough: true, highlight: true, no_intra_emphasis: true
+  )
+
+  def render_markdown(text)
+    MARKDOWN_RENDERER.render(text.to_s).html_safe
+  end
+
   # Renders a circular avatar — Active Storage image or initials fallback.
   # size: pixel diameter (default 36)
   def user_avatar(user, size: 36, bg: "#4a90d9", css_class: "")
@@ -67,5 +77,75 @@ module ApplicationHelper
   def jitsi_url_for(room_name)
     base = ENV.fetch("JITSI_URL", "https://meet.jit.si")
     "#{base}/#{ERB::Util.url_encode(room_name)}"
+  end
+
+  # Renders a Bootstrap dropdown with a hamburger (⋮) trigger for table row actions.
+  # Usage:
+  #   actions_dropdown do |d|
+  #     d.link "View", some_path, icon: "👁"
+  #     d.link "Edit", edit_path, icon: "✏️"
+  #     d.divider
+  #     d.delete "Delete", some_path, confirm: "Are you sure?"
+  #   end
+  def actions_dropdown(&block)
+    builder = ActionsDropdownBuilder.new(self)
+    block.call(builder)
+    id = "actions-#{SecureRandom.hex(4)}"
+    align_class = rtl? ? "text-start" : "text-end"
+
+    content_tag(:div, class: "dropdown #{align_class}") do
+      button = content_tag(:button, "⋮",
+        class: "btn btn-sm btn-outline-secondary dropdown-toggle actions-kebab",
+        type: "button",
+        id: id,
+        data: { bs_toggle: "dropdown" },
+        aria: { expanded: false })
+      menu = content_tag(:ul, class: "dropdown-menu dropdown-menu-end shadow-sm", aria: { labelledby: id }) do
+        safe_join(builder.items)
+      end
+      button + menu
+    end
+  end
+
+  class ActionsDropdownBuilder
+    attr_reader :items
+
+    def initialize(helper)
+      @helper = helper
+      @items = []
+    end
+
+    def link(label, url, icon: nil, method: nil, **html_opts)
+      data = {}
+      data[:turbo_method] = method if method
+      link = @helper.link_to(url, class: "dropdown-item fs-7", data: data, **html_opts) do
+        icon_html = icon ? @helper.content_tag(:span, icon, class: "me-2") : "".html_safe
+        icon_html + label
+      end
+      @items << @helper.content_tag(:li, link)
+    end
+
+    def delete(label, url, confirm: nil)
+      data = { turbo_method: :delete }
+      data[:turbo_confirm] = confirm if confirm
+      link = @helper.link_to(url, class: "dropdown-item fs-7 text-danger", data: data) do
+        @helper.content_tag(:span, "🗑", class: "me-2") + label
+      end
+      @items << @helper.content_tag(:li, link)
+    end
+
+    def button_action(label, url, method: :patch, confirm: nil, icon: nil)
+      data = { turbo_method: method }
+      data[:turbo_confirm] = confirm if confirm
+      link = @helper.link_to(url, class: "dropdown-item fs-7", data: data) do
+        icon_html = icon ? @helper.content_tag(:span, icon, class: "me-2") : "".html_safe
+        icon_html + label
+      end
+      @items << @helper.content_tag(:li, link)
+    end
+
+    def divider
+      @items << @helper.content_tag(:li, @helper.content_tag(:hr, nil, class: "dropdown-divider"))
+    end
   end
 end

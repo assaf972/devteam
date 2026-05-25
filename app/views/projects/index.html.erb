@@ -8,16 +8,14 @@
 <div class="row">
   <% @projects.each do |project| %>
     <div class="col-6">
-      <div class="card p-3 mb-3">
-        <div class="level">
-          <div class="level-left">
-            <div>
-              <p class="fw-bold fs-5"><%= link_to project.name, project %></p>
-              <p class="subfw-bold is-7 text-muted"><%= project.tech_stack %></p>
-            </div>
+      <div class="card p-3 mb-3" style="overflow:hidden;">
+        <div class="d-flex justify-content-between align-items-start gap-2">
+          <div style="min-width:0;flex:1;">
+              <p class="fw-bold fs-5 mb-1"><%= link_to project.name, project %></p>
+              <p class="text-muted small mb-0" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><%= project.tech_stack %></p>
           </div>
-          <div class="level-right">
-            <%= link_to "CI", project_ci_dashboard_path(project), class: "btn btn-secondary btn-sm is-light" %>
+          <div class="flex-shrink-0">
+            <%= link_to "CI", ci_dashboard_project_path(project), class: "btn btn-secondary btn-sm is-light" %>
           </div>
         </div>
         <p class="fs-7 mb-3"><%= project.description&.truncate(120) %></p>

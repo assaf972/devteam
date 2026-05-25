@@ -39,7 +39,7 @@
   <h2 class="subfw-bold mt-4">Past Meetings</h2>
   <table class="table table-hover w-100">
     <thead>
-      <tr><th>Title</th><th>Type</th><th>Date</th><th>Project</th><th>Status</th><th>Recording</th></tr>
+      <tr><th><%= t('table_headers.title') %></th><th><%= t('table_headers.type') %></th><th><%= t('table_headers.date') %></th><th><%= t('table_headers.project') %></th><th><%= t('table_headers.status') %></th><th><%= t('table_headers.recording') %></th></tr>
     </thead>
     <tbody>
       <% past.first(20).each do |meeting| %>
