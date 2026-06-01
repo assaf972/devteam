@@ -45,6 +45,14 @@ RSpec.describe Sprint, type: :model do
       expect(Sprint.current).to include(current)
       expect(Sprint.current).not_to include(future)
     end
+
+    it ".upcoming returns only future sprints, earliest first" do
+      current  = create(:active_sprint, start_date: Date.today - 1, end_date: Date.today + 5)
+      soon     = create(:sprint, start_date: Date.today + 7,  end_date: Date.today + 21)
+      later    = create(:sprint, start_date: Date.today + 30, end_date: Date.today + 44)
+      expect(Sprint.upcoming).to eq([ soon, later ])
+      expect(Sprint.upcoming).not_to include(current)
+    end
   end
 
   describe "#progress_percent" do

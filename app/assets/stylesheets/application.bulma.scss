@@ -1076,3 +1076,21 @@ trix-toolbar {
         border-radius: 0.375rem;
     }
 }
+
+// ─── simple_form × Bulma select wrapper fix ───────────────────────────────
+// simple_form tags each input wrapper with the input type as a class, so a
+// <select> field's wrapper becomes `div.select.optional`. Bulma's `.select`
+// control styling then hijacks that wrapper — forcing inline-block sizing
+// (which collapses the grid columns) and drawing a floating dropdown arrow
+// that overlaps the next field's label. Neutralize it here; the Bootstrap
+// `.form-select` inside the wrapper already renders its own arrow.
+.select.optional,
+.select.required {
+    display: block;
+    height: auto;
+    max-width: 100%;
+
+    &::after {
+        content: none !important;
+    }
+}

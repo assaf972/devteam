@@ -20,6 +20,18 @@ RSpec.describe "Tickets", type: :request do
     end
   end
 
+  # ── GET /tickets (cross-project list) ─────────────────────────────────────
+  describe "GET /tickets" do
+    it "renders the row actions dropdown with move options" do
+      get all_tickets_path
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include(move_to_sprint_ticket_path(ticket, target: "current"))
+      expect(response.body).to include(I18n.t("tickets.move.current_sprint"))
+      expect(response.body).to include(I18n.t("tickets.move.next_sprint"))
+      expect(response.body).to include(I18n.t("tickets.move.backlog"))
+    end
+  end
+
   # ── GET /tickets/:id ──────────────────────────────────────────────────────
   describe "GET /tickets/:id" do
     it "returns http success" do
@@ -30,6 +42,36 @@ RSpec.describe "Tickets", type: :request do
     it "displays the ticket title" do
       get ticket_path(ticket)
       expect(response.body).to include(ticket.title)
+    end
+
+    it "renders a key/value Details panel with status, assignee and owner" do
+      assignee = create(:user, name: "Dana Dev")
+      owner    = create(:user, name: "Omri Owner")
+      ticket.update!(assignee: assignee, owner: owner, status: :in_progress)
+      get ticket_path(ticket)
+      expect(response.body).to include("Details")
+      expect(response.body).to include("Dana Dev")
+      expect(response.body).to include("Omri Owner")
+    end
+
+    it "renders an Evaluation & Time panel with the estimates" do
+      ticket.update!(dev_estimate_hours: 8, tester_estimate_hours: 4, actual_hours: "1d 2h")
+      get ticket_path(ticket)
+      expect(response.body).to include("Evaluation")
+      expect(response.body).to include("1d 2h")
+    end
+
+    it "places the Comments section before the CI panel" do
+      get ticket_path(ticket)
+      expect(response.body.index('id="comments"')).to be < response.body.index('id="ci-runs"')
+    end
+
+    it "links to detailed test results for a CI run that has them" do
+      run = create(:ci_run, project: project, ticket: ticket)
+      create(:test_result, ci_run: run)
+      get ticket_path(ticket)
+      expect(response.body).to include(ci_run_path(run, anchor: "test-results"))
+      expect(response.body).to include("View test results")
     end
   end
 
@@ -69,6 +111,21 @@ RSpec.describe "Tickets", type: :request do
     it "returns http success" do
       get edit_ticket_path(ticket)
       expect(response).to have_http_status(:success)
+    end
+
+    it "shows the How to Reproduce editor under the description" do
+      get edit_ticket_path(ticket)
+      desc_pos = response.body.index("ticket_description")
+      htr_pos  = response.body.index("ticket_how_to_reproduce_input")
+      expect(htr_pos).to be_present
+      expect(desc_pos).to be < htr_pos
+    end
+
+    it "groups the estimate fields in an Evaluation & Time section" do
+      get edit_ticket_path(ticket)
+      expect(response.body).to include("Evaluation")
+      expect(response.body).to include("ticket_dev_estimate_hours")
+      expect(response.body).to include("ticket_actual_hours")
     end
   end
 
@@ -119,6 +176,90 @@ RSpec.describe "Tickets", type: :request do
         delete ticket_path(ticket)
       }.to change(Ticket, :count).by(-1)
       expect(response).to redirect_to(project_tickets_path(project))
+    end
+  end
+
+  # ── PATCH /tickets/:id/move_to_sprint ─────────────────────────────────────
+  describe "PATCH /tickets/:id/move_to_sprint" do
+    context "target: current" do
+      let!(:current_sprint) { create(:active_sprint, project: project) }
+      let!(:ticket) { create(:ticket, project: project, status: :backlog) }
+
+      it "assigns the current sprint and promotes it out of the backlog" do
+        patch move_to_sprint_ticket_path(ticket, target: "current")
+        expect(ticket.reload.sprint).to eq(current_sprint)
+        expect(ticket.reload.status).to eq("open")
+        expect(flash[:notice]).to be_present
+      end
+
+      it "keeps a non-backlog status unchanged" do
+        ticket.update!(status: :in_progress)
+        patch move_to_sprint_ticket_path(ticket, target: "current")
+        expect(ticket.reload.sprint).to eq(current_sprint)
+        expect(ticket.reload.status).to eq("in_progress")
+      end
+
+      it "alerts when the project has no active sprint" do
+        current_sprint.update!(status: :completed)
+        patch move_to_sprint_ticket_path(ticket, target: "current")
+        expect(ticket.reload.sprint).to be_nil
+        expect(flash[:alert]).to be_present
+      end
+    end
+
+    context "target: next" do
+      let!(:next_sprint) do
+        create(:sprint, project: project,
+               start_date: Date.current + 15, end_date: Date.current + 28)
+      end
+      let!(:ticket) { create(:ticket, project: project, status: :backlog) }
+
+      it "assigns the upcoming sprint" do
+        patch move_to_sprint_ticket_path(ticket, target: "next")
+        expect(ticket.reload.sprint).to eq(next_sprint)
+        expect(ticket.reload.status).to eq("open")
+      end
+
+      it "picks the earliest upcoming sprint when several exist" do
+        later = create(:sprint, project: project,
+                       start_date: Date.current + 40, end_date: Date.current + 54)
+        patch move_to_sprint_ticket_path(ticket, target: "next")
+        expect(ticket.reload.sprint).to eq(next_sprint)
+        expect(ticket.reload.sprint).not_to eq(later)
+      end
+
+      it "alerts when the project has no upcoming sprint" do
+        next_sprint.destroy
+        patch move_to_sprint_ticket_path(ticket, target: "next")
+        expect(ticket.reload.sprint).to be_nil
+        expect(flash[:alert]).to be_present
+      end
+    end
+
+    context "target: backlog" do
+      let!(:sprint) { create(:active_sprint, project: project) }
+      let!(:ticket) { create(:ticket, project: project, sprint: sprint, status: :in_progress) }
+
+      it "clears the sprint and sets the status to backlog" do
+        patch move_to_sprint_ticket_path(ticket, target: "backlog")
+        expect(ticket.reload.sprint).to be_nil
+        expect(ticket.reload.status).to eq("backlog")
+        expect(flash[:notice]).to be_present
+      end
+    end
+
+    context "with an unknown target" do
+      it "leaves the ticket unchanged and alerts" do
+        patch move_to_sprint_ticket_path(ticket, target: "bogus")
+        expect(flash[:alert]).to be_present
+      end
+    end
+
+    it "only moves the ticket within its own project's sprints" do
+      create(:active_sprint, project: create(:project))
+      patch move_to_sprint_ticket_path(ticket, target: "current")
+      expect(ticket.reload.sprint).to be_nil
+      expect(flash[:alert]).to be_present
     end
   end
 

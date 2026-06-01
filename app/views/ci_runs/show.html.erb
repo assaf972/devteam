@@ -36,7 +36,7 @@
     </div>
 
     <% if @test_results.any? %>
-      <div class="card p-3 mb-3">
+      <div class="card p-3 mb-3" id="test-results">
         <h3 class="subfw-bold">Test Results</h3>
         <% @test_results.each do |tr| %>
           <div class="level mb-2">

@@ -33,6 +33,12 @@ Rails.application.routes.draw do
   get "reports/test_coverage"
   get "reports/sprint_velocity"
   get "reports/estimation_accuracy"
+
+  # ── CI Dashboard ────────────────────────────────────────────────────────────
+  get "ci",             to: "ci_dashboard#index",       as: :ci_dashboard
+  get "ci/runs",        to: "ci_dashboard#runs",         as: :ci_runs_all
+  get "ci/security",    to: "ci_dashboard#security",     as: :ci_security
+  get "ci/performance", to: "ci_dashboard#performance",  as: :ci_performance
   devise_for :users, controllers: {
     sessions: "users/sessions",
     registrations: "users/registrations"
@@ -133,6 +139,7 @@ Rails.application.routes.draw do
 
   # Ticket comments — derived from ticket (project resolved via ticket.project)
   resources :tickets, only: [] do
+    member { patch :move_to_sprint }
     resources :comments, only: %i[create destroy]
   end
 

@@ -1,6 +1,6 @@
 class TicketsController < ApplicationController
   before_action :set_project, only: [ :index, :new, :create ]
-  before_action :set_ticket,  only: [ :show, :edit, :update, :destroy ]
+  before_action :set_ticket,  only: [ :show, :edit, :update, :destroy, :move_to_sprint ]
 
   def index
     @tickets = @project.tickets.includes(:assignee, :sprint, :ci_runs).order(priority: :desc, created_at: :desc)
@@ -104,7 +104,41 @@ class TicketsController < ApplicationController
     redirect_to project_tickets_path(@project), notice: t("tickets.deleted")
   end
 
+  # Moves a ticket between the backlog, the project's current sprint, and the
+  # project's next (upcoming) sprint. Triggered from the row actions dropdown.
+  def move_to_sprint
+    case params[:target]
+    when "current"
+      sprint = @project.sprints.current.first
+      return redirect_after_move(alert: t("tickets.move.no_current_sprint")) unless sprint
+      assign_sprint(sprint)
+      redirect_after_move(notice: t("tickets.move.moved_to_current"))
+    when "next"
+      sprint = @project.sprints.upcoming.first
+      return redirect_after_move(alert: t("tickets.move.no_next_sprint")) unless sprint
+      assign_sprint(sprint)
+      redirect_after_move(notice: t("tickets.move.moved_to_next"))
+    when "backlog"
+      @ticket.update(sprint: nil, status: :backlog)
+      redirect_after_move(notice: t("tickets.move.moved_to_backlog"))
+    else
+      redirect_after_move(alert: t("tickets.move.invalid_target"))
+    end
+  end
+
   private
+
+  # Assigns the ticket to a sprint, promoting it out of the backlog so it shows
+  # up in the active board rather than staying hidden in the backlog filter.
+  def assign_sprint(sprint)
+    attrs = { sprint: sprint }
+    attrs[:status] = :open if @ticket.backlog?
+    @ticket.update(attrs)
+  end
+
+  def redirect_after_move(notice: nil, alert: nil)
+    redirect_back fallback_location: all_tickets_path, notice: notice, alert: alert
+  end
 
   def set_project
     @project = Project.find(params[:project_id])

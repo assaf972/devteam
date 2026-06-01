@@ -16,6 +16,7 @@ class Sprint < ApplicationRecord
   scope :planning,  -> { where(status: :planning) }
   scope :completed, -> { where(status: :completed) }
   scope :current,   -> { active.where("start_date <= ? AND end_date >= ?", Date.today, Date.today) }
+  scope :upcoming,  -> { where("start_date > ?", Date.today).order(:start_date) }
 
   def duration_days
     (end_date - start_date).to_i
