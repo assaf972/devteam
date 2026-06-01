@@ -263,6 +263,29 @@ RSpec.describe "Tickets", type: :request do
     end
   end
 
+  # ── PATCH /tickets/:id/update_status ──────────────────────────────────────
+  describe "PATCH /tickets/:id/update_status" do
+    it "updates the ticket status and redirects back" do
+      patch update_status_ticket_path(ticket, status: "in_review"),
+            headers: { "HTTP_REFERER" => project_path(project) }
+      expect(ticket.reload.status).to eq("in_review")
+      expect(response).to redirect_to(project_path(project))
+      expect(flash[:notice]).to be_present
+    end
+
+    it "can mark a ticket done" do
+      patch update_status_ticket_path(ticket, status: "done")
+      expect(ticket.reload.status).to eq("done")
+    end
+
+    it "rejects an unknown status and leaves the ticket unchanged" do
+      original = ticket.status
+      patch update_status_ticket_path(ticket, status: "not_a_status")
+      expect(ticket.reload.status).to eq(original)
+      expect(flash[:alert]).to be_present
+    end
+  end
+
   # ── Comments ──────────────────────────────────────────────────────────────
   describe "POST /tickets/:ticket_id/comments" do
     context "when user is an admin" do
