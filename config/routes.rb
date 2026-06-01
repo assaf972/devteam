@@ -139,7 +139,10 @@ Rails.application.routes.draw do
 
   # Ticket comments — derived from ticket (project resolved via ticket.project)
   resources :tickets, only: [] do
-    member { patch :move_to_sprint }
+    member do
+      patch :move_to_sprint
+      patch :update_status
+    end
     resources :comments, only: %i[create destroy]
   end
 

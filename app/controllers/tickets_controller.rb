@@ -1,6 +1,6 @@
 class TicketsController < ApplicationController
   before_action :set_project, only: [ :index, :new, :create ]
-  before_action :set_ticket,  only: [ :show, :edit, :update, :destroy, :move_to_sprint ]
+  before_action :set_ticket,  only: [ :show, :edit, :update, :destroy, :move_to_sprint, :update_status ]
 
   def index
     @tickets = @project.tickets.includes(:assignee, :sprint, :ci_runs).order(priority: :desc, created_at: :desc)
@@ -121,6 +121,15 @@ class TicketsController < ApplicationController
     when "backlog"
       @ticket.update(sprint: nil, status: :backlog)
       redirect_after_move(notice: t("tickets.move.moved_to_backlog"))
+    else
+      redirect_after_move(alert: t("tickets.move.invalid_target"))
+    end
+  end
+
+  # Quick status change from a row actions dropdown (e.g. the project page).
+  def update_status
+    if Ticket.statuses.key?(params[:status]) && @ticket.update(status: params[:status])
+      redirect_after_move(notice: t("tickets.status_updated", status: t("tickets.statuses.#{@ticket.status}")))
     else
       redirect_after_move(alert: t("tickets.move.invalid_target"))
     end

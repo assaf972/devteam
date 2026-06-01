@@ -16,7 +16,21 @@ class ProjectsController < ApplicationController
     @recent_deployments = @project.deployments.includes(:deployed_by).order(created_at: :desc).limit(5)
     @open_pull_requests = @project.pull_requests.where(status: :open).order(updated_at: :desc).limit(5)
     @recent_documents   = @project.documents.order(updated_at: :desc).limit(6)
-    @open_tickets       = @project.tickets.where.not(status: [ :done, :closed ]).includes(:assignee).order(updated_at: :desc).limit(8)
+
+    # Tickets panel — filterable between open, completed, and awaiting estimation.
+    not_closed = @project.tickets.where.not(status: [ :done, :closed ])
+    @ticket_counts = {
+      open:             not_closed.count,
+      completed:        @project.tickets.where(status: [ :done, :closed ]).count,
+      needs_estimation: not_closed.where(dev_estimate_hours: nil).count
+    }
+    @ticket_filter = params[:ticket_filter].presence_in(%w[open completed needs_estimation]) || "open"
+    scope = case @ticket_filter
+    when "completed"        then @project.tickets.where(status: [ :done, :closed ])
+    when "needs_estimation" then not_closed.where(dev_estimate_hours: nil)
+    else                         not_closed
+    end
+    @panel_tickets = scope.includes(:assignee).order(updated_at: :desc).limit(15)
   end
 
   def new
