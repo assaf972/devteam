@@ -114,9 +114,23 @@
       <div class="card-header">
         <strong><i class="bi bi-cpu me-2"></i>CI Results</strong>
       </div>
-      <% if Array(@pull_request.latest_test_results).any? %>
+      <% results = @pull_request.latest_test_results %>
+      <% if results.is_a?(Hash) && results["total"].present? %>
+        <div class="card-body">
+          <div class="d-flex gap-3 align-items-center">
+            <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i><%= results["passed"] %> passed</span>
+            <% if results["failed"].to_i > 0 %>
+              <span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i><%= results["failed"] %> failed</span>
+            <% end %>
+            <% if results["skipped"].to_i > 0 %>
+              <span class="badge bg-secondary"><i class="bi bi-skip-forward me-1"></i><%= results["skipped"] %> skipped</span>
+            <% end %>
+            <span class="text-muted small"><%= results["total"] %> total</span>
+          </div>
+        </div>
+      <% elsif results.is_a?(Array) && results.any? %>
         <ul class="list-group list-group-flush">
-          <% Array(@pull_request.latest_test_results).each do |s| %>
+          <% results.each do |s| %>
             <%
               state = s["state"].to_s
               icon  = state == "success" ? "check-circle-fill text-success" : (state == "failure" ? "x-circle-fill text-danger" : "clock-fill text-warning")

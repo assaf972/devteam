@@ -22,11 +22,11 @@
       <table class="table is-fullwidth">
         <thead>
           <tr>
-            <th>Status</th>
-            <th>Message</th>
-            <th>Error</th>
-            <th>Created</th>
-            <th class="text-end">Actions</th>
+            <th><%= t('table_headers.status') %></th>
+            <th><%= t('table_headers.message') %></th>
+            <th><%= t('table_headers.error') %></th>
+            <th><%= t('table_headers.created') %></th>
+            <th class="text-end"><%= t('table_headers.actions') %></th>
           </tr>
         </thead>
         <tbody>
@@ -49,18 +49,15 @@
               </td>
               <td><%= notification.created_at.strftime("%Y-%m-%d %H:%M") %></td>
               <td class="text-end">
-                <div class="d-inline-flex gap-1">
-                  <%= link_to t("common.view"), notification_path(notification), class: "btn btn-sm btn-secondary is-light" %>
-                  <%= link_to t("common.actions.edit"), edit_notification_path(notification), class: "btn btn-sm btn-secondary is-light" %>
+                <%= actions_dropdown do |d| %>
+                  <% d.link t('common.view'), notification_path(notification), icon: '👁' %>
+                  <% d.link t('common.actions.edit'), edit_notification_path(notification), icon: '✏️' %>
                   <% unless notification.read? %>
-                    <%= link_to "Mark read", mark_read_notification_path(notification),
-                          data: { turbo_method: :patch },
-                          class: "btn btn-sm btn-secondary is-light" %>
+                    <% d.button_action t('common.actions.mark_read'), mark_read_notification_path(notification), method: :patch, icon: '✅' %>
                   <% end %>
-                  <%= link_to t("common.delete"), notification_path(notification),
-                    data: { turbo_method: :delete, turbo_confirm: t("common.confirm_delete") },
-                        class: "btn btn-sm btn-danger" %>
-                </div>
+                  <% d.divider %>
+                  <% d.delete t('common.delete'), notification_path(notification), confirm: t('common.confirm_delete') %>
+                <% end %>
               </td>
             </tr>
           <% end %>

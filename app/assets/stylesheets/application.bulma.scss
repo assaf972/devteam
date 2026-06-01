@@ -7,6 +7,14 @@ $link-color: #4a90d9;
 // Bootstrap 5
 @import 'bootstrap/scss/bootstrap';
 
+// Table header styling — make headers clearly visible
+.table thead th {
+    background-color: #2c3e50;
+    color: #fff;
+    font-weight: 600;
+    border-bottom: 2px solid #1a252f;
+}
+
 // fs-7 utility (Bootstrap only ships fs-1 through fs-6)
 .fs-7 {
     font-size: 0.78rem !important;
@@ -61,6 +69,62 @@ html[dir="rtl"] {
     td,
     th {
         text-align: right;
+    }
+
+    // RTL: align action dropdown to the left
+    .dropdown.text-end {
+        text-align: start !important;
+    }
+
+    .dropdown-menu-end {
+        --bs-position: auto;
+        right: auto !important;
+        left: 0 !important;
+    }
+}
+
+// Actions kebab dropdown button
+.actions-kebab {
+    font-size: 1.1rem;
+    line-height: 1;
+    padding: 0.15rem 0.5rem;
+    border: none;
+    background: transparent;
+    color: #6c757d;
+
+    &::after {
+        display: none; // hide Bootstrap caret
+    }
+
+    &:hover,
+    &:focus {
+        background: #f0f0f0;
+        color: #212529;
+    }
+}
+
+// Ensure dropdown menus inside dark table headers remain readable
+.dropdown-menu {
+    --bs-dropdown-bg: #fff !important;
+    --bs-dropdown-color: #212529 !important;
+    --bs-dropdown-link-color: #212529 !important;
+    --bs-dropdown-link-hover-color: #000 !important;
+    --bs-dropdown-link-hover-bg: #f8f9fa !important;
+    background-color: #fff !important;
+    color: #212529 !important;
+
+    .dropdown-item {
+        color: #212529 !important;
+
+        &:hover,
+        &:focus {
+            background-color: #f8f9fa !important;
+            color: #000 !important;
+        }
+
+        &.text-danger {
+            color: #dc3545 !important;
+        }
     }
 }
 
@@ -1010,5 +1074,23 @@ trix-toolbar {
     img {
         max-width: 100%;
         border-radius: 0.375rem;
+    }
+}
+
+// ─── simple_form × Bulma select wrapper fix ───────────────────────────────
+// simple_form tags each input wrapper with the input type as a class, so a
+// <select> field's wrapper becomes `div.select.optional`. Bulma's `.select`
+// control styling then hijacks that wrapper — forcing inline-block sizing
+// (which collapses the grid columns) and drawing a floating dropdown arrow
+// that overlaps the next field's label. Neutralize it here; the Bootstrap
+// `.form-select` inside the wrapper already renders its own arrow.
+.select.optional,
+.select.required {
+    display: block;
+    height: auto;
+    max-width: 100%;
+
+    &::after {
+        content: none !important;
     }
 }

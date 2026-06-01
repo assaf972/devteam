@@ -13,7 +13,12 @@ class DocumentsController < ApplicationController
     @templates = @project.documents.templates.includes(:author).order(updated_at: :desc)
   end
 
-  def show; end
+  def show
+    if @document.content.lstrip.start_with?("<!DOCTYPE", "<html")
+      response.headers["X-Frame-Options"] = "SAMEORIGIN"
+      render html: @document.content.html_safe, layout: false, content_type: "text/html"
+    end
+  end
 
   def raw
     response.headers["X-Frame-Options"] = "SAMEORIGIN"

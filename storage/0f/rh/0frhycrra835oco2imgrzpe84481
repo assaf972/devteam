@@ -1,0 +1,22 @@
+# Story Specification: Migrate data layer to EntityFrameworkCore 9 code-first
+
+**Project:** TDI2
+**Kind:** Story
+**Priority:** High
+**Dev estimate:** 32.0h
+**QA estimate:** 16.0h
+
+## Overview
+
+Replace the legacy LINQ-to-SQL layer with EF Core 9 code-first migrations. Map all existing stored procedures to EF Core raw SQL calls or equivalent LINQ expressions. Target SQL Server 2022 compatibility level 160.
+
+## Acceptance Criteria
+
+- [ ] Implementation matches the described behaviour
+- [ ] Unit tests cover the main code paths
+- [ ] QA sign-off on the acceptance criteria
+- [ ] Documentation updated if applicable
+
+## Technical Notes
+
+_To be filled in by the assigned developer._

@@ -63,6 +63,11 @@
   <%# ── Tickets ─────────────────────────────────────────────────────────── %>
   <div class="sidebar-section-label"><%= t('sidebar.tickets_label') %></div>
 
+  <%= link_to all_tickets_path,
+        class: "sidebar-nav-item #{controller_name == 'tickets' && action_name == 'all' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">🎫</span> <%= t('sidebar.tickets.all_tickets') %>
+  <% end %>
+
   <%= link_to my_tickets_path,
         class: "sidebar-nav-item #{controller_name == 'tickets' && action_name == 'mine' ? 'is-active' : ''}" do %>
     <span class="nav-icon">🎫</span> <%= t('sidebar.tickets.my_tickets') %>
@@ -103,6 +108,11 @@
     <%= t('sidebar.projects_label') %>
     <%= link_to projects_path, class: "text-white", style: "opacity:0.4;font-size:0.75rem;", title: t('sidebar.projects_label') do %><%= t('sidebar.all') %><% end %>
   </div>
+
+  <%= link_to new_project_path,
+        class: "sidebar-nav-item #{controller_name == 'projects' && action_name == 'new' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">➕</span> <%= t('sidebar.new_project') %>
+  <% end %>
 
   <% @sidebar_projects.each do |project| %>
     <%

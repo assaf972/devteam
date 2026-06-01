@@ -21,7 +21,7 @@
   </div>
   <div class="d-flex gap-2 flex-wrap">
     <% unless @document.is_template? %>
-      <%= button_to t("buttons.save_as_template"), save_as_template_document_path(@document),
+      <%= button_to save_as_template_document_path(@document),
             method: :post,
             class: "btn btn-outline-warning btn-sm",
             form: { data: { turbo_confirm: "Save \"#{@document.title}\" as a reusable template?" } } do %>
@@ -45,6 +45,7 @@
 <% end %>
 
 <% full_html = @document.content.lstrip.start_with?("<!DOCTYPE", "<html") %>
+<% is_markdown = !full_html && @document.content.match?(/\A\s*[\#\-\*\>]|\n\#|\n\-\-\-|\n\*\*|\n```/) %>
 
 <% if full_html %>
   <div class="ratio mb-3" style="--bs-aspect-ratio: 56.25%; min-height: 480px;">
@@ -53,6 +54,10 @@
             class="w-100 border rounded"
             style="min-height: 480px;"
             title="<%= h @document.title %>"></iframe>
+  </div>
+<% elsif is_markdown %>
+  <div class="card p-3 mb-3 trix-content">
+    <%= render_markdown(@document.content) %>
   </div>
 <% else %>
   <div class="card p-3 mb-3 trix-content">

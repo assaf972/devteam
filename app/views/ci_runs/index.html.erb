@@ -22,14 +22,14 @@
   <table class="table table-hover w-100">
     <thead>
       <tr>
-        <th>Build #</th>
-        <th>Branch</th>
-        <th>Commit</th>
-        <th>Status</th>
-        <th>Duration</th>
-        <th>Test Results</th>
-        <th>Triggered By</th>
-        <th>Started</th>
+        <th><%= t('table_headers.build') %></th>
+        <th><%= t('table_headers.branch') %></th>
+        <th><%= t('table_headers.commit') %></th>
+        <th><%= t('table_headers.status') %></th>
+        <th><%= t('table_headers.duration') %></th>
+        <th><%= t('table_headers.test_results') %></th>
+        <th><%= t('table_headers.triggered_by') %></th>
+        <th><%= t('table_headers.started') %></th>
         <th></th>
       </tr>
     </thead>
@@ -52,8 +52,11 @@
           <td><%= run.triggered_by&.display_name || '—' %></td>
           <td><%= run.started_at&.strftime('%d/%m %H:%M') || '—' %></td>
           <td>
-            <% if run.log_url.present? %>
-              <%= link_to "Log", run.log_url, target: "_blank", class: "btn btn-secondary btn-sm is-light" %>
+            <%= actions_dropdown do |d| %>
+              <% d.link t('common.view'), ci_run_path(run), icon: '👁' %>
+              <% if run.log_url.present? %>
+                <% d.link t('common.actions.view_log'), run.log_url, icon: '📋', target: '_blank' %>
+              <% end %>
             <% end %>
           </td>
         </tr>

@@ -1,69 +1,35 @@
 <% content_for :title, "Ticket ##{@ticket.id} – #{@ticket.title}" %>
 
 <div class="row">
-  <%# ─── Ticket detail ────────────────────────────────────────────────────── %>
-  <div class="col-12">
+  <%# ─── Main column ──────────────────────────────────────────────────────── %>
+  <div class="col-lg-8">
+    <%# Header %>
     <div class="card p-3 mb-3">
-      <div class="level">
-        <div class="level-left">
-          <div>
-            <span class="badge bg-light text-dark">#<%= @ticket.id %></span>
-            <%# Kind badge %>
-            <%
-              kind_color = case @ticket.kind
-                when "story"      then "is-info"
-                when "meta_story" then "is-link"
-                when "bug_fix"    then "is-danger"
-                when "hotfix"     then "is-danger is-dark"
-                when "spike"      then "is-warning"
-                else "is-light"
-              end
-            %>
-            <span class="badge bg-secondary <%= kind_color %> ms-1"><%= @ticket.kind.humanize.gsub('_', ' ') %></span>
-            <%# Level badge %>
-            <%
-              level_color = case @ticket.level
-                when "trivial","simple"  then "is-success is-light"
-                when "moderate"          then "is-warning is-light"
-                when "complex","expert"  then "is-danger is-light"
-                else "is-light"
-              end
-            %>
-            <span class="badge bg-secondary <%= level_color %> ms-1" title="Complexity">⚙ <%= @ticket.level.capitalize %></span>
-            <%= priority_tag(@ticket.priority) %>
-            <%= status_tag(@ticket.status) %>
-          </div>
+      <div class="d-flex justify-content-between align-items-start gap-3">
+        <div>
+          <span class="text-muted fw-semibold">#<%= @ticket.id %></span>
+          <h1 class="fw-bold fs-4 mt-1 mb-0"><%= @ticket.title %></h1>
         </div>
-        <div class="level-right">
-          <%= link_to t("common.actions.edit"), edit_ticket_path(@ticket), class: "btn btn-secondary btn-sm is-warning" %>
-          <%= link_to t("common.delete"), ticket_path(@ticket), data: { turbo_method: :delete, turbo_confirm: t("common.confirm_delete") }, class: "btn btn-secondary btn-sm is-danger" %>
+        <div class="d-flex gap-2 flex-shrink-0">
+          <%= link_to t("common.actions.edit"), edit_ticket_path(@ticket), class: "btn btn-secondary btn-sm" %>
+          <%= link_to t("common.delete"), ticket_path(@ticket), data: { turbo_method: :delete, turbo_confirm: t("common.confirm_delete") }, class: "btn btn-outline-danger btn-sm" %>
         </div>
       </div>
 
-      <h1 class="fw-bold fs-4 mt-2"><%= @ticket.title %></h1>
-
-      <%# Estimations row %>
-      <% if @ticket.dev_estimate_hours.present? || @ticket.tester_estimate_hours.present? || @ticket.actual_hours.present? %>
-        <div class="d-flex flex-wrap gap-1 mb-2">
-          <% if @ticket.dev_estimate_hours.present? %>
-            <span class="badge bg-info text-dark is-light">🧑‍💻 Dev: <%= @ticket.dev_estimate_hours %>h</span>
-          <% end %>
-          <% if @ticket.tester_estimate_hours.present? %>
-            <span class="badge bg-warning-subtle text-warning-emphasis">🧪 QA: <%= @ticket.tester_estimate_hours %>h</span>
-          <% end %>
-          <% if @ticket.actual_hours.present? %>
-            <span class="badge bg-success-subtle text-success-emphasis">⏱ Actual: <%= @ticket.actual_hours %></span>
-          <% end %>
-          <% if @ticket.estimated_by.present? %>
-            <span class="badge bg-light text-dark">Estimator: <%= @ticket.estimated_by.display_name %></span>
+      <% if @ticket.tag_list.any? %>
+        <div class="d-flex flex-wrap gap-1 mt-2">
+          <% @ticket.tag_list.each do |tag| %>
+            <span class="badge bg-light text-dark border">#<%= tag %></span>
           <% end %>
         </div>
       <% end %>
 
+      <hr class="my-3">
+
       <div class="content"><%= simple_format(@ticket.description) %></div>
 
-      <%# How to Reproduce (bug_fix / hotfix only) %>
-      <% if @ticket.bug_kind? && @ticket.how_to_reproduce.present? %>
+      <%# How to Reproduce %>
+      <% if @ticket.how_to_reproduce.present? %>
         <div class="alert alert-warning p-3 mt-3">
           <p class="fw-semibold mb-1">🐛 How to Reproduce</p>
           <div class="trix-content fs-7">
@@ -74,6 +40,7 @@
         </div>
       <% end %>
 
+      <%# Test Plan %>
       <% if @ticket.test_plan.present? %>
         <div class="card border-info p-3 mt-3">
           <p class="fw-semibold mb-1">🧪 Test Plan</p>
@@ -84,60 +51,9 @@
           </div>
         </div>
       <% end %>
-
-      <div class="d-flex flex-wrap gap-1">
-        <% @ticket.tag_list.each do |tag| %>
-          <span class="badge bg-info text-dark is-light"><%= tag %></span>
-        <% end %>
-      </div>
     </div>
 
-    <%# CI Runs %>
-    <div class="card p-3 mb-3">
-      <h3 class="subfw-bold"><%= t('nav.ci') %></h3>
-      <% if @ci_runs.any? %>
-        <table class="table w-100 fs-7">
-          <thead><tr><th>Build</th><th>Branch</th><th>Status</th><th>Duration</th><th>Log</th></tr></thead>
-          <tbody>
-            <% @ci_runs.each do |run| %>
-              <tr>
-                <td><%= link_to "##{run.build_number}", run %></td>
-                <td><code><%= run.branch_name %></code></td>
-                <td><%= status_tag(run.status) %></td>
-                <td><%= run.duration ? "#{run.duration} min" : "—" %></td>
-                <td><% if run.log_url.present? %><%= link_to "Log", run.log_url, target: "_blank", class: "btn btn-secondary btn-sm is-light" %><% end %></td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
-      <% else %>
-        <p class="text-muted fs-7">No CI runs yet.</p>
-      <% end %>
-    </div>
-
-    <%# Attachments %>
-    <% if @ticket.attachments.attached? %>
-      <div class="card p-3 mb-3">
-        <h3 class="subfw-bold">📎 Attachments (<%= @ticket.attachments.count %>)</h3>
-        <ul class="list-unstyled mb-0">
-          <% @ticket.attachments.each do |attachment| %>
-            <li class="d-flex align-items-center gap-2 py-1" style="border-bottom:1px solid #f5f5f5;">
-              <span>📄</span>
-              <%= link_to attachment.filename.to_s,
-                    rails_blob_path(attachment, disposition: "attachment"),
-                    target: "_blank",
-                    class: "fs-7" %>
-              <span class="text-muted fs-7 ms-auto">
-                <%= number_to_human_size(attachment.byte_size) %>
-                · <%= attachment.created_at.strftime('%d/%m/%Y') %>
-              </span>
-            </li>
-          <% end %>
-        </ul>
-      </div>
-    <% end %>
-
-    <%# Comments %>
+    <%# Comments (before the CI panel) %>
     <div class="card p-3 mb-3" id="comments">
       <h3 class="subfw-bold">Comments (<%= @comments.size %>)</h3>
 
@@ -190,7 +106,7 @@
         <hr>
         <%= form_with url: ticket_comments_path(@ticket), method: :post, local: true do |f| %>
           <div class="mb-3">
-            <%= f.text_area :body, class: "textarea", rows: 3,
+            <%= f.text_area :body, class: "textarea form-control", rows: 3,
                   placeholder: "Add a comment… (supports plain text)" %>
           </div>
           <div>
@@ -200,6 +116,134 @@
       <% else %>
         <p class="text-muted fs-7">Join the project to comment.</p>
       <% end %>
+    </div>
+
+    <%# CI Runs %>
+    <div class="card p-3 mb-3" id="ci-runs">
+      <h3 class="subfw-bold"><%= t('nav.ci') %></h3>
+      <% if @ci_runs.any? %>
+        <table class="table w-100 fs-7">
+          <thead><tr><th><%= t('table_headers.build') %></th><th><%= t('table_headers.branch') %></th><th><%= t('table_headers.status') %></th><th><%= t('table_headers.duration') %></th><th>Tests</th><th><%= t('table_headers.log') %></th></tr></thead>
+          <tbody>
+            <% @ci_runs.each do |run| %>
+              <tr>
+                <td><%= link_to "##{run.build_number}", run %></td>
+                <td><code><%= run.branch_name %></code></td>
+                <td><%= status_tag(run.status) %></td>
+                <td><%= run.duration ? "#{run.duration} min" : "—" %></td>
+                <td>
+                  <% if run.test_results.any? %>
+                    <%= link_to "View test results", ci_run_path(run, anchor: "test-results"), class: "link-primary" %>
+                  <% else %>
+                    <span class="text-muted">—</span>
+                  <% end %>
+                </td>
+                <td><% if run.log_url.present? %><%= link_to "Log", run.log_url, target: "_blank", class: "btn btn-secondary btn-sm is-light" %><% end %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <p class="text-muted fs-7">No CI runs yet.</p>
+      <% end %>
+    </div>
+
+    <%# Attachments %>
+    <% if @ticket.attachments.attached? %>
+      <div class="card p-3 mb-3">
+        <h3 class="subfw-bold">📎 Attachments (<%= @ticket.attachments.count %>)</h3>
+        <ul class="list-unstyled mb-0">
+          <% @ticket.attachments.each do |attachment| %>
+            <li class="d-flex align-items-center gap-2 py-1" style="border-bottom:1px solid #f5f5f5;">
+              <span>📄</span>
+              <%= link_to attachment.filename.to_s,
+                    rails_blob_path(attachment, disposition: "attachment"),
+                    target: "_blank",
+                    class: "fs-7" %>
+              <span class="text-muted fs-7 ms-auto">
+                <%= number_to_human_size(attachment.byte_size) %>
+                · <%= attachment.created_at.strftime('%d/%m/%Y') %>
+              </span>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+  </div>
+
+  <%# ─── Details sidebar ──────────────────────────────────────────────────── %>
+  <div class="col-lg-4">
+    <div class="card p-3 mb-3">
+      <h3 class="subfw-bold">Details</h3>
+      <table class="table table-sm fs-7 mb-0">
+        <tbody>
+          <tr>
+            <th class="text-muted fw-semibold w-50">Status</th>
+            <td><%= status_tag(@ticket.status) %></td>
+          </tr>
+          <tr>
+            <th class="text-muted fw-semibold">Priority</th>
+            <td><%= priority_tag(@ticket.priority) %></td>
+          </tr>
+          <tr>
+            <th class="text-muted fw-semibold">Kind</th>
+            <td><%= @ticket.kind.humanize.gsub('_', ' ') %></td>
+          </tr>
+          <tr>
+            <th class="text-muted fw-semibold">Complexity</th>
+            <td><%= @ticket.level.capitalize %></td>
+          </tr>
+          <tr>
+            <th class="text-muted fw-semibold">Assignee</th>
+            <td><%= @ticket.assignee&.display_name || "—" %></td>
+          </tr>
+          <tr>
+            <th class="text-muted fw-semibold">Reporter / Owner</th>
+            <td><%= @ticket.owner&.display_name || "—" %></td>
+          </tr>
+          <tr>
+            <th class="text-muted fw-semibold">Sprint</th>
+            <td><%= @ticket.sprint ? link_to(@ticket.sprint.name, sprint_path(@ticket.sprint)) : "—" %></td>
+          </tr>
+          <tr>
+            <th class="text-muted fw-semibold">Milestone</th>
+            <td><%= @ticket.milestone&.name || "—" %></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <%# Evaluation & Time %>
+    <div class="card p-3 mb-3">
+      <h3 class="subfw-bold">⏱ Evaluation &amp; Time</h3>
+      <table class="table table-sm fs-7 mb-0">
+        <tbody>
+          <tr>
+            <th class="text-muted fw-semibold w-50">Story Points</th>
+            <td><%= @ticket.story_points || "—" %></td>
+          </tr>
+          <tr>
+            <th class="text-muted fw-semibold">Dev Estimate</th>
+            <td><%= @ticket.dev_estimate_hours ? "#{@ticket.dev_estimate_hours} h" : "—" %></td>
+          </tr>
+          <tr>
+            <th class="text-muted fw-semibold">QA Estimate</th>
+            <td><%= @ticket.tester_estimate_hours ? "#{@ticket.tester_estimate_hours} h" : "—" %></td>
+          </tr>
+          <tr>
+            <th class="text-muted fw-semibold">Actual Work</th>
+            <td><%= @ticket.actual_hours.presence || "—" %></td>
+          </tr>
+          <tr>
+            <th class="text-muted fw-semibold">Actual Velocity</th>
+            <td><%= @ticket.actual_velocity || "—" %></td>
+          </tr>
+          <tr>
+            <th class="text-muted fw-semibold">Estimated By</th>
+            <td><%= @ticket.estimated_by&.display_name || "—" %></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>

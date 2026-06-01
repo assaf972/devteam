@@ -9,6 +9,7 @@
   </div>
   <div class="level-right">
     <%= link_to t("common.actions.edit"), edit_project_path(@project), class: "btn btn-secondary btn-sm is-warning" %>
+    <%= link_to t("sprints.new_sprint"), new_project_sprint_path(@project), class: "btn btn-primary btn-sm" %>
     <% if @project.repo_url.present? %>
       <%= link_to "Repository ↗", @project.repo_url, target: "_blank", rel: "noopener noreferrer", class: "btn btn-secondary btn-sm is-light" %>
     <% end %>
@@ -76,11 +77,11 @@
     <table class="table table-hover w-100 fs-7 mb-0">
       <thead>
         <tr>
-          <th>Build</th>
-          <th>Branch</th>
-          <th>Status</th>
-          <th>Duration</th>
-          <th>Started</th>
+          <th><%= t('table_headers.build') %></th>
+          <th><%= t('table_headers.branch') %></th>
+          <th><%= t('table_headers.status') %></th>
+          <th><%= t('table_headers.duration') %></th>
+          <th><%= t('table_headers.started') %></th>
         </tr>
       </thead>
       <tbody>
@@ -286,12 +287,12 @@
     <table class="table table-hover w-100 is-striped fs-7">
       <thead>
         <tr>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Role</th>
-          <th>Notes</th>
+          <th><%= t('table_headers.name') %></th>
+          <th><%= t('table_headers.email') %></th>
+          <th><%= t('table_headers.role') %></th>
+          <th><%= t('table_headers.notes') %></th>
           <% if current_user.admin? || memberships.leads.exists?(user: current_user) %>
-            <th></th>
+            <th class="text-end"></th>
           <% end %>
         </tr>
       </thead>
@@ -311,12 +312,10 @@
             </td>
             <td class="text-muted"><%= m.notes.presence || "—" %></td>
             <% if current_user.admin? || memberships.leads.exists?(user: current_user) %>
-              <td>
-                <%= button_to "Remove",
-                      project_project_membership_path(@project, m),
-                      method: :delete,
-                      data: { confirm: "Remove #{m.user.display_name} from this project?" },
-                      class: "btn btn-danger is-small is-outlined" %>
+              <td class="text-end">
+                <%= actions_dropdown do |d| %>
+                  <% d.delete t('common.actions.remove'), project_project_membership_path(@project, m), confirm: "Remove #{m.user.display_name} from this project?" %>
+                <% end %>
               </td>
             <% end %>
           </tr>

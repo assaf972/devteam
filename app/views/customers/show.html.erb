@@ -22,7 +22,7 @@
       <h3 class="subfw-bold">Support Tickets</h3>
       <% if @customer_tickets.any? %>
         <table class="table w-100 fs-7">
-          <thead><tr><th>Title</th><th>Priority</th><th>Status</th><th>Opened</th><th></th></tr></thead>
+          <thead><tr><th><%= t('table_headers.title') %></th><th><%= t('table_headers.priority') %></th><th><%= t('table_headers.status') %></th><th><%= t('table_headers.opened') %></th><th></th></tr></thead>
           <tbody>
             <% @customer_tickets.each do |ct| %>
               <tr>
@@ -31,9 +31,10 @@
                 <td><%= status_tag(ct.status) %></td>
                 <td><%= ct.created_at.strftime("%d/%m/%y") %></td>
                 <td>
-                  <% unless ct.status_resolved? || ct.status_closed? %>
-                    <%= button_to "Resolve", resolve_customer_customer_ticket_path(@customer, ct),
-                        method: :patch, class: "btn btn-secondary btn-sm is-success is-light" %>
+                  <%= actions_dropdown do |d| %>
+                    <% unless ct.status_resolved? || ct.status_closed? %>
+                      <% d.button_action t('common.actions.resolve'), resolve_customer_customer_ticket_path(@customer, ct), method: :patch, icon: '✅' %>
+                    <% end %>
                   <% end %>
                 </td>
               </tr>
@@ -51,7 +52,7 @@
       <h3 class="subfw-bold">Installed Software</h3>
       <% if @installations.any? %>
         <table class="table w-100 fs-7">
-          <thead><tr><th>Software</th><th>Version</th><th>Env</th><th>Status</th></tr></thead>
+          <thead><tr><th><%= t('table_headers.software') %></th><th><%= t('table_headers.version') %></th><th><%= t('table_headers.environment') %></th><th><%= t('table_headers.status') %></th></tr></thead>
           <tbody>
             <% @installations.each do |inst| %>
               <tr class="<%= 'bg-warning-subtle' if inst.status_outdated? %>">

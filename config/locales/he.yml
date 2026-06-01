@@ -1,4 +1,58 @@
 he:
+  date:
+    formats:
+      default: "%d/%m/%Y"
+      short: "%d %b"
+      long: "%d ב%B %Y"
+    day_names:
+      - ראשון
+      - שני
+      - שלישי
+      - רביעי
+      - חמישי
+      - שישי
+      - שבת
+    abbr_day_names:
+      - א'
+      - ב'
+      - ג'
+      - ד'
+      - ה'
+      - ו'
+      - ש'
+    month_names:
+      - ~
+      - ינואר
+      - פברואר
+      - מרץ
+      - אפריל
+      - מאי
+      - יוני
+      - יולי
+      - אוגוסט
+      - ספטמבר
+      - אוקטובר
+      - נובמבר
+      - דצמבר
+    abbr_month_names:
+      - ~
+      - ינו'
+      - פבר'
+      - מרץ
+      - אפר'
+      - מאי
+      - יוני
+      - יולי
+      - אוג'
+      - ספט'
+      - אוק'
+      - נוב'
+      - דצמ'
+  time:
+    formats:
+      default: "%d/%m/%Y %H:%M"
+      short: "%d %b %H:%M"
+      long: "%d ב%B %Y %H:%M"
   app_name: "DevTeam Hub"
   nav:
     today: "היום"
@@ -29,12 +83,29 @@ he:
     created: "הכרטיס נוצר בהצלחה."
     updated: "הכרטיס עודכן בהצלחה."
     deleted: "הכרטיס נמחק."
+    all: "כל הכרטיסים"
     filtered:
       mine: "הכרטיסים שלי"
       late: "כרטיסים באיחור"
       backlog_list: "Backlog"
       current_sprint: "כרטיסי ספרינט נוכחי"
       empty: "לא נמצאו כרטיסים."
+    filters:
+      all_statuses: "כל הסטטוסים"
+      all_projects: "כל הפרויקטים"
+      all_assignees: "כל המשויכים"
+      all_owners: "כל הבעלים"
+      filter: "סנן"
+    move:
+      current_sprint: "העבר לספרינט הנוכחי"
+      next_sprint: "העבר לספרינט הבא"
+      backlog: "העבר ל-Backlog"
+      moved_to_current: "הכרטיס הועבר לספרינט הנוכחי."
+      moved_to_next: "הכרטיס הועבר לספרינט הבא."
+      moved_to_backlog: "הכרטיס הועבר ל-Backlog."
+      no_current_sprint: "לא נמצא ספרינט פעיל לפרויקט זה."
+      no_next_sprint: "לא נמצא ספרינט עתידי לפרויקט זה."
+      invalid_target: "יעד העברה לא ידוע."
     statuses:
       backlog: "Backlog"
       open: "פתוח"
@@ -78,6 +149,8 @@ he:
       demo: "הדגמה"
       one_on_one: "פגישה 1:1"
       other: "אחר"
+  sprints:
+    new_sprint: "ספרינט חדש"
   documents:
     types:
       spec: "מפרט"
@@ -137,6 +210,10 @@ he:
       edit: "עריכה"
       save: "שמור"
       join: "הצטרף"
+      mark_read: "סמן כנקרא"
+      resolve: "סמן כפתור"
+      remove: "הסר"
+      view_log: "צפה בלוג"
   buttons:
     new_project: "פרויקט חדש"
     new_ticket: "כרטיס חדש"
@@ -183,6 +260,14 @@ he:
     channels_label: "ערוצים"
     projects_label: "פרויקטים"
     reports_label: "דוחות"
+    ci_label: "CI / DevOps"
+    ci:
+      overview: "סקירת CI"
+      runs: "כל הריצות"
+      security: "אבטחה (Trivy)"
+      performance: "ביצועים"
+      test_results: "תוצאות בדיקות"
+      deployments: "פריסות"
     admin_label: "ניהול"
     team_label: "צוות"
     all: "הכל"
@@ -197,10 +282,12 @@ he:
       estimation_accuracy: "דיוק הערכות"
     tickets_label: "כרטיסים"
     tickets:
+      all_tickets: "כל הכרטיסים"
       my_tickets: "הכרטיסים שלי"
       late: "כרטיסים באיחור"
       backlog: "Backlog"
       current_sprint: "ספרינט נוכחי"
+    new_project: "פרויקט חדש"
     admin:
       users: "משתמשים"
       clients: "לקוחות"
@@ -294,3 +381,63 @@ he:
     save: "שמור שינויים"
     updated: "הפרופיל עודכן בהצלחה."
     leave_blank: "השאר ריק לשמור על הסיסמה הנוכחית"
+  table_headers:
+    id: "#"
+    title: "כותרת"
+    project: "פרויקט"
+    priority: "עדיפות"
+    status: "סטטוס"
+    assignee: "מוקצה"
+    sprint: "ספרינט"
+    build: "בנייה"
+    branch: "ענף"
+    commit: "Commit"
+    duration: "משך"
+    test_results: "תוצאות בדיקות"
+    triggered_by: "הופעל ע״י"
+    started: "התחלה"
+    when: "מתי"
+    name: "שם"
+    email: 'דוא"ל'
+    role: "תפקיד"
+    notes: "הערות"
+    type: "סוג"
+    date: "תאריך"
+    recording: "הקלטה"
+    log: "לוג"
+    message: "הודעה"
+    error: "שגיאה"
+    created: "נוצר"
+    actions: "פעולות"
+    assigned_to: "מוקצה ל"
+    opened: "נפתח"
+    software: "תוכנה"
+    version: "גרסה"
+    environment: "סביבה"
+    installed: "הותקן"
+    suite: "חבילה"
+    total: "סה״כ"
+    passed: "עבר"
+    failed: "נכשל"
+    skipped: "דולג"
+    pass_rate: "אחוז הצלחה"
+    developer: "מפתח"
+    tickets: "כרטיסים"
+    total_estimated: "סה״כ הערכה"
+    total_actual: "סה״כ בפועל"
+    variance: "סטייה"
+    under_estimated: "הערכת חסר"
+    over_estimated: "הערכת יתר"
+    accuracy_score: "ציון דיוק"
+    ticket: "כרטיס"
+    estimator: "מעריך"
+    est_dev: "הערכה (פיתוח)"
+    actual: "בפועל"
+    last_updated: "עדכון אחרון"
+    deployed_at: "תאריך פריסה"
+    start: "התחלה"
+    "end": "סיום"
+    velocity: "מהירות"
+    deploy_type: "סוג"
+    submitted: "הוגש"
+    updated: "עודכן"

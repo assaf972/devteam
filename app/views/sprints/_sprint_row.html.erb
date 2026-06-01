@@ -8,12 +8,13 @@
         <% if sprint.velocity.present? %>· <%= sprint.velocity %> pts velocity<% end %>
       </p>
     </div>
-    <div class="d-flex gap-2">
-      <%= link_to t("common.view"), sprint_path(sprint), class: "btn btn-secondary btn-sm" %>
-      <%= link_to t("common.actions.edit"), edit_sprint_path(sprint), class: "btn btn-secondary btn-sm is-warning is-light" %>
-      <%= button_to t("common.delete"), sprint_path(sprint), method: :delete,
-        data: { turbo_confirm: t("common.confirm_delete") },
-            class: "btn btn-secondary btn-sm is-danger is-light" %>
+    <div>
+      <%= actions_dropdown do |d| %>
+        <% d.link t('common.view'), sprint_path(sprint), icon: '👁' %>
+        <% d.link t('common.actions.edit'), edit_sprint_path(sprint), icon: '✏️' %>
+        <% d.divider %>
+        <% d.delete t('common.delete'), sprint_path(sprint), confirm: t('common.confirm_delete') %>
+      <% end %>
     </div>
   </div>
 </div>

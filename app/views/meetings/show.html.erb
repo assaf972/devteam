@@ -171,11 +171,7 @@
            class="mb-2">
         <% @meeting.comments.includes(:author).order(:created_at).each do |comment| %>
           <div class="d-flex gap-2 align-items-start">
-            <span style="width:24px;height:24px;border-radius:50%;background:#6366f1;color:#fff;
-                         display:inline-flex;align-items:center;justify-content:center;
-                         font-size:0.65rem;font-weight:700;flex-shrink:0;margin-top:2px;">
-              <%= comment.author&.display_name&.first&.upcase || '?' %>
-            </span>
+            <%= user_avatar(comment.author, size: 24, bg: "#6366f1") %>
             <div>
               <span class="fw-semibold fs-8"><%= comment.author&.display_name || 'Unknown' %></span>
               <span class="text-muted fs-8 ms-1"><%= comment.created_at.strftime('%H:%M') %></span>
