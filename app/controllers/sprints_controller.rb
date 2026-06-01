@@ -11,6 +11,10 @@ class SprintsController < ApplicationController
 
   def show
     @tickets       = @sprint.tickets.includes(:assignee, :owner).order(:status, :priority)
+    # A ticket still needs evaluation/refinement until it has both a story-point
+    # estimate and a dev hour estimate. Everything else is considered planned work.
+    @refinement_tickets, @assigned_tickets =
+      @tickets.partition { |t| t.story_points.blank? || t.dev_estimate_hours.blank? }
     @meetings      = @sprint.meetings.order(:scheduled_at)
     @pull_requests = @sprint.pull_requests.includes(:ticket).order(created_at: :desc)
     @comments      = @sprint.comments.includes(:author).order(:created_at)

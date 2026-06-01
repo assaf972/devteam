@@ -83,6 +83,7 @@ he:
     created: "הכרטיס נוצר בהצלחה."
     updated: "הכרטיס עודכן בהצלחה."
     deleted: "הכרטיס נמחק."
+    status_updated: "סטטוס הכרטיס שונה ל-%{status}."
     all: "כל הכרטיסים"
     filtered:
       mine: "הכרטיסים שלי"
