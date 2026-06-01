@@ -98,83 +98,112 @@
 <div class="row">
   <div class="col-8">
 
-    <%# Tickets %>
+    <%# Assigned / planned tickets %>
     <div class="card p-3 mb-3">
       <div class="level mb-2">
-        <div class="level-left"><h3 class="fw-bold fs-5 mb-0">🎫 Tickets (<%= @tickets.count %>)</h3></div>
+        <div class="level-left"><h3 class="fw-bold fs-5 mb-0">🎫 Assigned Tickets (<%= @assigned_tickets.size %>)</h3></div>
         <div class="level-right"><%= link_to "All Tickets", project_tickets_path(@project), class: "fs-7 text-muted" %></div>
       </div>
-      <% if @tickets.any? %>
-        <% @tickets.group_by(&:status).each do |status, group| %>
-          <div class="mb-3">
-            <div class="fw-semibold fs-7 text-muted mb-2"><%= status.humanize.upcase %> (<%= group.size %>)</div>
-            <% group.each do |ticket| %>
+      <% if @assigned_tickets.any? %>
+        <table class="table table-hover w-100 fs-7 align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Assignee</th>
+              <th>Description</th>
+              <th style="min-width:170px;">Progress</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @assigned_tickets.each do |ticket| %>
               <%
                 total_estimate = (ticket.dev_estimate_hours || 0).to_f + (ticket.tester_estimate_hours || 0).to_f
                 actual = ticket.actual_hours_in_hours || 0
                 if total_estimate > 0
-                  pct = [(actual / total_estimate * 100).round, 100].min
+                  pct = [ (actual / total_estimate * 100).round, 100 ].min
                   bar_color = actual > total_estimate ? "bg-danger" : (pct >= 80 ? "bg-warning" : "bg-success")
                 else
                   pct = 0
                   bar_color = "bg-secondary"
                 end
-                assignee = ticket.assignee
-                owner    = ticket.owner
               %>
-              <div class="d-flex align-items-start gap-3 py-2 border-bottom">
-                <%# Avatar %>
-                <%= user_avatar(assignee, size: 36, bg: assignee ? '#4a90d9' : '#cbd5e1') %>
-
-                <%# Main content %>
-                <div style="flex:1;min-width:0;">
-                  <div class="d-flex align-items-center gap-2 mb-1">
-                    <%= link_to ticket.title.truncate(65), ticket_path(ticket), class: "fw-semibold fs-7 text-decoration-none" %>
-                    <%= status_tag(ticket.status) %>
-                    <%= priority_tag(ticket.priority) if ticket.priority %>
-                  </div>
-
-                  <% if ticket.description.present? %>
-                    <div class="text-muted fs-7 mb-1" style="line-height:1.4;"><%= truncate(strip_tags(ticket.description), length: 120) %></div>
+              <tr>
+                <td>
+                  <%= link_to ticket.title.truncate(50), ticket_path(ticket), class: "fw-semibold text-decoration-none" %>
+                  <div class="mt-1"><%= status_tag(ticket.status) %> <%= priority_tag(ticket.priority) if ticket.priority %></div>
+                </td>
+                <td>
+                  <% if ticket.assignee %>
+                    <span class="d-inline-flex align-items-center gap-1">
+                      <%= user_avatar(ticket.assignee, size: 24, bg: '#4a90d9') %>
+                      <%= ticket.assignee.display_name %>
+                    </span>
+                  <% else %>
+                    <span class="text-muted">— Unassigned —</span>
                   <% end %>
-
-                  <%# Progress bar: estimate vs actual %>
-                  <% if total_estimate > 0 %>
-                    <div class="d-flex align-items-center gap-2" style="max-width:320px;">
-                      <div class="progress flex-grow-1" style="height:6px;">
-                        <div class="progress-bar <%= bar_color %>" style="width:<%= pct %>%"></div>
-                      </div>
-                      <span class="fs-7 text-muted" style="white-space:nowrap;">
-                        <%= actual > 0 ? "#{actual}h" : "0h" %> / <%= total_estimate %>h
-                      </span>
+                </td>
+                <td class="text-muted" style="max-width:260px;">
+                  <%= ticket.description.present? ? truncate(strip_tags(ticket.description), length: 100) : "—" %>
+                </td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="progress flex-grow-1" style="height:6px;">
+                      <div class="progress-bar <%= bar_color %>" style="width:<%= pct %>%"></div>
                     </div>
-                  <% end %>
+                    <span class="text-muted" style="white-space:nowrap;"><%= actual %>h / <%= total_estimate %>h</span>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <p class="text-muted fs-7 mb-0">No estimated tickets in this sprint yet.</p>
+      <% end %>
+    </div>
 
-                  <%# Owner & estimation meta %>
-                  <div class="d-flex flex-wrap gap-2 mt-1 fs-7 text-muted">
-                    <% if owner %>
-                      <span>👤 Owner: <strong><%= owner.display_name %></strong></span>
+    <%# Tickets needing evaluation / refinement %>
+    <div class="card p-3 mb-3" id="needs-refinement">
+      <h3 class="fw-bold fs-5 mb-3">🔍 Needs Evaluation &amp; Refinement (<%= @refinement_tickets.size %>)</h3>
+      <% if @refinement_tickets.any? %>
+        <table class="table table-hover w-100 fs-7 align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Owner / Assignee</th>
+              <th>Status</th>
+              <th>Missing</th>
+              <th class="text-end"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @refinement_tickets.each do |ticket| %>
+              <tr>
+                <td><%= link_to ticket.title.truncate(50), ticket_path(ticket), class: "fw-semibold text-decoration-none" %></td>
+                <td><%= (ticket.owner || ticket.assignee)&.display_name || "—" %></td>
+                <td><%= status_tag(ticket.status) %></td>
+                <td>
+                  <div class="d-flex flex-wrap gap-1">
+                    <% if ticket.story_points.blank? %>
+                      <span class="badge bg-warning-subtle text-warning-emphasis">No story points</span>
                     <% end %>
-                    <% if assignee %>
-                      <span>🧑‍💻 Assignee: <strong><%= assignee.display_name %></strong></span>
+                    <% if ticket.dev_estimate_hours.blank? %>
+                      <span class="badge bg-warning-subtle text-warning-emphasis">No dev estimate</span>
                     <% end %>
-                    <% if ticket.story_points.present? %>
-                      <span>🃏 <%= ticket.story_points %> pts</span>
-                    <% end %>
-                    <% if ticket.dev_estimate_hours.present? %>
-                      <span>Dev: <%= ticket.dev_estimate_hours %>h</span>
-                    <% end %>
-                    <% if ticket.tester_estimate_hours.present? %>
-                      <span>QA: <%= ticket.tester_estimate_hours %>h</span>
+                    <% if ticket.tester_estimate_hours.blank? %>
+                      <span class="badge bg-light text-dark">No QA estimate</span>
                     <% end %>
                   </div>
-                </div>
-              </div>
+                </td>
+                <td class="text-end">
+                  <%= link_to "Refine →", edit_ticket_path(ticket), class: "btn btn-outline-primary btn-sm" %>
+                </td>
+              </tr>
             <% end %>
-          </div>
-        <% end %>
+          </tbody>
+        </table>
       <% else %>
-        <p class="text-muted fs-7">No tickets in this sprint yet.</p>
+        <p class="text-muted fs-7 mb-0">All sprint tickets have been estimated and refined. 🎉</p>
       <% end %>
     </div>
 
