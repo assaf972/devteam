@@ -58,6 +58,36 @@ RSpec.describe "Sprints", type: :request do
       get sprint_path(sprint)
       expect(response.body).to match(/\d+%/)
     end
+
+    it "lists fully-estimated tickets under Assigned Tickets" do
+      ready = create(:ticket, project: project, sprint: sprint,
+                     title: "Ready ticket", story_points: 3, dev_estimate_hours: 8)
+      get sprint_path(sprint)
+      expect(response.body).to include("Assigned Tickets")
+      expect(response.body).to include("Ready ticket")
+    end
+
+    it "lists tickets missing estimates under Needs Evaluation & Refinement" do
+      unrefined = create(:ticket, project: project, sprint: sprint,
+                         title: "Fuzzy ticket", story_points: nil, dev_estimate_hours: nil)
+      get sprint_path(sprint)
+      expect(response.body).to include("Needs Evaluation")
+      expect(response.body).to include("Fuzzy ticket")
+      expect(response.body).to include("No story points")
+      expect(response.body).to include("No dev estimate")
+    end
+
+    it "puts an estimated ticket in the assigned table, not refinement" do
+      ready     = create(:ticket, project: project, sprint: sprint,
+                         title: "Estimated work", story_points: 5, dev_estimate_hours: 4)
+      unrefined = create(:ticket, project: project, sprint: sprint,
+                         title: "Needs grooming", story_points: nil, dev_estimate_hours: nil)
+      get sprint_path(sprint)
+      assigned_section   = response.body[/Assigned Tickets.*?Needs Evaluation/m]
+      refinement_section = response.body[/Needs Evaluation.*/m]
+      expect(assigned_section).to include("Estimated work")
+      expect(refinement_section).to include("Needs grooming")
+    end
   end
 
   # ── GET /projects/:project_id/sprints/new ─────────────────────────────────
