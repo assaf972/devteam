@@ -119,4 +119,7 @@ group :test do
   gem "cucumber-rails", require: false
   gem "database_cleaner-active_record"
   gem "shoulda-matchers"
+  # Code coverage reporting
+  gem "simplecov", require: false
+  gem "simplecov-cobertura", require: false
 end
