@@ -32,7 +32,9 @@ class WebhooksController < ApplicationController
   def jenkins
     secret = ENV.fetch("JENKINS_WEBHOOK_SECRET", "")
     token  = request.headers["X-Jenkins-Token"]
-    unless ActiveSupport::SecurityUtils.secure_compare(token.to_s, secret)
+    # Reject when no secret is configured — otherwise an empty token would
+    # match an empty secret and leave the webhook open to anyone.
+    if secret.blank? || !ActiveSupport::SecurityUtils.secure_compare(token.to_s, secret)
       head :unauthorized and return
     end
 
@@ -101,8 +103,11 @@ class WebhooksController < ApplicationController
     build       = payload["build"] || {}
     job_name    = payload.dig("name") || payload.dig("build", "full_url", "job")
     build_number = build["number"]&.to_s
+    return if job_name.blank?
 
-    project = Project.where("tech_stack ILIKE ?", "%#{job_name}%").first
+    # Case-insensitive match that works on both SQLite and PostgreSQL
+    # (ILIKE is PostgreSQL-only and raises on SQLite).
+    project = Project.where("LOWER(tech_stack) LIKE ?", "%#{job_name.downcase}%").first
     return unless project
 
     status = case build["phase"]
