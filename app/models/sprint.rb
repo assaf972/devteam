@@ -23,7 +23,7 @@ class Sprint < ApplicationRecord
   end
 
   def days_remaining
-    [(end_date - Date.today).to_i, 0].max
+    [ (end_date - Date.today).to_i, 0 ].max
   end
 
   def progress_percent
