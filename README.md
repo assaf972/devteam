@@ -29,6 +29,13 @@ external AI provider.** The AI agent powers six services, all stored as auditabl
 5. **Live sprint analysis** — real-time sprint-health read rendered on the sprint page.
 6. **Solution suggestions** — reads a ticket and proposes an implementation approach.
 
+## 📜 Log viewer
+
+Every application ships its logs to a central **Grafana Loki** store in a common JSON
+shape. The in-app **Log Viewer** (`/logs`, sidebar → CI/DevOps → Log Viewer) renders them
+in a readable console with **errors and exceptions highlighted**, filters by service /
+level / time-range / search, and a **live "watch"** mode that tails new entries.
+
 Find it under the sidebar **AI Agent** section (AI Reports · Recent Review Results · Recent Test
 Reviews). Configure it with `OLLAMA_URL` / `OLLAMA_MODEL` (see `.env.example`). Full guide:
 [`docs/ai_integration.md`](docs/ai_integration.md).

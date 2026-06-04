@@ -18,3 +18,6 @@ application.register("chat", ChatController)
 
 import CalendarController from "./calendar_controller"
 application.register("calendar", CalendarController)
+
+import LogViewerController from "./log_viewer_controller"
+application.register("log-viewer", LogViewerController)

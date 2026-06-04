@@ -28,6 +28,7 @@ DevTeam Hub is an internal developer-team management dashboard built with Ruby o
 - **Admin panel** — user management and client account administration
 - **CLI & VS Code extension** — `devteam` / `dt` command-line tool and IDE integration via REST API
 - **AI Agent (local LLM)** — on-prem Ollama model for ticket readiness checks, code review (Go/Ruby/C#/Node), cucumber test review, estimation analytics, live sprint analysis, and solution suggestions — code never leaves the LAN (see §10)
+- **Log Viewer** — readable, highlighted view of the central Loki logs with service/level/search filters and a live "watch" tail (`/logs`)
 
 The application targets small-to-medium software teams (5–30 developers) who want an on-premise, self-hosted alternative to Jira + Confluence + Freshdesk combined.
 

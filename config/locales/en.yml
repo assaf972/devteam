@@ -230,6 +230,23 @@ en:
     destroyed: "Installation deleted."
   errors:
     not_authorized: "You are not authorized to perform this action."
+  log_viewer:
+    title: "Log Viewer"
+    subtitle: "Live application logs from the central store, with errors and exceptions highlighted."
+    connected: "Loki connected"
+    disconnected: "Loki unreachable"
+    errors: "errors"
+    warnings: "warnings"
+    watch: "Watch"
+    empty: "No log entries for the selected filters."
+    filters:
+      service: "Service"
+      all_services: "All services"
+      level: "Level"
+      all_levels: "All levels"
+      range: "Range"
+      search: "Search"
+      search_ph: "Filter messages (e.g. NullReference, timeout)…"
   ai:
     reports_title: "AI Reports"
     reports_subtitle: "AI-assisted reviews and analyses run on the local on-prem LLM (Ollama)."
@@ -271,6 +288,7 @@ en:
       performance: "Performance"
       test_results: "Test Results"
       deployments: "Deployments"
+      logs: "Log Viewer"
     admin_label: "Admin"
     team_label: "Team"
     ai_label: "AI Agent"
