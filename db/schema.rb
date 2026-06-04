@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_24_073913) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_05_120000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -55,6 +55,29 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_24_073913) do
     t.index ["subject_user_id"], name: "index_activities_on_subject_user_id"
     t.index ["ticket_id"], name: "index_activities_on_ticket_id"
     t.index ["user_id"], name: "index_activities_on_user_id"
+  end
+
+  create_table "ai_reviews", force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.integer "duration_ms"
+    t.text "error_message"
+    t.integer "kind", default: 0, null: false
+    t.string "llm_model"
+    t.text "prompt"
+    t.integer "reviewable_id"
+    t.string "reviewable_type"
+    t.integer "score"
+    t.integer "status", default: 0, null: false
+    t.text "summary"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.string "verdict"
+    t.index ["created_at"], name: "index_ai_reviews_on_created_at"
+    t.index ["kind"], name: "index_ai_reviews_on_kind"
+    t.index ["reviewable_type", "reviewable_id"], name: "index_ai_reviews_on_reviewable"
+    t.index ["status"], name: "index_ai_reviews_on_status"
+    t.index ["user_id"], name: "index_ai_reviews_on_user_id"
   end
 
   create_table "branches", force: :cascade do |t|

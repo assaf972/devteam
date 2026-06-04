@@ -1,8 +1,8 @@
 # DevTeam Hub — Project Documentation
 
-> **Version:** 2.0  
-> **Last updated:** May 25, 2026  
-> **Stack:** Ruby on Rails 8.1.3 · SQLite3 · Bootstrap 5 · Stimulus JS · Solid Queue
+> **Version:** 2.1  
+> **Last updated:** June 5, 2026  
+> **Stack:** Ruby on Rails 8.1.3 · SQLite3 · Bootstrap 5 · Stimulus JS · Solid Queue · Ollama (local LLM)
 
 ---
 
@@ -27,6 +27,7 @@ DevTeam Hub is an internal developer-team management dashboard built with Ruby o
 - **Today Page** — personalised landing page for each developer showing their day at a glance
 - **Admin panel** — user management and client account administration
 - **CLI & VS Code extension** — `devteam` / `dt` command-line tool and IDE integration via REST API
+- **AI Agent (local LLM)** — on-prem Ollama model for ticket readiness checks, code review (Go/Ruby/C#/Node), cucumber test review, estimation analytics, live sprint analysis, and solution suggestions — code never leaves the LAN (see §10)
 
 The application targets small-to-medium software teams (5–30 developers) who want an on-premise, self-hosted alternative to Jira + Confluence + Freshdesk combined.
 
@@ -290,7 +291,41 @@ REST API at `/api/v1/` powers the `devteam` / `dt` CLI and VS Code extension:
 
 ---
 
-## 10. On-Premises Tools
+## 10. AI Agent — Local LLM Integration
+
+DevTeam Hub embeds a **local Large Language Model** into the team's workflow and
+CI process. The model runs **on-premises** on a dedicated **Mac mini** via
+[Ollama](https://ollama.com); DevTeam Hub calls it over a plain HTTP REST API on
+the LAN (`Ai::OllamaClient`, built on Faraday — no extra gem). **No code, ticket
+text, or customer data ever leaves the local network.**
+
+Every run is stored as an `AiReview` record (kind, verdict `pass`/`needs_work`/`fail`,
+0–100 score, full Markdown body, model, duration) so results are auditable and
+surface in the UI.
+
+**Services exposed to the LLM machine:**
+
+| # | Service | What it does | Trigger |
+|---|---------|--------------|---------|
+| 1 | **Ticket readiness** | Verifies story-telling / Definition of Ready; **auto-reassigns poorly-written tickets back to the owner** | Ticket page · "✅ Check readiness" |
+| 2 | **Code review** | Reviews a diff for bugs, security, lint & best practice across **Go / Ruby / C# / Node** | Ticket page · "🔍 Code review" |
+| 3 | **Cucumber test review** | Reviews `.feature` files; suggests changes, optimizations and **missing scenarios** | Ticket page · "🧪 Test review" |
+| 4 | **Estimation accuracy** | Estimated vs actual delivery time; bias, per-developer patterns, coaching | Sprint page · "📊 AI Estimation" |
+| 5 | **Sprint analysis** | Live sprint-health read (on-track? risks? next step?) | Sprint page · live panel |
+| 6 | **Solution suggestion** | Reads a ticket and proposes an implementation approach | Ticket page · "💡 Suggest solution" |
+
+**UI:** the sidebar **AI Agent** section links to **AI Reports** (`/tools/ai`),
+**Recent Review Results**, and **Recent Test Reviews**. The sprint page shows the
+analysis **live** via a lazy Turbo Frame.
+
+**Config:** `OLLAMA_URL`, `OLLAMA_MODEL`, `OLLAMA_TIMEOUT` (see `.env.example`).
+
+> Full details, setup, CI usage and the roadmap of additional services are in
+> [`docs/ai_integration.md`](ai_integration.md).
+
+---
+
+## 11. On-Premises Tools
 
 | Tool | Purpose |
 |---|---|
@@ -305,7 +340,7 @@ REST API at `/api/v1/` powers the `devteam` / `dt` CLI and VS Code extension:
 
 ---
 
-## 11. Internationalisation
+## 12. Internationalisation
 
 - **Locales:** English (`en`) and Hebrew (`he`) with full RTL support
 - **User preference:** `preferred_language` on User model
@@ -314,7 +349,7 @@ REST API at `/api/v1/` powers the `devteam` / `dt` CLI and VS Code extension:
 
 ---
 
-## 12. Screenshots
+## 13. Screenshots
 
 Application screenshots are available in both languages:
 

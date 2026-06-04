@@ -22,6 +22,8 @@
   <div class="level-right d-flex gap-2">
     <% status_colors = { "planning" => "bg-info", "active" => "bg-success", "completed" => "bg-secondary", "cancelled" => "bg-danger" } %>
     <span class="badge <%= status_colors[@sprint.status] || "bg-secondary" %>"><%= @sprint.status.humanize %></span>
+    <%= button_to "📊 AI Estimation", tools_ai_estimation_analysis_path(sprint_id: @sprint.id),
+          method: :post, class: "btn btn-secondary btn-sm" %>
     <%= link_to t("common.actions.edit"), edit_sprint_path(@sprint), class: "btn btn-secondary btn-sm is-warning is-light" %>
         <%= button_to t("common.delete"), sprint_path(@sprint), method: :delete,
           data: { turbo_confirm: t("common.confirm_delete") },
@@ -59,6 +61,15 @@
     </div>
   </div>
 </div>
+
+<%# ── Live AI sprint analysis (lazy-loaded from the local Ollama LLM) ──────── %>
+<turbo-frame id="ai_sprint_analysis"
+             src="<%= tools_ai_sprint_analysis_path(sprint_id: @sprint.id) %>"
+             loading="lazy">
+  <div class="card p-3 mb-4" style="border-left:4px solid #7048e8;">
+    <span class="text-muted fs-7">🤖 <%= t("ai.analyzing") %> <span class="spinner-border spinner-border-sm ms-1"></span></span>
+  </div>
+</turbo-frame>
 
 <% if @sprint.goals.present? %>
   <div class="alert alert-info is-light mb-4">

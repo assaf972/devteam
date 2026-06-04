@@ -39,6 +39,27 @@ Rails.application.routes.draw do
   get "ci/runs",        to: "ci_dashboard#runs",         as: :ci_runs_all
   get "ci/security",    to: "ci_dashboard#security",     as: :ci_security
   get "ci/performance", to: "ci_dashboard#performance",  as: :ci_performance
+
+  # ── AI Agent (local Ollama LLM on the on-prem Mac mini) ─────────────────────
+  namespace :tools do
+    get "ai",              to: "ai#index",        as: :ai             # AI Reports dashboard
+    get "ai/reviews",      to: "ai#reviews",      as: :ai_reviews     # Recent (code) review results
+    get "ai/test_reviews", to: "ai#test_reviews", as: :ai_test_reviews
+    get "ai/reviews/:id",  to: "ai#show",         as: :ai_review
+
+    # Service endpoints — each contacts the Ollama machine and persists an AiReview
+    post "ai/ticket_quality",      to: "ai#ticket_quality",      as: :ai_ticket_quality
+    post "ai/code_review",         to: "ai#code_review",         as: :ai_code_review
+    post "ai/test_review",         to: "ai#test_review",         as: :ai_test_review
+    post "ai/estimation_analysis", to: "ai#estimation_analysis", as: :ai_estimation_analysis
+    post "ai/solution_suggestion", to: "ai#solution_suggestion", as: :ai_solution_suggestion
+
+    # Sprint analysis — GET drives the lazy Turbo Frame (live render on the
+    # sprint page); POST forces a refresh.
+    get  "ai/sprint_analysis", to: "ai#sprint_analysis", as: :ai_sprint_analysis
+    post "ai/sprint_analysis", to: "ai#sprint_analysis"
+  end
+
   devise_for :users, controllers: {
     sessions: "users/sessions",
     registrations: "users/registrations"

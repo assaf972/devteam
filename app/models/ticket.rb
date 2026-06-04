@@ -13,6 +13,7 @@ class Ticket < ApplicationRecord
   has_many :ticket_watchers
   has_many :watchers, through: :ticket_watchers, source: :user
   has_many :test_results, through: :ci_runs
+  has_many :ai_reviews, as: :reviewable, dependent: :destroy
 
   has_many_attached :attachments
 

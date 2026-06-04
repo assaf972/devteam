@@ -179,6 +179,26 @@
 
   <hr class="sidebar-divider">
 
+  <%# ── AI Agent ─────────────────────────────────────────────────────── %>
+  <div class="sidebar-section-label"><%= t('sidebar.ai_label') %></div>
+
+  <%= link_to tools_ai_path,
+        class: "sidebar-nav-item #{controller_path == 'tools/ai' && action_name == 'index' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">🤖</span> <%= t('sidebar.ai.reports') %>
+  <% end %>
+
+  <%= link_to tools_ai_reviews_path,
+        class: "sidebar-nav-item #{controller_path == 'tools/ai' && action_name == 'reviews' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">🔍</span> <%= t('sidebar.ai.review_results') %>
+  <% end %>
+
+  <%= link_to tools_ai_test_reviews_path,
+        class: "sidebar-nav-item #{controller_path == 'tools/ai' && action_name == 'test_reviews' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">🧪</span> <%= t('sidebar.ai.test_reviews') %>
+  <% end %>
+
+  <hr class="sidebar-divider">
+
   <%# ── Reports ──────────────────────────────────────────────────────── %>
   <div class="sidebar-section-label"><%= t('sidebar.reports_label') %></div>
 

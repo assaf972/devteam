@@ -12,6 +12,7 @@ class Project < ApplicationRecord
   has_many :project_memberships, dependent: :destroy
   has_many :members, through: :project_memberships, source: :user
   has_many :activities, dependent: :destroy
+  has_many :ai_reviews, as: :reviewable, dependent: :destroy
 
   validates :name, presence: true
 
