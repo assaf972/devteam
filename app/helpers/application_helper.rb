@@ -116,9 +116,13 @@ module ApplicationHelper
     end
 
     def link(label, url, icon: nil, method: nil, **html_opts)
-      data = {}
-      data[:turbo_method] = method if method
-      link = @helper.link_to(url, class: "dropdown-item fs-7", data: data, **html_opts) do
+      # A non-GET "link" must submit a real form, otherwise it navigates as a
+      # GET and 404s. Plain (GET) links stay as anchors.
+      if method && method.to_sym != :get
+        return @items << @helper.content_tag(:li, button_form(url, label, method: method, icon: icon))
+      end
+
+      link = @helper.link_to(url, class: "dropdown-item fs-7", **html_opts) do
         icon_html = icon ? @helper.content_tag(:span, icon, class: "me-2") : "".html_safe
         icon_html + label
       end
@@ -126,26 +130,34 @@ module ApplicationHelper
     end
 
     def delete(label, url, confirm: nil)
-      data = { turbo_method: :delete }
-      data[:turbo_confirm] = confirm if confirm
-      link = @helper.link_to(url, class: "dropdown-item fs-7 text-danger", data: data) do
-        @helper.content_tag(:span, "🗑", class: "me-2") + label
-      end
-      @items << @helper.content_tag(:li, link)
+      @items << @helper.content_tag(:li, button_form(url, label, method: :delete, icon: "🗑",
+                                                     confirm: confirm, button_class: "text-danger"))
     end
 
     def button_action(label, url, method: :patch, confirm: nil, icon: nil)
-      data = { turbo_method: method }
-      data[:turbo_confirm] = confirm if confirm
-      link = @helper.link_to(url, class: "dropdown-item fs-7", data: data) do
-        icon_html = icon ? @helper.content_tag(:span, icon, class: "me-2") : "".html_safe
-        icon_html + label
-      end
-      @items << @helper.content_tag(:li, link)
+      @items << @helper.content_tag(:li, button_form(url, label, method: method, icon: icon, confirm: confirm))
     end
 
     def divider
       @items << @helper.content_tag(:li, @helper.content_tag(:hr, nil, class: "dropdown-divider"))
+    end
+
+    private
+
+    # Renders a state-changing dropdown action as a real <form> button. Using
+    # button_to (rather than a link with data-turbo-method) guarantees the
+    # correct HTTP verb is sent whether or not Turbo upgrades the request, so
+    # actions like move-to-sprint never fall back to a GET and 404.
+    def button_form(url, label, method:, icon: nil, confirm: nil, button_class: nil)
+      form_data = {}
+      form_data[:turbo_confirm] = confirm if confirm
+      @helper.button_to(url,
+        method: method,
+        class: "dropdown-item fs-7 #{button_class}".strip,
+        form: { class: "d-grid", data: form_data }) do
+        icon_html = icon ? @helper.content_tag(:span, icon, class: "me-2") : "".html_safe
+        icon_html + label.to_s
+      end
     end
   end
 end

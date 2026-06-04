@@ -35,6 +35,9 @@ class ApplicationController < ActionController::Base
                                     .merge(current_user.member_projects)
                                     .first
 
+    # Chat rooms for sidebar channel list
+    @sidebar_chat_rooms = ChatRoom.active.order(:room_type, :name)
+
     # Team members for sidebar presence list
     @sidebar_team_members = User.order(:name)
 

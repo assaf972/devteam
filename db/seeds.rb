@@ -46,7 +46,7 @@ def attach_face_avatar(user, _index)
 end
 
 # ─────────────────────────────────────────────────────────────────
-# Internal users (developers, leads, admin)
+#   Internal users (developers, leads, admin)
 # ─────────────────────────────────────────────────────────────────
 users_data = [
   { name: "Assaf Goldstein",   email: "assaf@devteam.local",   role: :admin           },
