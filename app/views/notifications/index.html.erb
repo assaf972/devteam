@@ -51,6 +51,7 @@
               <td class="text-end">
                 <%= actions_dropdown do |d| %>
                   <% d.link t('common.view'), notification_path(notification), icon: '👁' %>
+                  <% d.button_action "Open ticket", open_ticket_notification_path(notification), method: :post, icon: '🎫' %>
                   <% d.link t('common.actions.edit'), edit_notification_path(notification), icon: '✏️' %>
                   <% unless notification.read? %>
                     <% d.button_action t('common.actions.mark_read'), mark_read_notification_path(notification), method: :patch, icon: '✅' %>

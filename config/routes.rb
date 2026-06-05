@@ -201,7 +201,10 @@ Rails.application.routes.draw do
 
   resources :notifications do
     collection { post :mark_all_read }
-    member { patch :mark_read }
+    member do
+      patch :mark_read
+      post  :open_ticket   # create a ticket from this notification's data
+    end
   end
 
   resources :chat_rooms, only: %i[index show new create] do
