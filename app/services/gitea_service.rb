@@ -103,6 +103,23 @@ class GiteaService
     []
   end
 
+  # Fetch changed files with per-file stats (status + additions/deletions).
+  def pull_request_file_details(repo_owner:, repo_name:, pr_number:)
+    response = @conn.get("/api/v1/repos/#{repo_owner}/#{repo_name}/pulls/#{pr_number}/files")
+    return [] unless response.success?
+    Array(response.body).map do |f|
+      {
+        "filename"  => f["filename"],
+        "status"    => f["status"],
+        "additions" => f["additions"].to_i,
+        "deletions" => f["deletions"].to_i
+      }
+    end
+  rescue Faraday::Error => e
+    Rails.logger.error "GiteaService#pull_request_file_details failed: #{e.message}"
+    []
+  end
+
   # Fetch PR review comments
   def pull_request_comments(repo_owner:, repo_name:, pr_number:)
     response = @conn.get("/api/v1/repos/#{repo_owner}/#{repo_name}/issues/#{pr_number}/comments")

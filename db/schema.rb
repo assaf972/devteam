@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_24_073913) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_05_160000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -55,6 +55,29 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_24_073913) do
     t.index ["subject_user_id"], name: "index_activities_on_subject_user_id"
     t.index ["ticket_id"], name: "index_activities_on_ticket_id"
     t.index ["user_id"], name: "index_activities_on_user_id"
+  end
+
+  create_table "ai_reviews", force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.integer "duration_ms"
+    t.text "error_message"
+    t.integer "kind", default: 0, null: false
+    t.string "llm_model"
+    t.text "prompt"
+    t.integer "reviewable_id"
+    t.string "reviewable_type"
+    t.integer "score"
+    t.integer "status", default: 0, null: false
+    t.text "summary"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.string "verdict"
+    t.index ["created_at"], name: "index_ai_reviews_on_created_at"
+    t.index ["kind"], name: "index_ai_reviews_on_kind"
+    t.index ["reviewable_type", "reviewable_id"], name: "index_ai_reviews_on_reviewable"
+    t.index ["status"], name: "index_ai_reviews_on_status"
+    t.index ["user_id"], name: "index_ai_reviews_on_user_id"
   end
 
   create_table "branches", force: :cascade do |t|
@@ -120,6 +143,28 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_24_073913) do
     t.string "name"
     t.text "notes"
     t.datetime "updated_at", null: false
+  end
+
+  create_table "code_reviews", force: :cascade do |t|
+    t.string "author"
+    t.string "base_branch"
+    t.datetime "created_at", null: false
+    t.string "gitea_state"
+    t.string "head_branch"
+    t.integer "pr_number", null: false
+    t.string "pr_url", null: false
+    t.bigint "project_id"
+    t.string "repo_name"
+    t.string "repo_owner"
+    t.bigint "reviewer_id"
+    t.integer "status", default: 0, null: false
+    t.text "summary"
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.index ["project_id"], name: "index_code_reviews_on_project_id"
+    t.index ["repo_owner", "repo_name", "pr_number"], name: "index_code_reviews_on_repo_owner_and_repo_name_and_pr_number"
+    t.index ["reviewer_id"], name: "index_code_reviews_on_reviewer_id"
+    t.index ["status"], name: "index_code_reviews_on_status"
   end
 
   create_table "comments", force: :cascade do |t|
@@ -395,6 +440,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_24_073913) do
     t.index ["name"], name: "index_tags_on_name", unique: true
   end
 
+  create_table "tasks", force: :cascade do |t|
+    t.string "actual"
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.text "description", null: false
+    t.string "estimation"
+    t.datetime "started_at"
+    t.integer "ticket_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["ticket_id"], name: "index_tasks_on_ticket_id"
+    t.index ["user_id"], name: "index_tasks_on_user_id"
+  end
+
   create_table "test_results", force: :cascade do |t|
     t.bigint "ci_run_id", null: false
     t.datetime "created_at", null: false
@@ -423,6 +482,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_24_073913) do
     t.integer "actual_velocity"
     t.bigint "assignee_id"
     t.string "branch_name"
+    t.integer "completed_tasks_count", default: 0
+    t.decimal "completed_tasks_estimation", precision: 8, scale: 2, default: "0.0"
     t.datetime "created_at", null: false
     t.text "description"
     t.decimal "dev_estimate_hours", precision: 6, scale: 2
@@ -440,9 +501,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_24_073913) do
     t.bigint "sprint_id"
     t.integer "status"
     t.integer "story_points"
+    t.integer "tasks_count", default: 0
+    t.integer "tasks_progress_in_percents", default: 0
     t.text "test_plan"
     t.decimal "tester_estimate_hours", precision: 6, scale: 2
     t.string "title"
+    t.decimal "total_tasks_estimation", precision: 8, scale: 2, default: "0.0"
     t.datetime "updated_at", null: false
     t.index ["assignee_id"], name: "index_tickets_on_assignee_id"
     t.index ["estimated_by_id"], name: "index_tickets_on_estimated_by_id"
@@ -511,6 +575,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_24_073913) do
   add_foreign_key "pull_requests", "tickets"
   add_foreign_key "sprints", "projects"
   add_foreign_key "taggings", "tags"
+  add_foreign_key "tasks", "tickets"
   add_foreign_key "test_results", "ci_runs"
   add_foreign_key "ticket_watchers", "tickets"
   add_foreign_key "ticket_watchers", "users"

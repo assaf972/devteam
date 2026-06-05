@@ -12,8 +12,15 @@ class Project < ApplicationRecord
   has_many :project_memberships, dependent: :destroy
   has_many :members, through: :project_memberships, source: :user
   has_many :activities, dependent: :destroy
+  has_many :ai_reviews, as: :reviewable, dependent: :destroy
+  has_many :chat_rooms, dependent: :nullify
 
   validates :name, presence: true
+
+  # The project's current sprint is its active one (only one can be active).
+  def current_sprint
+    sprints.active.first
+  end
 
   scope :active, -> { where(active: true) }
 

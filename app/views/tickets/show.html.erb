@@ -9,6 +9,7 @@
         <div>
           <span class="text-muted fw-semibold">#<%= @ticket.id %></span>
           <h1 class="fw-bold fs-4 mt-1 mb-0"><%= @ticket.title %></h1>
+          <div class="d-flex flex-wrap gap-1 mt-2"><%= render "tickets/progress_badges", ticket: @ticket %></div>
         </div>
         <div class="d-flex gap-2 flex-shrink-0">
           <%= link_to t("common.actions.edit"), edit_ticket_path(@ticket), class: "btn btn-secondary btn-sm" %>
@@ -52,6 +53,9 @@
         </div>
       <% end %>
     </div>
+
+    <%# Tasks (story breakdown + progress) %>
+    <%= render "tickets/tasks", ticket: @ticket %>
 
     <%# Comments (before the CI panel) %>
     <div class="card p-3 mb-3" id="comments">
@@ -173,6 +177,8 @@
 
   <%# ─── Details sidebar ──────────────────────────────────────────────────── %>
   <div class="col-lg-4">
+    <%= render "tools/ai/ticket_actions", ticket: @ticket %>
+
     <div class="card p-3 mb-3">
       <h3 class="subfw-bold">Details</h3>
       <table class="table table-sm fs-7 mb-0">
@@ -195,11 +201,11 @@
           </tr>
           <tr>
             <th class="text-muted fw-semibold">Assignee</th>
-            <td><%= @ticket.assignee&.display_name || "—" %></td>
+            <td><span class="d-inline-flex align-items-center gap-1"><%= user_avatar(@ticket.assignee, size: 22) if @ticket.assignee %><%= @ticket.assignee&.display_name || "—" %></span></td>
           </tr>
           <tr>
             <th class="text-muted fw-semibold">Reporter / Owner</th>
-            <td><%= @ticket.owner&.display_name || "—" %></td>
+            <td><span class="d-inline-flex align-items-center gap-1"><%= user_avatar(@ticket.owner, size: 22) if @ticket.owner %><%= @ticket.owner&.display_name || "—" %></span></td>
           </tr>
           <tr>
             <th class="text-muted fw-semibold">Sprint</th>

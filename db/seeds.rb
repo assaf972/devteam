@@ -12,41 +12,44 @@ require "open-uri"
 
 # Map each user to a specific pravatar image ID for consistency.
 # IDs 1-70 are available on i.pravatar.cc.
-AVATAR_IMAGE_IDS = {
-  "assaf@devteam.local"  => 11,  # male
-  "yael@devteam.local"   => 5,   # female
-  "noam@devteam.local"   => 12,  # male
-  "dana@devteam.local"   => 9,   # female
-  "oren@devteam.local"   => 14,  # male
-  "michal@devteam.local" => 25,  # female
-  "tal@devteam.local"    => 33,  # male
-  "avi@devteam.local"    => 53   # male
+# Real user avatars now come from the local docs/users-icons/ folder (no network).
+USER_ICON_DIR   = Rails.root.join("docs/users-icons")
+USER_ICON_FILES = Dir[USER_ICON_DIR.join("*.{jpg,jpeg,png}")].sort.freeze
+
+# Stable per-person assignment so a known teammate keeps the same face on reseed.
+AVATAR_FACE_BY_EMAIL = {
+  "assaf@devteam.local"  => "face11.jpg",
+  "yael@devteam.local"   => "face5.jpg",
+  "noam@devteam.local"   => "face12.jpg",
+  "dana@devteam.local"   => "face9.jpg",
+  "oren@devteam.local"   => "face14.jpg",
+  "michal@devteam.local" => "face2.jpg",
+  "tal@devteam.local"    => "face6.jpg",
+  "avi@devteam.local"    => "face7.jpg"
 }.freeze
 
-def attach_face_avatar(user, _index)
-  # Replace existing SVG avatars with real photos; keep user-uploaded non-SVG avatars
-  if user.avatar.attached?
-    return unless user.avatar.blob.content_type == "image/svg+xml"
-    user.avatar.purge
-  end
+def attach_face_avatar(user, index)
+  return if USER_ICON_FILES.empty?
 
-  img_id = AVATAR_IMAGE_IDS[user.email] || (user.id.to_i % 70) + 1
-  url    = "https://i.pravatar.cc/200?img=#{img_id}"
+  # Seed data owns the avatar — replace whatever is there with a local icon.
+  user.avatar.purge if user.avatar.attached?
 
-  begin
-    photo_data = URI.parse(url).open(read_timeout: 10).read
-    user.avatar.attach(
-      io:           StringIO.new(photo_data),
-      filename:     "#{user.display_name.parameterize}-avatar.jpg",
-      content_type: "image/jpeg"
-    )
-  rescue StandardError => e
-    puts "    ⚠ Could not download avatar for #{user.display_name}: #{e.message}"
-  end
+  mapped = AVATAR_FACE_BY_EMAIL[user.email]
+  path   = mapped && USER_ICON_DIR.join(mapped)
+  path   = nil unless path && File.exist?(path)
+  path ||= USER_ICON_FILES[index % USER_ICON_FILES.size]
+
+  user.avatar.attach(
+    io:           File.open(path),
+    filename:     "#{user.display_name.parameterize}-avatar#{File.extname(path)}",
+    content_type: "image/jpeg"
+  )
+rescue StandardError => e
+  puts "    ⚠ Could not attach local avatar for #{user.display_name}: #{e.message}"
 end
 
 # ─────────────────────────────────────────────────────────────────
-# Internal users (developers, leads, admin)
+#   Internal users (developers, leads, admin)
 # ─────────────────────────────────────────────────────────────────
 users_data = [
   { name: "Assaf Goldstein",   email: "assaf@devteam.local",   role: :admin           },
@@ -1350,6 +1353,13 @@ docs_to_seed = [
     doc_type:        :architecture,
     summary:         "Unified log management with Grafana Loki + Promtail — format, tools, API, CLI, and CI integration.",
     version_number:  "1.0"
+  },
+  {
+    file:            "docs/local_llm_onprem_guide.html",
+    title:           "AI in On-Premises Projects — Local LLM & Hardware Guide",
+    doc_type:        :architecture,
+    summary:         "Free local-LLM scan + Mac mini M5 hardware recommendation for on-prem dev AI (code review, fixes, docs, presentations).",
+    version_number:  "1.0"
   }
 ]
 
@@ -1372,5 +1382,83 @@ docs_to_seed.each do |d|
 end
 
 puts "  ✓ #{doc_count} documents seeded from docs/ folder"
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Assign tickets to sprints so sprint dashboards have data
+#   done/closed → a completed sprint · active work → the active sprint · backlog → none
+# ──────────────────────────────────────────────────────────────────────────────
+assigned = 0
+Ticket.includes(project: :sprints).find_each do |ticket|
+  next if ticket.sprint_id.present? || ticket.status == "backlog"
+
+  sprints = ticket.project.sprints
+  target =
+    if %w[done closed].include?(ticket.status)
+      sprints.where(status: :completed).order(:start_date).last
+    else
+      sprints.find_by(status: :active)
+    end
+  next unless target
+
+  ticket.update_column(:sprint_id, target.id) # skip callbacks
+  assigned += 1
+end
+puts "  ✓ #{assigned} tickets assigned to sprints"
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Tasks  (break every ticket into estimable tasks; some done, some not)
+# ──────────────────────────────────────────────────────────────────────────────
+TASK_TEMPLATES = [
+  "Design the data model", "Write the service object", "Add controller actions",
+  "Build the UI", "Wire up the Stimulus controller", "Add request specs",
+  "Add cucumber scenarios", "Update the documentation", "Handle edge cases",
+  "Add i18n strings", "Refactor for clarity", "Add input validations",
+  "Add background job", "Add the webhook handler", "Performance pass"
+].freeze
+TASK_ESTIMATES = %w[1h 2h 3h 4h 6h 1d].freeze
+
+# Completion fraction is driven by the ticket's status so the data looks real.
+def completion_fraction(status)
+  case status
+  when "done", "closed"       then 1.0
+  when "in_review", "testing" then 0.8
+  when "in_progress"          then 0.5
+  when "open"                 then 0.25
+  else                             0.0 # backlog / blocked
+  end
+end
+
+task_count = 0
+Ticket.includes(:tasks, :project).find_each do |ticket|
+  next if ticket.tasks.count >= 3 # already seeded — keep idempotent
+
+  member = ticket.assignee || ticket.owner || ticket.project.members.to_a.sample
+  target = 3 + (ticket.id % 4) # 3–6 tasks per ticket
+
+  while ticket.tasks.count < target
+    idx = ticket.id + ticket.tasks.count
+    ticket.tasks.create!(
+      description: TASK_TEMPLATES[idx % TASK_TEMPLATES.size],
+      estimation:  TASK_ESTIMATES[idx % TASK_ESTIMATES.size],
+      user:        member
+    )
+    task_count += 1
+  end
+
+  # Mark a status-driven fraction complete; the next one is "in progress".
+  all_tasks = ticket.tasks.order(:created_at).to_a
+  done_n    = (all_tasks.size * completion_fraction(ticket.status)).round
+  all_tasks.each_with_index do |task, i|
+    if i < done_n
+      task.update!(started_at: 4.days.ago, completed_at: (3 - (i % 3)).days.ago)
+    elsif i == done_n && done_n < all_tasks.size && completion_fraction(ticket.status).positive?
+      task.update!(started_at: 1.day.ago) # one in-progress task
+    end
+  end
+
+  ticket.recalculate_task_stats!
+end
+puts "  ✓ #{task_count} tasks seeded across #{Ticket.count} tickets " \
+     "(#{Task.completed.count} completed)"
 
 puts "✅ Seed complete!"

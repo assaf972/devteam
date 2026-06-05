@@ -16,9 +16,9 @@
     <span class="nav-icon">📋</span> <%= t('nav.today') %>
   <% end %>
 
-  <%= link_to dashboard_path,
-        class: "sidebar-nav-item #{controller_name == 'dashboard' ? 'is-active' : ''}" do %>
-    <span class="nav-icon">📊</span> <%= t('nav.dashboard') %>
+  <%= link_to all_tickets_path,
+        class: "sidebar-nav-item #{controller_name == 'tickets' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">🎫</span> <%= t('nav.tickets') %>
   <% end %>
 
   <%= link_to meetings_path,
@@ -56,36 +56,6 @@
       <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><%= t('sidebar.active_sprint_prefix') %> <%= @sidebar_current_sprint.name.truncate(18) %></span>
       <span class="badge bg-success ms-1" style="font-size:0.62rem;flex-shrink:0;"><%= t('sidebar.active_badge') %></span>
     <% end %>
-  <% end %>
-
-  <hr class="sidebar-divider">
-
-  <%# ── Tickets ─────────────────────────────────────────────────────────── %>
-  <div class="sidebar-section-label"><%= t('sidebar.tickets_label') %></div>
-
-  <%= link_to all_tickets_path,
-        class: "sidebar-nav-item #{controller_name == 'tickets' && action_name == 'all' ? 'is-active' : ''}" do %>
-    <span class="nav-icon">🎫</span> <%= t('sidebar.tickets.all_tickets') %>
-  <% end %>
-
-  <%= link_to my_tickets_path,
-        class: "sidebar-nav-item #{controller_name == 'tickets' && action_name == 'mine' ? 'is-active' : ''}" do %>
-    <span class="nav-icon">🎫</span> <%= t('sidebar.tickets.my_tickets') %>
-  <% end %>
-
-  <%= link_to late_tickets_path,
-        class: "sidebar-nav-item #{controller_name == 'tickets' && action_name == 'late' ? 'is-active' : ''}" do %>
-    <span class="nav-icon">⏰</span> <%= t('sidebar.tickets.late') %>
-  <% end %>
-
-  <%= link_to backlog_tickets_path,
-        class: "sidebar-nav-item #{controller_name == 'tickets' && action_name == 'backlog_list' ? 'is-active' : ''}" do %>
-    <span class="nav-icon">📥</span> <%= t('sidebar.tickets.backlog') %>
-  <% end %>
-
-  <%= link_to current_sprint_tickets_path,
-        class: "sidebar-nav-item #{controller_name == 'tickets' && action_name == 'current_sprint' ? 'is-active' : ''}" do %>
-    <span class="nav-icon">🏃</span> <%= t('sidebar.tickets.current_sprint') %>
   <% end %>
 
   <hr class="sidebar-divider">
@@ -128,14 +98,77 @@
 
   <hr class="sidebar-divider">
 
+  <%# ── CI ─────────────────────────────────────────────────────────────── %>
+  <div class="sidebar-section-label"><%= t('sidebar.ci_label') %></div>
+
+  <%= link_to ci_dashboard_path,
+        class: "sidebar-nav-item #{controller_name == 'ci_dashboard' && action_name == 'index' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">🏗️</span> <%= t('sidebar.ci.overview') %>
+  <% end %>
+
+  <%= link_to ci_runs_all_path,
+        class: "sidebar-nav-item #{controller_name == 'ci_dashboard' && action_name == 'runs' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">⚙️</span> <%= t('sidebar.ci.runs') %>
+  <% end %>
+
+  <%= link_to ci_security_path,
+        class: "sidebar-nav-item #{controller_name == 'ci_dashboard' && action_name == 'security' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">🔒</span> <%= t('sidebar.ci.security') %>
+  <% end %>
+
+  <%= link_to ci_performance_path,
+        class: "sidebar-nav-item #{controller_name == 'ci_dashboard' && action_name == 'performance' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">⚡</span> <%= t('sidebar.ci.performance') %>
+  <% end %>
+
+  <%= link_to reports_test_coverage_path,
+        class: "sidebar-nav-item #{controller_name == 'reports' && action_name == 'test_coverage' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">✅</span> <%= t('sidebar.ci.test_results') %>
+  <% end %>
+
+  <%= link_to reports_deployment_summary_path,
+        class: "sidebar-nav-item #{controller_name == 'reports' && action_name == 'deployment_summary' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">🚀</span> <%= t('sidebar.ci.deployments') %>
+  <% end %>
+
+  <%= link_to log_viewer_path,
+        class: "sidebar-nav-item #{controller_name == 'log_viewer' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">📜</span> <%= t('sidebar.ci.logs') %>
+  <% end %>
+
+  <%= link_to code_reviews_path,
+        class: "sidebar-nav-item #{controller_name == 'code_reviews' || controller_name == 'code_review_comments' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">🔍</span> <%= t('sidebar.ci.code_review') %>
+  <% end %>
+
+  <hr class="sidebar-divider">
+
+  <%# ── AI Agent ─────────────────────────────────────────────────────── %>
+  <div class="sidebar-section-label"><%= t('sidebar.ai_label') %></div>
+
+  <%= link_to tools_ai_path,
+        class: "sidebar-nav-item #{controller_path == 'tools/ai' && action_name == 'index' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">🤖</span> <%= t('sidebar.ai.reports') %>
+  <% end %>
+
+  <%= link_to tools_ai_reviews_path,
+        class: "sidebar-nav-item #{controller_path == 'tools/ai' && action_name == 'reviews' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">🔍</span> <%= t('sidebar.ai.review_results') %>
+  <% end %>
+
+  <%= link_to tools_ai_test_reviews_path,
+        class: "sidebar-nav-item #{controller_path == 'tools/ai' && action_name == 'test_reviews' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">🧪</span> <%= t('sidebar.ai.test_reviews') %>
+  <% end %>
+
+  <hr class="sidebar-divider">
+
   <%# ── Reports ──────────────────────────────────────────────────────── %>
   <div class="sidebar-section-label"><%= t('sidebar.reports_label') %></div>
 
-  <%= link_to reports_ci_summary_path,         class: "sidebar-nav-item" do %><span class="nav-icon">📈</span> <%= t('sidebar.reports.ci_summary') %><% end %>
-  <%= link_to reports_deployment_summary_path, class: "sidebar-nav-item" do %><span class="nav-icon">🚀</span> <%= t('sidebar.reports.deployments') %><% end %>
-  <%= link_to reports_test_coverage_path,      class: "sidebar-nav-item" do %><span class="nav-icon">✅</span> <%= t('sidebar.reports.test_coverage') %><% end %>
-  <%= link_to reports_sprint_velocity_path,    class: "sidebar-nav-item" do %><span class="nav-icon">⚡</span> <%= t('sidebar.reports.velocity') %><% end %>
-  <%= link_to reports_estimation_accuracy_path, class: "sidebar-nav-item" do %><span class="nav-icon">🎯</span> <%= t('sidebar.reports.estimation_accuracy') %><% end %>
+  <%= link_to reports_ci_summary_path,         class: "sidebar-nav-item #{controller_name == 'reports' && action_name == 'ci_summary' ? 'is-active' : ''}" do %><span class="nav-icon">📈</span> <%= t('sidebar.reports.ci_summary') %><% end %>
+  <%= link_to reports_sprint_velocity_path,    class: "sidebar-nav-item #{controller_name == 'reports' && action_name == 'sprint_velocity' ? 'is-active' : ''}" do %><span class="nav-icon">⚡</span> <%= t('sidebar.reports.velocity') %><% end %>
+  <%= link_to reports_estimation_accuracy_path, class: "sidebar-nav-item #{controller_name == 'reports' && action_name == 'estimation_accuracy' ? 'is-active' : ''}" do %><span class="nav-icon">🎯</span> <%= t('sidebar.reports.estimation_accuracy') %><% end %>
 
   <% if current_user.respond_to?(:admin?) && current_user.admin? %>
     <hr class="sidebar-divider">

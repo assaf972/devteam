@@ -39,6 +39,49 @@ Rails.application.routes.draw do
   get "ci/runs",        to: "ci_dashboard#runs",         as: :ci_runs_all
   get "ci/security",    to: "ci_dashboard#security",     as: :ci_security
   get "ci/performance", to: "ci_dashboard#performance",  as: :ci_performance
+
+  # ── Quick contact (toolbar: message a teammate) ─────────────────────────────
+  post "quick_contact", to: "quick_contacts#create", as: :quick_contact
+
+  # ── Team ceremonies ─────────────────────────────────────────────────────────
+  get "daily_meeting", to: "daily_meetings#show", as: :daily_meeting
+  get "retro_meeting", to: "retro_meetings#show", as: :retro_meeting
+
+  # ── Log Viewer (reads the central Loki store) ───────────────────────────────
+  get "logs",      to: "log_viewer#index", as: :log_viewer
+  get "logs/tail", to: "log_viewer#tail",  as: :log_viewer_tail
+
+  # ── Code Review (review a Gitea PR by URL) ──────────────────────────────────
+  resources :code_reviews, only: %i[index new create show update] do
+    member do
+      post :refresh
+      post :ai_review
+    end
+    resources :comments, only: %i[create destroy], controller: "code_review_comments"
+  end
+
+  # ── AI Agent (local Ollama LLM on the on-prem Mac mini) ─────────────────────
+  namespace :tools do
+    get "ai",              to: "ai#index",        as: :ai             # AI Reports dashboard
+    get "ai/reviews",      to: "ai#reviews",      as: :ai_reviews     # Recent (code) review results
+    get "ai/test_reviews", to: "ai#test_reviews", as: :ai_test_reviews
+    get "ai/reviews/:id",  to: "ai#show",         as: :ai_review
+
+    # Service endpoints — each contacts the Ollama machine and persists an AiReview
+    post "ai/ticket_quality",      to: "ai#ticket_quality",      as: :ai_ticket_quality
+    post "ai/code_review",         to: "ai#code_review",         as: :ai_code_review
+    post "ai/test_review",         to: "ai#test_review",         as: :ai_test_review
+    post "ai/estimation_analysis", to: "ai#estimation_analysis", as: :ai_estimation_analysis
+    post "ai/solution_suggestion", to: "ai#solution_suggestion", as: :ai_solution_suggestion
+    post "ai/fix_bug",             to: "ai#fix_bug",             as: :ai_fix_bug
+    post "ai/generate_tasks",      to: "ai#generate_tasks",      as: :ai_generate_tasks
+
+    # Sprint analysis — GET drives the lazy Turbo Frame (live render on the
+    # sprint page); POST forces a refresh.
+    get  "ai/sprint_analysis", to: "ai#sprint_analysis", as: :ai_sprint_analysis
+    post "ai/sprint_analysis", to: "ai#sprint_analysis"
+  end
+
   devise_for :users, controllers: {
     sessions: "users/sessions",
     registrations: "users/registrations"
@@ -88,12 +131,20 @@ Rails.application.routes.draw do
 
   resources :projects do
     resources :tickets, shallow: true
-    resources :sprints, shallow: true
+    resources :sprints, shallow: true do
+      member do
+        get   :dashboard
+        patch :activate   # make this the project's current (active) sprint
+      end
+    end
     resources :milestones, shallow: true
     resources :ci_runs, only: [ :index, :show ], shallow: true
     resources :deployments, shallow: true
     resources :documents, shallow: true do
-      collection { get :templates }
+      collection do
+        get  :templates
+        post :generate   # AI-generate a document (presentation / spec) for the project
+      end
       member do
         post :save_as_template
         get  :new_from_template
@@ -107,6 +158,7 @@ Rails.application.routes.draw do
     resources :project_memberships, only: %i[create destroy]
     resources :activities,           only: %i[index]
     member do
+      get :dashboard
       get :report
       get :ci_dashboard
       get :calendar_events
@@ -144,6 +196,13 @@ Rails.application.routes.draw do
       patch :update_status
     end
     resources :comments, only: %i[create destroy]
+    resources :tasks, only: %i[create update destroy] do
+      member do
+        patch :start
+        patch :complete
+        patch :reopen
+      end
+    end
   end
 
   # Sprint comments

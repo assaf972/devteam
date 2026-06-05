@@ -39,7 +39,7 @@
       <% if @my_tickets.any? %>
         <table class="table table-hover w-100 fs-7">
           <thead>
-            <tr><th><%= t('table_headers.id') %></th><th><%= t('table_headers.title') %></th><th><%= t('table_headers.project') %></th><th><%= t('table_headers.priority') %></th><th><%= t('table_headers.status') %></th></tr>
+            <tr><th><%= t('table_headers.id') %></th><th><%= t('table_headers.title') %></th><th><%= t('table_headers.project') %></th><th><%= t('table_headers.priority') %></th><th><%= t('table_headers.status') %></th><th>Progress</th></tr>
           </thead>
           <tbody>
             <% @my_tickets.each do |ticket| %>
@@ -49,6 +49,7 @@
                 <td><%= ticket.project.name %></td>
                 <td><%= priority_tag(ticket.priority) %></td>
                 <td><%= status_tag(ticket.status) %></td>
+                <td><%= render "tickets/progress_cell", ticket: ticket %></td>
               </tr>
             <% end %>
           </tbody>

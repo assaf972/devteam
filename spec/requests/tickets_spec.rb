@@ -30,6 +30,39 @@ RSpec.describe "Tickets", type: :request do
       expect(response.body).to include(I18n.t("tickets.move.next_sprint"))
       expect(response.body).to include(I18n.t("tickets.move.backlog"))
     end
+
+    it "shows the common-query links with the index marked active" do
+      get all_tickets_path
+      expect(response.body).to include(my_tickets_path)
+      expect(response.body).to include(late_tickets_path)
+      expect(response.body).to include(backlog_tickets_path)
+      expect(response.body).to include(current_sprint_tickets_path)
+      expect(response.body).to include("btn btn-primary")
+    end
+  end
+
+  # ── Common-query pages share the quick-query bar ──────────────────────────
+  describe "common ticket queries" do
+    it "renders the quick-query bar on the My Tickets page" do
+      get my_tickets_path
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include(all_tickets_path)
+      expect(response.body).to include(late_tickets_path)
+    end
+  end
+
+  # ── Sidebar: Tickets moved to the main nav, panel removed ─────────────────
+  describe "sidebar navigation" do
+    it "links to Tickets from the main nav and drops the old Tickets panel" do
+      get today_path
+      expect(response.body).to include(%(nav-icon">🎫</span> #{I18n.t('nav.tickets')}))
+      expect(response.body).not_to match(%r{sidebar-section-label">#{I18n.t('sidebar.tickets_label')}<})
+      # Dashboard was removed from the main nav (now lives under projects/sprints)
+      expect(response.body).not_to include(%(nav-icon">📊</span> #{I18n.t('nav.dashboard')}))
+      # Channels were removed from the main nav (now live inside a project)
+      expect(response.body).not_to include(%(sidebar-section-label">\n    #{I18n.t('sidebar.channels_label')}))
+      expect(response.body).not_to match(%r{sidebar-section-label">\s*#{I18n.t('sidebar.channels_label')}})
+    end
   end
 
   # ── GET /tickets/:id ──────────────────────────────────────────────────────

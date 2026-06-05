@@ -8,6 +8,7 @@
     </div>
   </div>
   <div class="level-right">
+    <%= link_to "📊 Dashboard", dashboard_project_path(@project), class: "btn btn-primary btn-sm is-light" %>
     <%= link_to t("common.actions.edit"), edit_project_path(@project), class: "btn btn-secondary btn-sm is-warning" %>
     <%= link_to t("sprints.new_sprint"), new_project_sprint_path(@project), class: "btn btn-primary btn-sm" %>
     <% if @project.repo_url.present? %>
@@ -46,23 +47,88 @@
   </div>
 </div>
 
-<%# ─── Project Calendar ───────────────────────────────────────────────── %>
-<div class="card p-3 mb-3">
+<%# ─── Tickets ─────────────────────────────────────────────────────────── %>
+<%
+  task_total    = @project.tickets.sum(:tasks_count)
+  task_done     = @project.tickets.sum(:completed_tasks_count)
+  task_percent  = task_total.zero? ? 0 : (task_done * 100.0 / task_total).round
+  task_est_hours = @project.tickets.sum(:total_tasks_estimation)
+%>
+<div class="card p-3 mb-3" id="tickets">
   <div class="level mb-3">
-    <div class="level-left"><h3 class="fw-bold fs-5 mb-0">📅 Calendar</h3></div>
+    <div class="level-left"><h3 class="fw-bold fs-5 mb-0">🎫 Tickets</h3></div>
     <div class="level-right">
-      <div class="d-flex gap-2 align-items-center fs-7">
-        <span class="badge rounded-pill" style="background:#4a90d9;">● Meetings</span>
-        <span class="badge rounded-pill" style="background:#e84545;">● Milestones</span>
-        <span class="badge rounded-pill" style="background:#38c96d;">● Sprints</span>
-      </div>
+      <%= link_to "View All →", project_tickets_path(@project), class: "fs-7 text-muted" %>
     </div>
   </div>
-  <div data-controller="calendar"
-       data-calendar-events-url-value="<%= calendar_events_project_path(@project, format: :json) %>"
-       data-calendar-initial-view-value="dayGridMonth"
-       style="min-height: 480px;">
+
+  <%# Task-based progress across the whole project (completed / total tasks) %>
+  <div class="mb-3">
+    <div class="d-flex justify-content-between fs-7 mb-1">
+      <span class="fw-semibold">Task progress</span>
+      <span class="text-muted"><%= task_done %>/<%= task_total %> tasks · <%= task_est_hours %>h estimated</span>
+    </div>
+    <div class="progress" style="height:10px;">
+      <div class="progress-bar bg-info" style="width:<%= task_percent %>%"><%= task_percent %>%</div>
+    </div>
   </div>
+
+  <%# Filter tabs: open / completed / awaiting estimation %>
+  <div class="btn-group btn-group-sm mb-3" role="group" aria-label="Ticket filters">
+    <% [
+         [ "open",             "Open" ],
+         [ "completed",        "Completed" ],
+         [ "needs_estimation", "Needs Estimation" ]
+       ].each do |key, label| %>
+      <%= link_to project_path(@project, ticket_filter: key, anchor: "tickets"),
+            class: "btn #{@ticket_filter == key ? 'btn-primary' : 'btn-outline-secondary'}" do %>
+        <%= label %>
+        <span class="badge bg-light text-dark ms-1"><%= @ticket_counts[key.to_sym] %></span>
+      <% end %>
+    <% end %>
+  </div>
+
+  <% if @panel_tickets.any? %>
+    <table class="table table-hover w-100 fs-7 mb-0">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Title</th>
+          <th>Status</th>
+          <th>Priority</th>
+          <th>Progress</th>
+          <th>Assignee</th>
+          <th>Updated</th>
+          <th class="text-end"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @panel_tickets.each do |ticket| %>
+          <tr>
+            <td><%= link_to "T-#{ticket.id}", ticket_path(ticket), class: "fw-bold text-primary" %></td>
+            <td><%= link_to ticket.title.truncate(60), ticket_path(ticket) %></td>
+            <td><%= status_tag(ticket.status) %></td>
+            <td><%= priority_tag(ticket.priority) %></td>
+            <td><%= render "tickets/progress_cell", ticket: ticket %></td>
+            <td><span class="d-inline-flex align-items-center gap-1"><%= user_avatar(ticket.assignee, size: 20) if ticket.assignee %><%= ticket.assignee&.display_name || '—' %></span></td>
+            <td><%= ticket.updated_at.strftime('%d/%m') %></td>
+            <td class="text-end">
+              <%= actions_dropdown do |d| %>
+                <% Ticket.statuses.keys.each do |st| %>
+                  <% next if st == ticket.status || st == "backlog" %>
+                  <% d.button_action "Mark #{t("tickets.statuses.#{st}")}", update_status_ticket_path(ticket, status: st), icon: "→" %>
+                <% end %>
+                <% d.divider %>
+                <% d.button_action "Move to backlog", move_to_sprint_ticket_path(ticket, target: "backlog"), icon: "📥" %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p class="text-muted fs-7 mb-0">No tickets in this view.</p>
+  <% end %>
 </div>
 
 <%# ─── Tickets ─────────────────────────────────────────────────────────── %>
@@ -246,6 +312,9 @@
       <%= link_to "View All →", project_documents_path(@project), class: "fs-7 text-muted" %>
     </div>
   </div>
+
+  <%= render "documents/ai_generate", project: @project %>
+
   <% if @recent_documents.any? %>
     <div class="row">
       <% @recent_documents.each do |doc| %>

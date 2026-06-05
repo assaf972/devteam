@@ -239,29 +239,36 @@
     .sec-bar-fill  { background: var(--green); border-radius: 4px; height: 6px; }
     .sec-bar-label { font-size: .68rem; color: rgba(255,255,255,.4); text-align: left; margin-top: .2rem; }
 
-    /* ── MOCKUP SCREENS ──────────────────────────────────────────────────── */
-    .mockup {
+    /* ── SCREENSHOT ──────────────────────────────────────────────────────── */
+    .screenshot-frame {
       background: #fff; border: 1.5px solid var(--border);
       border-radius: 10px; overflow: hidden;
       box-shadow: 0 8px 32px rgba(0,0,0,.12); margin-top: 1.25rem;
     }
-    .mockup-bar {
+    .screenshot-frame-bar {
       background: var(--dark); padding: .55rem 1rem;
       display: flex; align-items: center; gap: .5rem;
     }
-    .mockup-bar .dot { width: 9px; height: 9px; border-radius: 50%; }
+    .screenshot-frame-bar .dot { width: 9px; height: 9px; border-radius: 50%; }
     .dot-r { background: #e84545; }
     .dot-y { background: #f5a623; }
     .dot-g { background: #38c96d; }
-    .mockup-bar .mt { color: rgba(255,255,255,.5); font-size: .72rem; margin-right: auto; }
-    .mockup-wrap { display: flex; min-height: 260px; }
-    .mockup-sb {
-      width: 170px; background: #1a1d2e; padding: .85rem .65rem; flex-shrink: 0;
+    .screenshot-frame-bar .title { color: rgba(255,255,255,.5); font-size: .72rem; margin-right: auto; }
+    .screenshot-frame img {
+      width: 100%; display: block;
     }
-    .ms  { font-size: .6rem; text-transform: uppercase; letter-spacing: .07em; color: rgba(255,255,255,.28); padding: .6rem .4rem .1rem; font-weight: 700; }
-    .mi  { font-size: .72rem; padding: .25rem .45rem; border-radius: 4px; color: rgba(255,255,255,.55); margin-bottom: .1rem; }
-    .mi.a { background: #4a90d9; color: #fff; }
-    .mockup-main { flex: 1; padding: 1rem 1.25rem; overflow: hidden; }
+    .screenshot-tabs {
+      display: flex; gap: 0; border-bottom: 2px solid var(--border); margin-bottom: 1rem;
+    }
+    .screenshot-tabs button {
+      padding: .5rem 1.2rem; border: none; background: none;
+      font-family: inherit; font-size: .82rem; font-weight: 600;
+      color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent;
+      margin-bottom: -2px; transition: all .15s;
+    }
+    .screenshot-tabs button.active {
+      color: var(--blue); border-bottom-color: var(--blue);
+    }
 
     /* ── CHARTS ──────────────────────────────────────────────────────────── */
     .chart-card {
@@ -298,6 +305,28 @@
     .summary-tile .s-title { font-size: .95rem; font-weight: 700; color: #fff; margin-bottom: .35rem; }
     .summary-tile .s-desc  { font-size: .8rem; color: rgba(255,255,255,.55); line-height: 1.6; }
 
+    /* ── SCREENSHOT GALLERY ──────────────────────────────────────────────── */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem; margin-top: 1.5rem;
+    }
+    .gallery-item {
+      border-radius: 10px; overflow: hidden;
+      border: 1.5px solid var(--border);
+      box-shadow: 0 4px 16px rgba(0,0,0,.08);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .gallery-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 28px rgba(0,0,0,.15);
+    }
+    .gallery-item img { width: 100%; display: block; }
+    .gallery-item .caption {
+      padding: .6rem 1rem; background: var(--dark);
+      color: #fff; font-size: .78rem; font-weight: 600;
+    }
+
     /* ── FOOTER ──────────────────────────────────────────────────────────── */
     footer { background: var(--navy); color: rgba(255,255,255,.4); text-align: center; padding: 2rem; font-size: .8rem; }
 
@@ -309,6 +338,7 @@
       .feat-name { flex: 0 0 120px; }
       .arch-label { flex: 0 0 80px; }
       .sec-bar { display: none; }
+      .gallery-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -323,15 +353,16 @@
   <a href="#overview">סקירה</a>
   <a href="#architecture">ארכיטקטורה</a>
   <a href="#tools">כלים</a>
+  <a href="#screenshots-today">Today</a>
+  <a href="#screenshots-dashboard">Dashboard</a>
+  <a href="#screenshots-tickets">כרטיסים</a>
+  <a href="#screenshots-projects">פרויקטים</a>
+  <a href="#screenshots-ci">CI/CD</a>
+  <a href="#screenshots-reports">דוחות</a>
   <a href="#security">אבטחה</a>
   <a href="#code-review">סקירת קוד</a>
   <a href="#logging">לוגים</a>
-  <a href="#git-view">Git</a>
-  <a href="#ci-view">בדיקות</a>
-  <a href="#deploy-view">פריסות</a>
-  <a href="#tickets-view">כרטיסים</a>
-  <a href="#chat-view">הודעות</a>
-  <a href="#portal">פורטל לקוחות</a>
+  <a href="#portal">פורטל</a>
   <a href="#summary">סיכום</a>
 </nav>
 
@@ -347,10 +378,11 @@
     כולם פועלים על שרתים פנימיים, ללא תלות בענן.
   </p>
   <div class="hero-stats">
-    <div class="hero-stat"><span class="num">15+</span><div class="lbl">מודולים פונקציונליים</div></div>
+    <div class="hero-stat"><span class="num">17</span><div class="lbl">מודולים פונקציונליים</div></div>
+    <div class="hero-stat"><span class="num">22+</span><div class="lbl">טבלאות Database</div></div>
     <div class="hero-stat"><span class="num">2</span><div class="lbl">ממשקי משתמש (צוות + לקוח)</div></div>
     <div class="hero-stat"><span class="num">100%</span><div class="lbl">On-Premises – אפס ענן</div></div>
-    <div class="hero-stat"><span class="num">4</span><div class="lbl">אינטגרציות תוך-ארגוניות</div></div>
+    <div class="hero-stat"><span class="num">8</span><div class="lbl">כלים תוך-ארגוניים</div></div>
     <div class="hero-stat"><span class="num">8</span><div class="lbl">שכבות אבטחה</div></div>
   </div>
 </section>
@@ -367,20 +399,22 @@
       <a href="#overview" class="toc-item"><div class="toc-num">1</div>סקירה כללית</a>
       <a href="#architecture" class="toc-item"><div class="toc-num">2</div>ארכיטקטורת המערכת</a>
       <a href="#tools" class="toc-item"><div class="toc-num">3</div>כלים ותשתית On-Premises</a>
-      <a href="#git-tools" class="toc-item"><div class="toc-num">4</div>ניהול קוד — Gitea</a>
-      <a href="#ci-tools" class="toc-item"><div class="toc-num">5</div>CI/CD — Jenkins</a>
-      <a href="#deploy-tools" class="toc-item"><div class="toc-num">6</div>פריסות ו-Versioning</a>
-      <a href="#monitoring" class="toc-item"><div class="toc-num">7</div>ניטור ותגובה לאירועים</div></a>
-      <a href="#security" class="toc-item"><div class="toc-num">8</div>אבטחת המערכת</a>
-      <a href="#code-review" class="toc-item"><div class="toc-num">8b</div>סקירת קוד אוטומטית</a>
-      <a href="#logging" class="toc-item"><div class="toc-num">8c</div>לוגים מרכזיים — Grafana Loki</a>
-      <a href="#git-view" class="toc-item"><div class="toc-num">9</div>תצוגת Git & Pull Requests</a>
-      <a href="#ci-view" class="toc-item"><div class="toc-num">10</div>תצוגת CI & סטטוס בדיקות</a>
-      <a href="#deploy-view" class="toc-item"><div class="toc-num">11</div>תצוגת פריסות</a>
-      <a href="#tickets-view" class="toc-item"><div class="toc-num">12</div>תצוגת כרטיסים</a>
-      <a href="#chat-view" class="toc-item"><div class="toc-num">13</div>תצוגת הודעות & צ'אט</a>
-      <a href="#portal" class="toc-item"><div class="toc-num">14</div>פורטל לקוחות</a>
-      <a href="#summary" class="toc-item"><div class="toc-num">15</div>סיכום ויתרונות</a>
+      <a href="#screenshots-today" class="toc-item"><div class="toc-num">4</div>Today — דף אישי</a>
+      <a href="#screenshots-dashboard" class="toc-item"><div class="toc-num">5</div>Dashboard — לוח בקרה</a>
+      <a href="#screenshots-tickets" class="toc-item"><div class="toc-num">6</div>כרטיסים ומעקב משימות</a>
+      <a href="#screenshots-projects" class="toc-item"><div class="toc-num">7</div>פרויקטים וספרינטים</a>
+      <a href="#screenshots-ci" class="toc-item"><div class="toc-num">8</div>CI/CD — בדיקות ופריסות</a>
+      <a href="#screenshots-meetings" class="toc-item"><div class="toc-num">9</div>פגישות ויומן</a>
+      <a href="#screenshots-docs" class="toc-item"><div class="toc-num">10</div>מסמכים ותיעוד</a>
+      <a href="#screenshots-customers" class="toc-item"><div class="toc-num">11</div>ניהול לקוחות</a>
+      <a href="#screenshots-reports" class="toc-item"><div class="toc-num">12</div>דוחות וניתוח</a>
+      <a href="#screenshots-admin" class="toc-item"><div class="toc-num">13</div>ניהול מערכת</a>
+      <a href="#security" class="toc-item"><div class="toc-num">14</div>אבטחת המערכת</a>
+      <a href="#code-review" class="toc-item"><div class="toc-num">15</div>סקירת קוד אוטומטית</a>
+      <a href="#logging" class="toc-item"><div class="toc-num">16</div>לוגים — Grafana Loki</a>
+      <a href="#portal" class="toc-item"><div class="toc-num">17</div>פורטל לקוחות</a>
+      <a href="#cli" class="toc-item"><div class="toc-num">18</div>CLI ו-VS Code Extension</a>
+      <a href="#summary" class="toc-item"><div class="toc-num">19</div>סיכום ויתרונות</a>
     </div>
   </div>
 </div>
@@ -403,11 +437,11 @@
         </p>
         <p style="font-size:.95rem;line-height:1.8;color:#4a5568;margin-bottom:1.25rem;">
           המערכת פועלת <strong>על שרתים פנימיים בלבד</strong>, ומתממשקת עם כלים On-Premises
-          כגון Gitea, Jenkins ו-Jitsi — ללא שליחת נתונים רגישים לענן.
+          כגון Gitea, Jenkins, SonarQube, Ollama, Grafana Loki ו-Jitsi — ללא שליחת נתונים רגישים לענן.
         </p>
         <p style="font-size:.95rem;line-height:1.8;color:#4a5568;">
-          בנוסף, המערכת כוללת <strong>פורטל לקוחות נפרד</strong> המאפשר ללקוחות לצפות בסטטוס
-          הפרויקט, לפתוח כרטיסים, לתקשר עם הצוות ולעיין במסמכים רלוונטיים.
+          בנוסף, המערכת כוללת <strong>פורטל לקוחות נפרד</strong>, <strong>מערכת דוחות מלאה</strong>,
+          <strong>CLI ו-VS Code Extension</strong> המאפשרים ניהול מלא מתוך ה-IDE ושורת הפקודה.
         </p>
       </div>
       <div>
@@ -422,17 +456,17 @@
       <div class="card">
         <div class="card-icon">📋</div>
         <div class="card-title">ניהול פרויקטים</div>
-        <div class="card-desc">ספרינטים, Milestones, לוחות Kanban, מעקב קצב, ניהול גרסאות</div>
+        <div class="card-desc">ספרינטים, Milestones, סרגל צד עם CI dots, יצירת פרויקט וספרינט מהירה</div>
       </div>
       <div class="card">
         <div class="card-icon">🎫</div>
         <div class="card-title">כרטיסים ו-Stories</div>
-        <div class="card-desc">עדיפויות, סטטוסים, שיוך לספרינט, קישור ל-CI ו-PR, מעקב שינויים</div>
+        <div class="card-desc">תצוגת All Tickets עם פילטרים חוצי-פרויקטים, עדיפויות, סטטוסים, קישור ל-CI ו-PR</div>
       </div>
       <div class="card">
         <div class="card-icon">⚙️</div>
         <div class="card-title">CI/CD Monitoring</div>
-        <div class="card-desc">מעקב builds בזמן אמת, תוצאות בדיקות, לוגים, התראות על כשלים</div>
+        <div class="card-desc">CI Dashboard עם גרפים, תוצאות בדיקות, לוגים, התראות על כשלים</div>
       </div>
       <div class="card">
         <div class="card-icon">🚀</div>
@@ -440,9 +474,9 @@
         <div class="card-desc">מעקב פריסה לפי סביבה, גרסה, סוג (web/docker/installer), סטטוס</div>
       </div>
       <div class="card">
-        <div class="card-icon">📄</div>
-        <div class="card-title">מסמכים טכניים</div>
-        <div class="card-desc">Spec, Architecture, Runbook, Risk Management, User Stories, Test Coverage</div>
+        <div class="card-icon">📊</div>
+        <div class="card-title">דוחות ומגמות</div>
+        <div class="card-desc">CI Summary, Deployments, Test Coverage, Sprint Velocity, Estimation Accuracy</div>
       </div>
       <div class="card">
         <div class="card-icon">💬</div>
@@ -457,7 +491,12 @@
       <div class="card">
         <div class="card-icon">📅</div>
         <div class="card-title">פגישות ו-Today View</div>
-        <div class="card-desc">לוח יומי אישי, ניהול פגישות עם Jitsi, iCal, אג'נדות ומשתתפים</div>
+        <div class="card-desc">לוח יומי אישי, ניהול פגישות עם Jitsi, iCal, לוח שנה מלא</div>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔧</div>
+        <div class="card-title">CLI & VS Code</div>
+        <div class="card-desc">כלי שורת פקודה <code>dt</code> ותוסף VS Code לניהול כרטיסים, CI ולוגים מה-IDE</div>
       </div>
     </div>
   </div>
@@ -477,6 +516,7 @@
       <div class="arch-label">משתמשים</div>
       <div class="arch-box ab-user">👨‍💻 מפתחים / צוות</div>
       <div class="arch-box ab-user">👤 לקוחות (CustomerUser)</div>
+      <div class="arch-box ab-user">🔧 CLI / VS Code</div>
     </div>
     <hr class="arch-divider">
     <div class="arch-row">
@@ -484,25 +524,36 @@
       <div class="arch-box ab-app">🏗️ DevTeam Hub (Rails 8.1)</div>
       <div class="arch-box ab-portal">🌐 Customer Portal (/portal)</div>
       <div class="arch-box ab-int">🔐 Devise Auth (2 מודלים)</div>
+      <div class="arch-box ab-int">📡 REST API (v1)</div>
     </div>
     <div class="arch-row" style="padding-right:115px;">
       <div class="arch-box ab-app">📊 Dashboard &amp; Today View</div>
       <div class="arch-box ab-app">🎫 Tickets &amp; Sprints</div>
       <div class="arch-box ab-app">💬 Chat Channels</div>
       <div class="arch-box ab-app">📄 Documents</div>
+      <div class="arch-box ab-app">📈 Reports</div>
     </div>
     <hr class="arch-divider">
     <div class="arch-row">
       <div class="arch-label">אחסון</div>
-      <div class="arch-box ab-db">🗄️ SQLite / PostgreSQL</div>
+      <div class="arch-box ab-db">🗄️ SQLite3 (dev)</div>
       <div class="arch-box ab-db">📎 Active Storage (קבצים)</div>
+      <div class="arch-box ab-db">⚡ Solid Queue (jobs)</div>
+      <div class="arch-box ab-db">💾 Solid Cache</div>
     </div>
     <hr class="arch-divider">
     <div class="arch-row">
       <div class="arch-label">כלי On-Prem</div>
-      <div class="arch-box ab-tool">🦊 Gitea (Git Server)</div>
+      <div class="arch-box ab-tool">🦊 Gitea (Git)</div>
       <div class="arch-box ab-tool">🔧 Jenkins (CI/CD)</div>
       <div class="arch-box ab-tool">📹 Jitsi (וידאו)</div>
+      <div class="arch-box ab-tool">🔍 SonarQube</div>
+    </div>
+    <div class="arch-row" style="padding-right:115px;">
+      <div class="arch-box ab-tool">🤖 Ollama AI</div>
+      <div class="arch-box ab-tool">📋 Grafana Loki</div>
+      <div class="arch-box ab-tool">📊 Grafana</div>
+      <div class="arch-box ab-tool">🐛 Sentry</div>
     </div>
     <div class="arch-row" style="padding-right:115px;align-items:flex-start;">
       <div style="font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:.4rem;">
@@ -520,13 +571,15 @@
         <tbody>
           <tr><td>Backend</td><td>Ruby on Rails</td><td>8.1.3</td></tr>
           <tr><td>שפה</td><td>Ruby</td><td>3.4.5</td></tr>
-          <tr><td>DB</td><td>SQLite3 (dev) / PostgreSQL (prod)</td><td>2.0+</td></tr>
+          <tr><td>DB</td><td>SQLite3</td><td>~2.0</td></tr>
           <tr><td>Frontend JS</td><td>Hotwire (Turbo + Stimulus)</td><td>—</td></tr>
-          <tr><td>CSS</td><td>Bulma + Custom SCSS</td><td>1.x</td></tr>
+          <tr><td>CSS</td><td>Bootstrap 5 + Custom SCSS</td><td>5.3.8</td></tr>
           <tr><td>Auth</td><td>Devise</td><td>4.9</td></tr>
           <tr><td>Authorization</td><td>Pundit</td><td>2.4</td></tr>
-          <tr><td>Markdown</td><td>Redcarpet</td><td>3.x</td></tr>
-          <tr><td>Tagging</td><td>ActsAsTaggableOn</td><td>—</td></tr>
+          <tr><td>Background Jobs</td><td>Solid Queue</td><td>—</td></tr>
+          <tr><td>Charts</td><td>Chartkick + Groupdate</td><td>—</td></tr>
+          <tr><td>Notifications</td><td>Noticed</td><td>~2.0</td></tr>
+          <tr><td>Error Tracking</td><td>Sentry</td><td>—</td></tr>
         </tbody>
       </table>
     </div>
@@ -561,91 +614,56 @@
       <div class="card-icon">🦊</div>
       <div class="card-title">Gitea — שרת Git</div>
       <div class="card-desc">
-        חלופה תוך-ארגונית מלאה ל-GitHub.<br><br>
-        <strong style="color:#fff;">שימוש:</strong><br>
-        ניהול repositories, branches, pull requests, code review — כולם מסונכרנים אוטומטית ל-DevTeam Hub דרך Webhooks.
-        <br><br>
-        <strong style="color:#fff;">אינטגרציה:</strong><br>
-        <span class="badge badge-blue" style="background:rgba(74,144,217,.2);color:var(--blue2);">gitea_repo_id</span>
-        <span class="badge badge-blue" style="background:rgba(74,144,217,.2);color:var(--blue2);">repo_url</span>
-        <span class="badge badge-blue" style="background:rgba(74,144,217,.2);color:var(--blue2);">gitea_url</span>
-        שמורים על כל פרויקט ו-PR.
+        חלופה תוך-ארגונית ל-GitHub. ניהול repos, branches, PRs — מסונכרן ל-DevTeam Hub דרך Webhooks.
       </div>
     </div>
     <div class="card card-dark">
       <div class="card-icon">🔧</div>
-      <div class="card-title">Jenkins — CI/CD Server</div>
+      <div class="card-title">Jenkins — CI/CD</div>
       <div class="card-desc">
-        שרת אוטומציה תוך-ארגוני לבניה, בדיקות ופריסה.<br><br>
-        <strong style="color:#fff;">שימוש:</strong><br>
-        כל build מדווח ל-DevTeam Hub דרך Webhook — כולל מספר build, סטטוס, URL ללוג, ותוצאות בדיקות.
-        <br><br>
-        <strong style="color:#fff;">נתונים מועברים:</strong><br>
-        <span class="badge badge-blue" style="background:rgba(74,144,217,.2);color:var(--blue2);">build_number</span>
-        <span class="badge badge-blue" style="background:rgba(74,144,217,.2);color:var(--blue2);">log_url</span>
-        <span class="badge badge-blue" style="background:rgba(74,144,217,.2);color:var(--blue2);">test_results</span>
+        שרת אוטומציה לבניה, בדיקות ופריסה. כל build מדווח ל-DevTeam Hub — כולל סטטוס, תוצאות בדיקות ולוגים.
       </div>
     </div>
     <div class="card card-dark">
       <div class="card-icon">📹</div>
-      <div class="card-title">Jitsi — וידאו-ועידה</div>
+      <div class="card-title">Jitsi — וידאו</div>
       <div class="card-desc">
-        שרת וידאו-ועידה בקוד פתוח, מנוהל פנימית.<br><br>
-        <strong style="color:#fff;">שימוש:</strong><br>
-        פגישות צוות, Stand-ups, Code Reviews ו-Retrospectives — עם קישורי Join אוטומטיים מתוך DevTeam Hub.
-        <br><br>
-        <strong style="color:#fff;">יתרון:</strong><br>
-        הקלטות ותמלילי פגישות נשארים על שרתים פנימיים. ייצוא iCal לכל לוח שנה.
-      </div>
-    </div>
-    <div class="card card-dark">
-      <div class="card-icon">🗄️</div>
-      <div class="card-title">PostgreSQL / SQLite</div>
-      <div class="card-desc">
-        מסד נתונים On-Premises מלא.<br><br>
-        <strong style="color:#fff;">Dev:</strong> SQLite3 (אפס תלויות)<br>
-        <strong style="color:#fff;">Production:</strong> PostgreSQL<br><br>
-        כל הנתונים — כרטיסים, מסמכים, CI runs, deployments, messages — מאוחסנים על שרת ארגוני פנימי.
-        גיבויים, replication ו-retention policies בשליטה מלאה של הארגון.
+        שרת וידאו-ועידה בקוד פתוח. פגישות צוות, Stand-ups — עם Join אוטומטי מתוך DevTeam Hub וייצוא iCal.
       </div>
     </div>
     <div class="card card-dark">
       <div class="card-icon">🔍</div>
       <div class="card-title">SonarQube — סקירת קוד</div>
       <div class="card-desc">
-        ניתוח סטטי אוטומטי עם Quality Gates.<br><br>
-        <strong style="color:#fff;">שימוש:</strong><br>
-        בדיקת באגים, code smells, כיסוי קוד ו-OWASP SAST — לכל push ב-Jenkins Pipeline.
-        <br><br>
-        <strong style="color:#fff;">שפות:</strong> Ruby, C#, VB.NET, TypeScript, JS, SQL, HTML
+        ניתוח סטטי אוטומטי עם Quality Gates, OWASP SAST, code smells. תמיכה ב-8+ שפות.
       </div>
     </div>
     <div class="card card-dark">
       <div class="card-icon">🤖</div>
       <div class="card-title">Ollama — AI Code Review</div>
       <div class="card-desc">
-        סקירת קוד מבוססת AI — 100% מקומית.<br><br>
-        <strong style="color:#fff;">מודל:</strong> Qwen2.5-Coder 32B<br>
-        <strong style="color:#fff;">שימוש:</strong><br>
-        מבצע סקירת diff על כל PR — בודק לוגיקה, ארכיטקטורה, שמות ודפוסים. התגובה נכתבת ישירות ב-Gitea.
+        סקירת קוד מבוססת AI — 100% מקומית. מודל Qwen2.5-Coder 32B. סקירת diff לכל PR.
       </div>
     </div>
     <div class="card card-dark">
       <div class="card-icon">📋</div>
       <div class="card-title">Grafana Loki — לוגים</div>
       <div class="card-desc">
-        איסוף לוגים מרכזי מכל הפרויקטים.<br><br>
-        <strong style="color:#fff;">שימוש:</strong><br>
-        פורמט JSON אחיד, correlation IDs, סינון לפי רמות (labels), 30 ימי retention. קל: 256 MB RAM.
+        איסוף לוגים מרכזי בפורמט JSON אחיד. correlation IDs, סינון labels, 30 ימי retention, 256 MB RAM.
       </div>
     </div>
     <div class="card card-dark">
       <div class="card-icon">📊</div>
       <div class="card-title">Grafana — Dashboards</div>
       <div class="card-desc">
-        דשבורדים והתראות ללוגים.<br><br>
-        <strong style="color:#fff;">שימוש:</strong><br>
-        סינון errors ו-warnings בזמן אמת, נפח לוגים לפי service, LogQL queries, התראות Slack.
+        דשבורדים והתראות ללוגים. סינון errors ו-warnings בזמן אמת, LogQL queries, התראות.
+      </div>
+    </div>
+    <div class="card card-dark">
+      <div class="card-icon">🐛</div>
+      <div class="card-title">Sentry — Error Tracking</div>
+      <div class="card-desc">
+        מעקב שגיאות ו-exceptions בזמן אמת. Stack traces, breadcrumbs, performance monitoring.
       </div>
     </div>
   </div>
@@ -662,228 +680,353 @@
 </div>
 
 <!-- ══════════════════════════════════════════════════════════════════════
-     4. GIT TOOLS DEEP-DIVE
+     4. TODAY PAGE — SCREENSHOTS
      ══════════════════════════════════════════════════════════════════════ -->
-<section id="git-tools">
+<section id="screenshots-today">
   <div class="section">
-    <div class="section-badge">04 — Git</div>
-    <div class="section-title">ניהול קוד — Gitea</div>
-    <div class="section-sub">Gitea נבחר כפתרון Git תוך-ארגוני בשל הקוד הפתוח, הביצועים הגבוהים ו-API תואם GitHub</div>
+    <div class="section-badge">04 — דף אישי</div>
+    <div class="section-title">Today — הדף האישי של המפתח</div>
+    <div class="section-sub">כל מפתח רואה את היום שלו במבט אחד: כרטיסים פעילים, פגישות, CI runs, פריסות ו-milestones</div>
 
-    <div class="two-col">
-      <div>
-        <h3 style="font-size:1rem;font-weight:700;margin-bottom:1rem;">מדוע Gitea?</h3>
-        <table class="styled-table">
-          <thead><tr><th>קריטריון</th><th>Gitea</th><th>GitHub Enterprise</th><th>GitLab CE</th></tr></thead>
-          <tbody>
-            <tr><td>On-Premises</td><td>✅ מלא</td><td>✅ (יקר)</td><td>✅</td></tr>
-            <tr><td>עלות</td><td>🆓 חינם</td><td>💰 גבוהה</td><td>🆓 בסיסי</td></tr>
-            <tr><td>משאבי שרת</td><td>⚡ קל מאוד</td><td>🐘 כבד</td><td>🐘 כבד</td></tr>
-            <tr><td>Webhook API</td><td>✅ תואם GH</td><td>✅</td><td>✅</td></tr>
-            <tr><td>Code Review</td><td>✅</td><td>✅ מתקדם</td><td>✅</td></tr>
-            <tr><td>CI מובנה</td><td>❌ (Jenkins נפרד)</td><td>Actions</td><td>CI/CD מובנה</td></tr>
-          </tbody>
-        </table>
+    <div class="gallery-grid">
+      <div class="gallery-item">
+        <img src="screenshots/he/01_today.png" alt="Today Page - Hebrew">
+        <div class="caption">🇮🇱 Today — גרסה עברית (RTL)</div>
       </div>
-      <div>
-        <div class="chart-card">
-          <div class="chart-title">פעילות PR לפי חודש (דוגמה)</div>
-          <canvas id="prChart" height="220"></canvas>
-        </div>
+      <div class="gallery-item">
+        <img src="screenshots/en/01_today.png" alt="Today Page - English">
+        <div class="caption">🇬🇧 Today — English version (LTR)</div>
       </div>
     </div>
 
-    <h3 style="font-size:1rem;font-weight:700;margin:2rem 0 1rem;">זרימת העבודה עם Gitea</h3>
-    <div class="pipeline">
-      <div class="p-step">
-        <div class="p-icon" style="background:#ebf4ff;border-color:#90cdf4;color:#2b6cb0;">💻</div>
-        <div class="p-label">Commit</div>
-        <div class="p-sublabel">מפתח מבצע push</div>
-      </div>
-      <div class="p-arrow">←</div>
-      <div class="p-step">
-        <div class="p-icon" style="background:#faf5ff;border-color:#d6bcfa;color:#553c9a;">🔀</div>
-        <div class="p-label">Pull Request</div>
-        <div class="p-sublabel">Gitea יוצר PR</div>
-      </div>
-      <div class="p-arrow">←</div>
-      <div class="p-step">
-        <div class="p-icon" style="background:#fff5f5;border-color:#feb2b2;color:#c53030;">📡</div>
-        <div class="p-label">Webhook</div>
-        <div class="p-sublabel">Gitea שולח event</div>
-      </div>
-      <div class="p-arrow">←</div>
-      <div class="p-step">
-        <div class="p-icon" style="background:#f0fff4;border-color:#9ae6b4;color:#276749;">🏗️</div>
-        <div class="p-label">DevTeam Hub</div>
-        <div class="p-sublabel">מעדכן PR + כרטיס</div>
-      </div>
-      <div class="p-arrow">←</div>
-      <div class="p-step">
-        <div class="p-icon" style="background:#fffaf0;border-color:#fbd38d;color:#c05621;">🔔</div>
-        <div class="p-label">Notification</div>
-        <div class="p-sublabel">התראה לצוות</div>
-      </div>
+    <div class="highlight-box" style="margin-top:1.5rem;">
+      <strong>📋 תכולת הדף:</strong>
+      <p style="font-size:.88rem;color:#4a5568;margin-top:.5rem;line-height:1.7;">
+        כרטיסים פעילים של המפתח · פגישות היום עם כפתור Join ל-Jitsi · CI Runs ותוצאות בדיקות ·
+        פריסות שבוצעו היום · Milestones שעומדים לפוג · מסמכים שעודכנו · קישורים מהירים ל-Jenkins ול-Gitea
+      </p>
     </div>
   </div>
 </section>
 
 <!-- ══════════════════════════════════════════════════════════════════════
-     5. CI/CD TOOLS DEEP-DIVE
+     5. DASHBOARD — SCREENSHOTS
      ══════════════════════════════════════════════════════════════════════ -->
-<div id="ci-tools" class="section-alt">
+<div id="screenshots-dashboard" class="section-alt">
 <div class="section">
-  <div class="section-badge">05 — CI/CD</div>
-  <div class="section-title">אוטומציה — Jenkins</div>
-  <div class="section-sub">Jenkins נבחר כשרת CI/CD תוך-ארגוני בשל הגמישות, מאות ה-plugins והאפשרות לפריסה מלאה On-Premises</div>
+  <div class="section-badge">05 — לוח בקרה</div>
+  <div class="section-title">Dashboard — לוח בקרה צוותי</div>
+  <div class="section-sub">תמונת מצב כוללת: פרויקטים, builds אחרונים, פריסות, כרטיסים פתוחים ו-activity feed</div>
 
-  <div class="two-col">
-    <div>
+  <div class="gallery-grid">
+    <div class="gallery-item">
+      <img src="screenshots/he/02_dashboard.png" alt="Dashboard - Hebrew">
+      <div class="caption">🇮🇱 Dashboard — לוח בקרה צוותי</div>
+    </div>
+    <div class="gallery-item">
+      <img src="screenshots/en/02_dashboard.png" alt="Dashboard - English">
+      <div class="caption">🇬🇧 Dashboard — Team overview</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     6. TICKETS — SCREENSHOTS
+     ══════════════════════════════════════════════════════════════════════ -->
+<section id="screenshots-tickets">
+  <div class="section">
+    <div class="section-badge">06 — כרטיסים</div>
+    <div class="section-title">כרטיסים ומעקב משימות</div>
+    <div class="section-sub">תצוגות חוצות-פרויקטים עם פילטרים, עדיפויות, סטטוסים ותפריטי פעולה (⋮)</div>
+
+    <div class="gallery-grid">
+      <div class="gallery-item">
+        <img src="screenshots/he/03_all_tickets.png" alt="All Tickets - Hebrew">
+        <div class="caption">🎫 כל הכרטיסים — עם פילטרים (סטטוס, פרויקט, אחראי, בעלים)</div>
+      </div>
+      <div class="gallery-item">
+        <img src="screenshots/he/04_my_tickets.png" alt="My Tickets">
+        <div class="caption">📌 הכרטיסים שלי — כרטיסים שהוקצו לי</div>
+      </div>
+      <div class="gallery-item">
+        <img src="screenshots/he/05_late_tickets.png" alt="Late Tickets">
+        <div class="caption">⏰ כרטיסים באיחור — דדליינים שעברו</div>
+      </div>
+      <div class="gallery-item">
+        <img src="screenshots/he/06_backlog.png" alt="Backlog">
+        <div class="caption">📋 Backlog — כרטיסים ממתינים</div>
+      </div>
+      <div class="gallery-item">
+        <img src="screenshots/he/07_current_sprint.png" alt="Current Sprint">
+        <div class="caption">🏃 ספרינט נוכחי</div>
+      </div>
+      <div class="gallery-item">
+        <img src="screenshots/he/08_ticket_detail.png" alt="Ticket Detail">
+        <div class="caption">📝 פרטי כרטיס — מלא עם CI, PR, תגיות ותגובות</div>
+      </div>
+    </div>
+
+    <div class="highlight-box" style="margin-top:1.5rem;">
+      <strong>✨ חדש — תפריטי פעולה Dropdown (⋮):</strong>
+      <p style="font-size:.88rem;color:#4a5568;margin-top:.5rem;line-height:1.7;">
+        כל טבלה במערכת משתמשת בתפריט Kebab (⋮) לפעולות שורה — עריכה, מחיקה, צפייה,
+        קישור — במקום כפתורים מוטבעים. העיצוב נקי ותומך בעברית (RTL).
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     7. PROJECTS & SPRINTS — SCREENSHOTS
+     ══════════════════════════════════════════════════════════════════════ -->
+<div id="screenshots-projects" class="section-alt">
+<div class="section">
+  <div class="section-badge">07 — פרויקטים</div>
+  <div class="section-title">פרויקטים וספרינטים</div>
+  <div class="section-sub">ניהול פרויקטים מלא עם חברי צוות, ספרינטים, CI runs, פריסות, PRs ומסמכים</div>
+
+  <div class="gallery-grid">
+    <div class="gallery-item">
+      <img src="screenshots/he/09_projects.png" alt="Projects List">
+      <div class="caption">📁 רשימת פרויקטים</div>
+    </div>
+    <div class="gallery-item">
+      <img src="screenshots/he/10_project_detail.png" alt="Project Detail">
+      <div class="caption">📊 פרטי פרויקט — חברי צוות, סטטוס CI, ספרינטים</div>
+    </div>
+    <div class="gallery-item">
+      <img src="screenshots/he/11_project_tickets.png" alt="Project Tickets">
+      <div class="caption">🎫 כרטיסים של פרויקט</div>
+    </div>
+    <div class="gallery-item">
+      <img src="screenshots/he/14_project_sprints.png" alt="Project Sprints">
+      <div class="caption">🏃 ספרינטים של פרויקט</div>
+    </div>
+    <div class="gallery-item">
+      <img src="screenshots/he/30_sprint_detail.png" alt="Sprint Detail">
+      <div class="caption">📋 פרטי ספרינט — כרטיסים, story points, סטטוס</div>
+    </div>
+    <div class="gallery-item">
+      <img src="screenshots/he/15_project_pull_requests.png" alt="Pull Requests">
+      <div class="caption">🔀 Pull Requests — קישור ל-Gitea וסטטוס CI</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     8. CI/CD — SCREENSHOTS
+     ══════════════════════════════════════════════════════════════════════ -->
+<section id="screenshots-ci">
+  <div class="section">
+    <div class="section-badge">08 — CI/CD</div>
+    <div class="section-title">CI/CD — בדיקות ופריסות</div>
+    <div class="section-sub">מעקב builds, תוצאות בדיקות, פריסות לכל הסביבות — עם קישורים ישירים ל-Jenkins</div>
+
+    <div class="gallery-grid">
+      <div class="gallery-item">
+        <img src="screenshots/he/17_ci_dashboard.png" alt="CI Dashboard">
+        <div class="caption">📊 CI Dashboard — גרפים, pass rate, מגמות</div>
+      </div>
+      <div class="gallery-item">
+        <img src="screenshots/he/12_project_ci_runs.png" alt="CI Runs">
+        <div class="caption">⚙️ CI Runs — רשימת builds עם סטטוסים</div>
+      </div>
+      <div class="gallery-item">
+        <img src="screenshots/he/28_ci_run_detail.png" alt="CI Run Detail">
+        <div class="caption">🔍 פרטי CI Run — תוצאות בדיקות בודדות</div>
+      </div>
+      <div class="gallery-item">
+        <img src="screenshots/he/13_project_deployments.png" alt="Deployments">
+        <div class="caption">🚀 פריסות פרויקט — לפי סביבה וסוג</div>
+      </div>
+      <div class="gallery-item">
+        <img src="screenshots/he/29_deployment_detail.png" alt="Deployment Detail">
+        <div class="caption">📦 פרטי פריסה — גרסה, סביבה, סטטוס</div>
+      </div>
+      <div class="gallery-item">
+        <img src="screenshots/he/31_pull_request_detail.png" alt="PR Detail">
+        <div class="caption">🔀 פרטי Pull Request — CI, commits, Gitea link</div>
+      </div>
+    </div>
+
+    <div class="two-col" style="margin-top:2rem;">
       <div class="chart-card">
         <div class="chart-title">אחוז הצלחת builds לפי חודש</div>
         <canvas id="ciChart" height="220"></canvas>
       </div>
-    </div>
-    <div>
-      <h3 style="font-size:1rem;font-weight:700;margin-bottom:1rem;">נתוני CI Run במערכת</h3>
-      <table class="styled-table">
-        <thead><tr><th>שדה</th><th>תיאור</th></tr></thead>
-        <tbody>
-          <tr><td><code>build_number</code></td><td>מספר ה-build ב-Jenkins</td></tr>
-          <tr><td><code>status</code></td><td>pending / running / passed / failed / error</td></tr>
-          <tr><td><code>branch_name</code></td><td>Branch שעל גביו רץ ה-build</td></tr>
-          <tr><td><code>commit_sha</code></td><td>Commit hash מ-Gitea</td></tr>
-          <tr><td><code>started_at / finished_at</code></td><td>זמן ריצה ומשך</td></tr>
-          <tr><td><code>log_url</code></td><td>קישור ישיר ל-Jenkins log</td></tr>
-          <tr><td><code>test_results</code></td><td>תוצאות בדיקות (pass/fail/skip)</td></tr>
-        </tbody>
-      </table>
-
-      <div class="highlight-box" style="margin-top:1rem;">
-        <strong>סטטוסי CI:</strong>
-        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.5rem;">
-          <span class="badge badge-grey">pending</span>
-          <span class="badge badge-yellow">running</span>
-          <span class="badge badge-green">passed</span>
-          <span class="badge badge-red">failed</span>
-          <span class="badge badge-purple">error</span>
-          <span class="badge badge-grey">cancelled</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-</div>
-
-<!-- ══════════════════════════════════════════════════════════════════════
-     6. DEPLOYMENTS DEEP-DIVE
-     ══════════════════════════════════════════════════════════════════════ -->
-<section id="deploy-tools">
-  <div class="section">
-    <div class="section-badge">06 — פריסות</div>
-    <div class="section-title">פריסות וניהול גרסאות</div>
-    <div class="section-sub">מעקב מלא אחר פריסות לכל הסביבות — web, Docker, Windows installer ו-service</div>
-
-    <div class="two-col">
       <div>
-        <h3 style="font-size:1rem;font-weight:700;margin-bottom:1rem;">סוגי פריסה נתמכים</h3>
+        <h3 style="font-size:1rem;font-weight:700;margin-bottom:1rem;">נתוני CI Run במערכת</h3>
         <table class="styled-table">
-          <thead><tr><th>סוג</th><th>תיאור</th><th>שימוש</th></tr></thead>
+          <thead><tr><th>שדה</th><th>תיאור</th></tr></thead>
           <tbody>
-            <tr><td>🌐 Web App</td><td>אפליקציית ווב (Nginx/Puma)</td><td>SaaS, ממשקי משתמש</td></tr>
-            <tr><td>🐳 Docker</td><td>Container-based deployment</td><td>Microservices</td></tr>
-            <tr><td>💿 Windows Installer</td><td>חבילת התקנה .exe/.msi</td><td>לקוחות On-Prem</td></tr>
-            <tr><td>⚙️ Windows Service</td><td>שירות רקע Windows</td><td>agents, sync services</td></tr>
+            <tr><td><code>build_number</code></td><td>מספר ה-build ב-Jenkins</td></tr>
+            <tr><td><code>status</code></td><td>pending / running / passed / failed / error</td></tr>
+            <tr><td><code>branch_name</code></td><td>Branch שעל גביו רץ ה-build</td></tr>
+            <tr><td><code>commit_sha</code></td><td>Commit hash מ-Gitea</td></tr>
+            <tr><td><code>started_at / finished_at</code></td><td>זמן ריצה ומשך</td></tr>
+            <tr><td><code>log_url</code></td><td>קישור ישיר ל-Jenkins log</td></tr>
+            <tr><td><code>test_results</code></td><td>תוצאות בדיקות (pass/fail/skip)</td></tr>
           </tbody>
         </table>
-
-        <h3 style="font-size:1rem;font-weight:700;margin-top:1.5rem;margin-bottom:1rem;">סטטוסי פריסה</h3>
-        <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
-          <span class="badge badge-grey">pending</span>
-          <span class="badge badge-yellow">in_progress</span>
-          <span class="badge badge-green">succeeded</span>
-          <span class="badge badge-red">failed</span>
-          <span class="badge badge-purple">rolled_back</span>
-        </div>
-      </div>
-      <div>
-        <div class="chart-card">
-          <div class="chart-title">פריסות לפי סוג (דוגמה)</div>
-          <canvas id="deployChart" height="240"></canvas>
-        </div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- ══════════════════════════════════════════════════════════════════════
-     7. MONITORING
+     9. MEETINGS & CALENDAR — SCREENSHOTS
      ══════════════════════════════════════════════════════════════════════ -->
-<div id="monitoring" class="section-alt">
+<div id="screenshots-meetings" class="section-alt">
 <div class="section">
-  <div class="section-badge">07 — ניטור</div>
-  <div class="section-title">ניטור ותגובה לאירועים</div>
-  <div class="section-sub">מערכת ניטור אקטיבית עם התראות, לוח בקרה יומי ומעקב בזמן אמת</div>
+  <div class="section-badge">09 — פגישות</div>
+  <div class="section-title">פגישות ויומן</div>
+  <div class="section-sub">ניהול פגישות עם Jitsi, לוח שנה מלא, ייצוא iCal, אג'נדות ומשתתפים</div>
 
-  <div class="three-col">
-    <div class="card">
-      <div class="card-icon">🔔</div>
-      <div class="card-title">מערכת התראות</div>
-      <div class="card-desc">
-        Polymorphic Notification system — כל אירוע (build נכשל, פריסה הצליחה, PR חדש)
-        יוצר Notification לנמענים הרלוונטיים. ניתן לסמן כנקרא בודד או הכל.
-      </div>
+  <div class="gallery-grid">
+    <div class="gallery-item">
+      <img src="screenshots/he/18_meetings.png" alt="Meetings">
+      <div class="caption">📅 רשימת פגישות</div>
     </div>
-    <div class="card">
-      <div class="card-icon">📋</div>
-      <div class="card-title">Today View — לוח יומי</div>
-      <div class="card-desc">
-        תצוגה אישית יומית: כרטיסים פעילים, CI runs היום, פריסות היום, פגישות קרובות,
-        Milestones שעומדים לפוג — הכל בלוח בקרה אחד.
-      </div>
+    <div class="gallery-item">
+      <img src="screenshots/he/19_meeting_detail.png" alt="Meeting Detail">
+      <div class="caption">🎥 פרטי פגישה — Jitsi join, אג'נדה, משתתפים</div>
     </div>
-    <div class="card">
-      <div class="card-icon">📊</div>
-      <div class="card-title">דוחות ומגמות</div>
-      <div class="card-desc">
-        דוחות CI Summary, Deployment Summary, Test Coverage, Sprint Velocity —
-        גרפים ומגמות לאורך זמן לניתוח ביצועי הצוות.
-      </div>
+    <div class="gallery-item">
+      <img src="screenshots/he/20_calendar.png" alt="Calendar">
+      <div class="caption">📆 יומן — תצוגת חודש עם פגישות וספרינטים</div>
     </div>
-    <div class="card">
-      <div class="card-icon">⚡</div>
-      <div class="card-title">Sidebar פעיל</div>
-      <div class="card-desc">
-        סרגל צד Slack-style מציג לכל פרויקט: CI dot (ירוק/אדום/מהבהב),
-        סביבת הפריסה האחרונה, מספר PR פתוחים — עדכון בכל טעינת דף.
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-icon">💬</div>
-      <div class="card-title">Activity Feed</div>
-      <div class="card-desc">
-        לוח הימני מציג Feed של CI runs ופריסות אחרונות עם סטטוס, גרסה וסביבה —
-        ישירות לצד כל עמוד במערכת.
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-icon">📡</div>
-      <div class="card-title">Webhook Receiver</div>
-      <div class="card-desc">
-        Jenkins ו-Gitea שולחים events ל-DevTeam Hub בזמן אמת.
-        המערכת מעדכנת CI runs, PRs ומייצרת התראות אוטומטית ללא polling.
-      </div>
+    <div class="gallery-item">
+      <img src="screenshots/he/21_notifications.png" alt="Notifications">
+      <div class="caption">🔔 התראות — מעקב events בזמן אמת</div>
     </div>
   </div>
 </div>
 </div>
 
 <!-- ══════════════════════════════════════════════════════════════════════
-     8. SECURITY
+     10. DOCUMENTS — SCREENSHOTS
+     ══════════════════════════════════════════════════════════════════════ -->
+<section id="screenshots-docs">
+  <div class="section">
+    <div class="section-badge">10 — מסמכים</div>
+    <div class="section-title">מסמכים ותיעוד</div>
+    <div class="section-sub">מסמכים טכניים עם Markdown, קטגוריות, תגיות, קבצים מצורפים וגרסאות</div>
+
+    <div class="gallery-grid">
+      <div class="gallery-item">
+        <img src="screenshots/he/22_documents.png" alt="Documents">
+        <div class="caption">📄 כל המסמכים — חוצה פרויקטים</div>
+      </div>
+      <div class="gallery-item">
+        <img src="screenshots/he/16_project_documents.png" alt="Project Documents">
+        <div class="caption">📁 מסמכים לפי פרויקט</div>
+      </div>
+      <div class="gallery-item">
+        <img src="screenshots/he/23_document_detail.png" alt="Document Detail">
+        <div class="caption">📝 פרטי מסמך — Markdown preview, תגובות, קבצים</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     11. CUSTOMERS — SCREENSHOTS
+     ══════════════════════════════════════════════════════════════════════ -->
+<div id="screenshots-customers" class="section-alt">
+<div class="section">
+  <div class="section-badge">11 — לקוחות</div>
+  <div class="section-title">ניהול לקוחות</div>
+  <div class="section-sub">ניהול לקוחות, כרטיסי תמיכה, התקנות תוכנה ומעקב גרסאות</div>
+
+  <div class="gallery-grid">
+    <div class="gallery-item">
+      <img src="screenshots/he/24_customers.png" alt="Customers">
+      <div class="caption">👥 רשימת לקוחות</div>
+    </div>
+    <div class="gallery-item">
+      <img src="screenshots/he/25_customer_detail.png" alt="Customer Detail">
+      <div class="caption">👤 פרטי לקוח — פרטים, כרטיסים, התקנות</div>
+    </div>
+    <div class="gallery-item">
+      <img src="screenshots/he/26_customer_tickets.png" alt="Customer Tickets">
+      <div class="caption">🎫 כרטיסי תמיכה — סטטוס, עדיפות, שיוך</div>
+    </div>
+    <div class="gallery-item">
+      <img src="screenshots/he/27_installations.png" alt="Installations">
+      <div class="caption">💿 התקנות — מעקב גרסאות לפי לקוח וסביבה</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     12. REPORTS — SCREENSHOTS
+     ══════════════════════════════════════════════════════════════════════ -->
+<section id="screenshots-reports">
+  <div class="section">
+    <div class="section-badge">12 — דוחות</div>
+    <div class="section-title">דוחות וניתוח</div>
+    <div class="section-sub">5 סוגי דוחות עם גרפים ומגמות — CI, פריסות, בדיקות, velocity ודיוק הערכות</div>
+
+    <div class="gallery-grid">
+      <div class="gallery-item">
+        <img src="screenshots/he/32_report_ci_summary.png" alt="CI Summary Report">
+        <div class="caption">📊 דוח CI Summary — builds, pass rate, ממוצע זמנים</div>
+      </div>
+      <div class="gallery-item">
+        <img src="screenshots/he/33_report_deployments.png" alt="Deployments Report">
+        <div class="caption">🚀 דוח פריסות — תדירות לפי סביבה</div>
+      </div>
+      <div class="gallery-item">
+        <img src="screenshots/he/34_report_test_coverage.png" alt="Test Coverage Report">
+        <div class="caption">🧪 דוח Test Coverage — מגמת pass rate</div>
+      </div>
+      <div class="gallery-item">
+        <img src="screenshots/he/35_report_velocity.png" alt="Sprint Velocity Report">
+        <div class="caption">🏃 דוח Sprint Velocity — story points per sprint</div>
+      </div>
+      <div class="gallery-item">
+        <img src="screenshots/he/36_report_estimation.png" alt="Estimation Accuracy Report">
+        <div class="caption">🎯 דוח דיוק הערכות — actual vs. estimated</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     13. ADMIN — SCREENSHOTS
+     ══════════════════════════════════════════════════════════════════════ -->
+<div id="screenshots-admin" class="section-alt">
+<div class="section">
+  <div class="section-badge">13 — ניהול</div>
+  <div class="section-title">ניהול מערכת</div>
+  <div class="section-sub">ניהול משתמשים, תפקידים, חשבונות לקוח ופרופיל אישי</div>
+
+  <div class="gallery-grid">
+    <div class="gallery-item">
+      <img src="screenshots/he/37_admin_users.png" alt="Admin Users">
+      <div class="caption">👥 ניהול משתמשים — תפקידים והרשאות</div>
+    </div>
+    <div class="gallery-item">
+      <img src="screenshots/he/38_admin_clients.png" alt="Admin Client Accounts">
+      <div class="caption">🏢 ניהול חשבונות לקוח — CRM</div>
+    </div>
+    <div class="gallery-item">
+      <img src="screenshots/he/39_profile_edit.png" alt="Profile Edit">
+      <div class="caption">👤 עריכת פרופיל — שם, avatar, שפה</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     14. SECURITY
      ══════════════════════════════════════════════════════════════════════ -->
 <div id="security" class="section-full section-navy">
 <div class="section">
-  <div class="section-badge">08 — אבטחה</div>
+  <div class="section-badge">14 — אבטחה</div>
   <div class="section-title">אבטחת המערכת</div>
   <div class="section-sub">8 שכבות אבטחה המגנות על הנתונים, הגישה והתקשורת בכל רמות המערכת</div>
 
@@ -893,7 +1036,7 @@
         <div class="sec-layer-icon">🔑</div>
         <div class="sec-layer-info">
           <div class="sec-layer-title">אימות (Authentication) — Devise</div>
-          <div class="sec-layer-desc">שני מודלי Devise נפרדים: User (צוות פנימי) + CustomerUser (פורטל לקוחות). סיסמאות מוצפנות bcrypt. Password reset מאובטח.</div>
+          <div class="sec-layer-desc">שני מודלי Devise נפרדים: User (צוות) + CustomerUser (פורטל). סיסמאות bcrypt. Password reset.</div>
         </div>
         <div class="sec-bar"><div class="sec-bar-track"><div class="sec-bar-fill" style="width:95%"></div></div><div class="sec-bar-label">95%</div></div>
       </div>
@@ -901,7 +1044,7 @@
         <div class="sec-layer-icon">🛡️</div>
         <div class="sec-layer-info">
           <div class="sec-layer-title">הרשאות (Authorization) — Pundit</div>
-          <div class="sec-layer-desc">Pundit policies על כל resource. NotAuthorizedError מיירט כל ניסיון גישה לא מורשה ומפנה עם הודעת שגיאה.</div>
+          <div class="sec-layer-desc">Pundit policies על כל resource. היררכיית תפקידים: developer &lt; team_lead &lt; project_manager &lt; admin / qa.</div>
         </div>
         <div class="sec-bar"><div class="sec-bar-track"><div class="sec-bar-fill" style="width:88%"></div></div><div class="sec-bar-label">88%</div></div>
       </div>
@@ -909,7 +1052,7 @@
         <div class="sec-layer-icon">🔒</div>
         <div class="sec-layer-info">
           <div class="sec-layer-title">CSRF Protection — Rails Built-in</div>
-          <div class="sec-layer-desc">כל form ו-AJAX request מאומת עם CSRF token. Turbo ו-Stimulus שולחים X-CSRF-Token אוטומטית.</div>
+          <div class="sec-layer-desc">כל form ו-AJAX מאומת עם CSRF token. Turbo שולח X-CSRF-Token אוטומטית.</div>
         </div>
         <div class="sec-bar"><div class="sec-bar-track"><div class="sec-bar-fill" style="width:100%"></div></div><div class="sec-bar-label">100%</div></div>
       </div>
@@ -917,7 +1060,7 @@
         <div class="sec-layer-icon">🪝</div>
         <div class="sec-layer-info">
           <div class="sec-layer-title">Webhook Validation — HMAC Header</div>
-          <div class="sec-layer-desc">כל Webhook מ-Gitea ו-Jenkins מאומת עם secret header. בקשות ללא חתימה תקינה נדחות (403).</div>
+          <div class="sec-layer-desc">כל Webhook מ-Gitea ו-Jenkins מאומת עם secret header. בקשות ללא חתימה נדחות (403).</div>
         </div>
         <div class="sec-bar"><div class="sec-bar-track"><div class="sec-bar-fill" style="width:90%"></div></div><div class="sec-bar-label">90%</div></div>
       </div>
@@ -925,7 +1068,7 @@
         <div class="sec-layer-icon">🏰</div>
         <div class="sec-layer-info">
           <div class="sec-layer-title">בידוד פורטל הלקוח</div>
-          <div class="sec-layer-desc">CustomerPortal::BaseController יורש מ-ActionController::Base (לא מ-ApplicationController) — אין נגישות למשתנים פנימיים, layouts נפרדים.</div>
+          <div class="sec-layer-desc">CustomerPortal::BaseController יורש מ-ActionController::Base — אין נגישות למשתנים פנימיים.</div>
         </div>
         <div class="sec-bar"><div class="sec-bar-track"><div class="sec-bar-fill" style="width:95%"></div></div><div class="sec-bar-label">95%</div></div>
       </div>
@@ -933,7 +1076,7 @@
         <div class="sec-layer-icon">🧹</div>
         <div class="sec-layer-info">
           <div class="sec-layer-title">ניקוי קלט — Strong Parameters</div>
-          <div class="sec-layer-desc">כל controller מגדיר permit מפורש לפרמטרים. HTML בהודעות צ'אט עובר ERB::Util.html_escape לפני rendering.</div>
+          <div class="sec-layer-desc">כל controller מגדיר permit מפורש. HTML בצ'אט עובר html_escape.</div>
         </div>
         <div class="sec-bar"><div class="sec-bar-track"><div class="sec-bar-fill" style="width:85%"></div></div><div class="sec-bar-label">85%</div></div>
       </div>
@@ -941,7 +1084,7 @@
         <div class="sec-layer-icon">🕐</div>
         <div class="sec-layer-info">
           <div class="sec-layer-title">ניהול Session — Devise</div>
-          <div class="sec-layer-desc">remember_me token מוצפן, timeout session, מחיקת session מאובטחת בהתנתקות. Rails Encrypted Cookies.</div>
+          <div class="sec-layer-desc">remember_me token מוצפן, timeout session, Rails Encrypted Cookies.</div>
         </div>
         <div class="sec-bar"><div class="sec-bar-track"><div class="sec-bar-fill" style="width:90%"></div></div><div class="sec-bar-label">90%</div></div>
       </div>
@@ -949,7 +1092,7 @@
         <div class="sec-layer-icon">🌐</div>
         <div class="sec-layer-info">
           <div class="sec-layer-title">Modern Browser Enforcement</div>
-          <div class="sec-layer-desc">allow_browser versions: :modern דוחה דפדפנים ישנים פגיעים. CSP meta tags מגנים מפני XSS.</div>
+          <div class="sec-layer-desc">allow_browser versions: :modern דוחה דפדפנים ישנים. CSP meta tags מגנים מפני XSS.</div>
         </div>
         <div class="sec-bar"><div class="sec-bar-track"><div class="sec-bar-fill" style="width:80%"></div></div><div class="sec-bar-label">80%</div></div>
       </div>
@@ -965,11 +1108,11 @@
 </div>
 
 <!-- ══════════════════════════════════════════════════════════════════════
-     8b. CODE REVIEW
+     15. CODE REVIEW
      ══════════════════════════════════════════════════════════════════════ -->
 <section id="code-review">
   <div class="section">
-    <div class="section-badge">08b — סקירת קוד</div>
+    <div class="section-badge">15 — סקירת קוד</div>
     <div class="section-title">סקירת קוד אוטומטית — SonarQube + AI</div>
     <div class="section-sub">ניתוח סטטי מלא וסקירה מבוססת AI לכל השפות — פועל 100% On-Premises</div>
 
@@ -979,23 +1122,11 @@
         <table class="styled-table">
           <thead><tr><th>כלי</th><th>תפקיד</th><th>עלות</th></tr></thead>
           <tbody>
-            <tr><td>🔍 SonarQube CE</td><td>ניתוח סטטי, Quality Gates, OWASP SAST, code smells</td><td>חינם</td></tr>
-            <tr><td>🤖 Ollama AI</td><td>סקירת AI מקומית — לוגיקה, ארכיטקטורה, שמות, דפוסים</td><td>חינם</td></tr>
+            <tr><td>🔍 SonarQube CE</td><td>ניתוח סטטי, Quality Gates, OWASP SAST</td><td>חינם</td></tr>
+            <tr><td>🤖 Ollama AI</td><td>סקירת AI מקומית — לוגיקה, ארכיטקטורה, דפוסים</td><td>חינם</td></tr>
             <tr><td>💻 SonarLint</td><td>תוסף IDE — VS Code ו-Visual Studio</td><td>חינם</td></tr>
           </tbody>
         </table>
-
-        <h3 style="font-size:1rem;font-weight:700;margin-top:1.5rem;margin-bottom:1rem;">שפות נתמכות</h3>
-        <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
-          <span class="badge badge-green">Ruby</span>
-          <span class="badge badge-green">C#</span>
-          <span class="badge badge-green">VB.NET</span>
-          <span class="badge badge-green">TypeScript</span>
-          <span class="badge badge-green">JavaScript</span>
-          <span class="badge badge-green">SQL</span>
-          <span class="badge badge-green">HTML/CSS</span>
-          <span class="badge badge-green">Razor</span>
-        </div>
 
         <h3 style="font-size:1rem;font-weight:700;margin-top:1.5rem;margin-bottom:1rem;">Quality Gate — חסימת מיזוג</h3>
         <table class="styled-table">
@@ -1031,26 +1162,26 @@
 </section>
 
 <!-- ══════════════════════════════════════════════════════════════════════
-     8c. UNIFIED LOGGING
+     16. UNIFIED LOGGING
      ══════════════════════════════════════════════════════════════════════ -->
-<section id="logging">
-  <div class="section">
-    <div class="section-badge">08c — לוגים</div>
-    <div class="section-title">לוגים מרכזיים — Grafana Loki + Promtail</div>
-    <div class="section-sub">כל 5 הפרויקטים שולחים לוגים בפורמט JSON אחיד ל-Grafana Loki — עם dashboards, התראות וקורלציה בין שירותים</div>
+<div id="logging" class="section-alt">
+<div class="section">
+  <div class="section-badge">16 — לוגים</div>
+  <div class="section-title">לוגים מרכזיים — Grafana Loki + Promtail</div>
+  <div class="section-sub">פורמט JSON אחיד, correlation IDs, דשבורדים והתראות — 256 MB RAM בלבד</div>
 
-    <div class="cols" style="gap:1.5rem;margin-top:1.5rem;">
-      <div style="flex:1;">
-        <h3 style="font-size:1rem;font-weight:700;margin-bottom:1rem;">ארכיטקטורה</h3>
-        <pre style="background:#1a1d2e;color:#e6edf3;padding:1rem;border-radius:8px;font-size:0.72rem;direction:ltr;text-align:left;margin:0;line-height:1.6;"><code>Rails (lograge)  ──┐
+  <div class="two-col">
+    <div>
+      <h3 style="font-size:1rem;font-weight:700;margin-bottom:1rem;">ארכיטקטורה</h3>
+      <pre style="background:#1a1d2e;color:#e6edf3;padding:1rem;border-radius:8px;font-size:0.72rem;direction:ltr;text-align:left;margin:0;line-height:1.6;"><code>Rails (lograge)  ──┐
 ASP.NET (Serilog)──┼─▸ Promtail ─▸ Loki :3100 ─▸ Grafana :3200
 NestJS (Pino)    ──┘        (shipper)    (storage)     (dashboards)
 Next.js (Pino)   ──┘
 .NET 4.8 (NLog)  ──┘</code></pre>
 
-        <div style="margin-top:1rem;">
-          <h3 style="font-size:1rem;font-weight:700;margin-bottom:.75rem;">פורמט JSON אחיד</h3>
-          <pre style="background:#1a1d2e;color:#e6edf3;padding:1rem;border-radius:8px;font-size:0.72rem;direction:ltr;text-align:left;margin:0;line-height:1.5;"><code>{
+      <div style="margin-top:1rem;">
+        <h3 style="font-size:1rem;font-weight:700;margin-bottom:.75rem;">פורמט JSON אחיד</h3>
+        <pre style="background:#1a1d2e;color:#e6edf3;padding:1rem;border-radius:8px;font-size:0.72rem;direction:ltr;text-align:left;margin:0;line-height:1.5;"><code>{
   "timestamp":      "2026-06-15T10:23:45.123Z",
   "level":          "info",
   "service":        "devteam-hub",
@@ -1058,19 +1189,19 @@ Next.js (Pino)   ──┘
   "message":        "Ticket #42 created",
   "context":        { "user_id": 5 }
 }</code></pre>
-        </div>
-      </div>
-      <div style="flex:1;">
-        <div class="chart-wrap" style="margin:0;">
-          <div class="chart-title">השוואת כלי לוגים</div>
-          <canvas id="loggingPresChart" height="280"></canvas>
-        </div>
       </div>
     </div>
+    <div>
+      <div class="chart-card">
+        <div class="chart-title">השוואת כלי לוגים</div>
+        <canvas id="loggingPresChart" height="280"></canvas>
+      </div>
+    </div>
+  </div>
 
-    <div style="margin-top:1.5rem;">
-      <h3 style="font-size:1rem;font-weight:700;margin-bottom:.75rem;">פקודות CLI</h3>
-      <pre style="background:#1a1d2e;color:#e6edf3;padding:1rem;border-radius:8px;font-size:0.78rem;direction:ltr;text-align:left;margin:0;line-height:1.5;"><code>$ dt logs --service devteam-hub --level error
+  <div style="margin-top:1.5rem;">
+    <h3 style="font-size:1rem;font-weight:700;margin-bottom:.75rem;">פקודות CLI</h3>
+    <pre style="background:#1a1d2e;color:#e6edf3;padding:1rem;border-radius:8px;font-size:0.78rem;direction:ltr;text-align:left;margin:0;line-height:1.5;"><code>$ dt logs --service devteam-hub --level error
   10:23:45  ERROR  devteam-hub       Ticket creation failed: DB timeout
   10:19:12  ERROR  devteam-hub       Redis connection refused
   2 entries
@@ -1080,480 +1211,45 @@ $ dt logs services
     • devteam-hub
     • tdi2
     • print-server
-    • digital-internet
-    • work-management
 
 $ dt logs stats
   Log Statistics (last 24h)
   Errors:   12
   Warnings: 47</code></pre>
-    </div>
-
-    <div style="background:rgba(37,99,235,0.08);border:1px solid rgba(37,99,235,0.2);border-radius:12px;padding:1.25rem;margin-top:1rem;">
-      <h4 style="font-size:0.9rem;font-weight:700;color:#2563eb;margin-bottom:.5rem;">📊 למה Grafana Loki?</h4>
-      <p style="color:rgba(255,255,255,.7);font-size:.85rem;line-height:1.7;margin:0;">
-        <strong style="color:#fff;">256 MB RAM</strong> (vs 4–16 GB ל-ELK) ·
-        <strong style="color:#fff;">$0/שנה</strong> ·
-        ללא אינדוקס תוכן (labels בלבד) ·
-        HTTP Push API לכל שפה ·
-        Promtail עובד גם על Windows
-      </p>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════════════════════════════════════
-     9. GIT VIEW
-     ══════════════════════════════════════════════════════════════════════ -->
-<section id="git-view">
-  <div class="section">
-    <div class="section-badge">09 — תצוגה</div>
-    <div class="section-title">תצוגת Git & Pull Requests</div>
-    <div class="section-sub">ניהול branches ו-PRs ישירות מתוך DevTeam Hub, עם קישורים ל-Gitea וסנכרון אוטומטי</div>
-
-    <!-- MOCKUP -->
-    <div class="mockup">
-      <div class="mockup-bar">
-        <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
-        <div class="mt">DevTeam Hub — my-project / Pull Requests</div>
-      </div>
-      <div class="mockup-wrap">
-        <div class="mockup-sb">
-          <div class="ms">ניווט</div>
-          <div class="mi">📋 Today</div>
-          <div class="mi">📊 Dashboard</div>
-          <div class="ms">my-project</div>
-          <div class="mi a">🔀 Pull Requests</div>
-          <div class="mi">🌿 Branches</div>
-          <div class="mi">⚙️ CI Runs</div>
-          <div class="mi">🚀 Deployments</div>
-          <div class="mi">🎫 Tickets</div>
-          <div class="mi">📄 Docs</div>
-        </div>
-        <div class="mockup-main">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;">
-            <strong style="font-size:.9rem;">Pull Requests — my-project</strong>
-            <span class="badge badge-blue">3 פתוחים</span>
-          </div>
-          <table style="width:100%;font-size:.75rem;border-collapse:collapse;">
-            <thead><tr style="border-bottom:2px solid #e2e8f0;">
-              <th style="padding:.4rem .5rem;text-align:right;color:#718096;font-weight:600;">#</th>
-              <th style="padding:.4rem .5rem;text-align:right;color:#718096;font-weight:600;">כותרת</th>
-              <th style="padding:.4rem .5rem;text-align:right;color:#718096;font-weight:600;">Branch</th>
-              <th style="padding:.4rem .5rem;text-align:right;color:#718096;font-weight:600;">סטטוס</th>
-              <th style="padding:.4rem .5rem;text-align:right;color:#718096;font-weight:600;">כרטיס</th>
-              <th style="padding:.4rem .5rem;text-align:right;color:#718096;font-weight:600;">CI</th>
-            </tr></thead>
-            <tbody>
-              <tr style="border-bottom:1px solid #f0f0f0;">
-                <td style="padding:.4rem .5rem;">#42</td>
-                <td style="padding:.4rem .5rem;font-weight:600;color:#2b6cb0;">Add OAuth login</td>
-                <td style="padding:.4rem .5rem;font-family:monospace;font-size:.7rem;">feature/oauth</td>
-                <td style="padding:.4rem .5rem;"><span class="badge badge-blue">review</span></td>
-                <td style="padding:.4rem .5rem;color:#c53030;">#T-89</td>
-                <td style="padding:.4rem .5rem;"><span style="color:#38c96d;font-size:.9rem;">✅</span></td>
-              </tr>
-              <tr style="border-bottom:1px solid #f0f0f0;">
-                <td style="padding:.4rem .5rem;">#41</td>
-                <td style="padding:.4rem .5rem;font-weight:600;color:#2b6cb0;">Fix memory leak in worker</td>
-                <td style="padding:.4rem .5rem;font-family:monospace;font-size:.7rem;">fix/memory-leak</td>
-                <td style="padding:.4rem .5rem;"><span class="badge badge-green">merged</span></td>
-                <td style="padding:.4rem .5rem;color:#c53030;">#T-91</td>
-                <td style="padding:.4rem .5rem;"><span style="color:#38c96d;font-size:.9rem;">✅</span></td>
-              </tr>
-              <tr>
-                <td style="padding:.4rem .5rem;">#40</td>
-                <td style="padding:.4rem .5rem;font-weight:600;color:#2b6cb0;">Refactor DB queries</td>
-                <td style="padding:.4rem .5rem;font-family:monospace;font-size:.7rem;">refactor/queries</td>
-                <td style="padding:.4rem .5rem;"><span class="badge badge-yellow">open</span></td>
-                <td style="padding:.4rem .5rem;color:#718096;">—</td>
-                <td style="padding:.4rem .5rem;"><span style="color:#f5a623;font-size:.9rem;">⚙️</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <div class="highlight-box" style="margin-top:1.25rem;">
-      <strong>🔗 אינטגרציה עם Gitea:</strong>
-      <p style="font-size:.88rem;color:#4a5568;margin-top:.5rem;line-height:1.7;">
-        כל PR מכיל <code>gitea_url</code> לקישור ישיר לממשק Gitea לביצוע Code Review.
-        Webhook אוטומטי מעדכן את סטטוס ה-PR ב-DevTeam Hub עם כל שינוי —
-        ומקשר אוטומטית ל-CI run המתאים לפי <code>commit_sha</code>.
-      </p>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════════════════════════════════════
-     10. CI / TEST STATUS VIEW
-     ══════════════════════════════════════════════════════════════════════ -->
-<div id="ci-view" class="section-alt">
-<div class="section">
-  <div class="section-badge">10 — תצוגה</div>
-  <div class="section-title">תצוגת CI & סטטוס בדיקות</div>
-  <div class="section-sub">מעקב builds ותוצאות בדיקות בזמן אמת, עם קישורים ישירים ל-Jenkins ומעקב trend</div>
-
-  <div class="mockup">
-    <div class="mockup-bar">
-      <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
-      <div class="mt">DevTeam Hub — my-project / CI Runs</div>
-    </div>
-    <div class="mockup-wrap">
-      <div class="mockup-sb">
-        <div class="ms">my-project</div>
-        <div class="mi">🔀 Pull Requests</div>
-        <div class="mi">🌿 Branches</div>
-        <div class="mi a">⚙️ CI Runs</div>
-        <div class="mi">🚀 Deployments</div>
-        <div class="ms">Channels</div>
-        <div class="mi"># deployments</div>
-        <div class="mi"># engineering</div>
-      </div>
-      <div class="mockup-main">
-        <div style="display:flex;gap:.5rem;margin-bottom:.8rem;align-items:center;">
-          <strong style="font-size:.9rem;">CI Runs — my-project</strong>
-          <span class="badge badge-red" style="margin-right:auto;">⚠️ 1 כשל</span>
-        </div>
-        <table style="width:100%;font-size:.72rem;border-collapse:collapse;">
-          <thead><tr style="border-bottom:2px solid #e2e8f0;">
-            <th style="padding:.35rem .5rem;text-align:right;color:#718096;">Build</th>
-            <th style="padding:.35rem .5rem;text-align:right;color:#718096;">Branch</th>
-            <th style="padding:.35rem .5rem;text-align:right;color:#718096;">סטטוס</th>
-            <th style="padding:.35rem .5rem;text-align:right;color:#718096;">בדיקות</th>
-            <th style="padding:.35rem .5rem;text-align:right;color:#718096;">משך</th>
-            <th style="padding:.35rem .5rem;text-align:right;color:#718096;">Log</th>
-          </tr></thead>
-          <tbody>
-            <tr style="border-bottom:1px solid #f0f0f0;">
-              <td style="padding:.35rem .5rem;font-weight:700;">#234</td>
-              <td style="padding:.35rem .5rem;font-family:monospace;font-size:.68rem;">main</td>
-              <td style="padding:.35rem .5rem;"><span class="badge badge-red">failed</span></td>
-              <td style="padding:.35rem .5rem;"><span style="color:#e84545;">✗ 3</span> / <span style="color:#38c96d;">✓ 241</span></td>
-              <td style="padding:.35rem .5rem;">4.2 min</td>
-              <td style="padding:.35rem .5rem;"><a href="#" style="color:#4a90d9;font-size:.7rem;">Jenkins ↗</a></td>
-            </tr>
-            <tr style="border-bottom:1px solid #f0f0f0;">
-              <td style="padding:.35rem .5rem;font-weight:700;">#233</td>
-              <td style="padding:.35rem .5rem;font-family:monospace;font-size:.68rem;">feature/oauth</td>
-              <td style="padding:.35rem .5rem;"><span class="badge badge-green">passed</span></td>
-              <td style="padding:.35rem .5rem;"><span style="color:#38c96d;">✓ 244</span></td>
-              <td style="padding:.35rem .5rem;">3.8 min</td>
-              <td style="padding:.35rem .5rem;"><a href="#" style="color:#4a90d9;font-size:.7rem;">Jenkins ↗</a></td>
-            </tr>
-            <tr>
-              <td style="padding:.35rem .5rem;font-weight:700;">#232</td>
-              <td style="padding:.35rem .5rem;font-family:monospace;font-size:.68rem;">main</td>
-              <td style="padding:.35rem .5rem;"><span class="badge badge-green">passed</span></td>
-              <td style="padding:.35rem .5rem;"><span style="color:#38c96d;">✓ 242</span></td>
-              <td style="padding:.35rem .5rem;">3.9 min</td>
-              <td style="padding:.35rem .5rem;"><a href="#" style="color:#4a90d9;font-size:.7rem;">Jenkins ↗</a></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <div class="two-col" style="margin-top:1.5rem;">
-    <div class="chart-card">
-      <div class="chart-title">תוצאות בדיקות — אחוז הצלחה לאורך זמן</div>
-      <canvas id="testChart" height="200"></canvas>
-    </div>
-    <div>
-      <h3 style="font-size:1rem;font-weight:700;margin-bottom:1rem;">נתוני Test Result</h3>
-      <table class="styled-table">
-        <thead><tr><th>שדה</th><th>ערך לדוגמה</th></tr></thead>
-        <tbody>
-          <tr><td>test_name</td><td>UserAuthTest#test_login</td></tr>
-          <tr><td>status</td><td>passed / failed / skipped</td></tr>
-          <tr><td>duration_ms</td><td>142 ms</td></tr>
-          <tr><td>error_message</td><td>AssertionError: expected 200, got 422</td></tr>
-          <tr><td>ci_run</td><td>Build #234 (linked)</td></tr>
-        </tbody>
-      </table>
-    </div>
   </div>
 </div>
 </div>
 
 <!-- ══════════════════════════════════════════════════════════════════════
-     11. DEPLOYMENTS VIEW
-     ══════════════════════════════════════════════════════════════════════ -->
-<section id="deploy-view">
-  <div class="section">
-    <div class="section-badge">11 — תצוגה</div>
-    <div class="section-title">תצוגת פריסות</div>
-    <div class="section-sub">מעקב מלא אחר כל פריסה לכל סביבה — עם גרסה, סוג, אחראי וסטטוס</div>
-
-    <div class="mockup">
-      <div class="mockup-bar">
-        <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
-        <div class="mt">DevTeam Hub — my-project / Deployments</div>
-      </div>
-      <div class="mockup-wrap">
-        <div class="mockup-sb">
-          <div class="ms">my-project</div>
-          <div class="mi">⚙️ CI Runs</div>
-          <div class="mi a">🚀 Deployments</div>
-          <div class="mi">🎫 Tickets</div>
-          <div class="ms">Channels</div>
-          <div class="mi"># deployments</div>
-        </div>
-        <div class="mockup-main">
-          <div style="display:flex;gap:.75rem;margin-bottom:.8rem;flex-wrap:wrap;align-items:center;">
-            <strong style="font-size:.9rem;">Deployments — my-project</strong>
-            <span class="badge badge-green" style="margin-right:auto;">Production: v2.4.1 ✅</span>
-          </div>
-          <div style="display:flex;gap:.75rem;flex-wrap:wrap;">
-            <div style="flex:1;min-width:130px;background:#f0fff4;border:1.5px solid #9ae6b4;border-radius:8px;padding:.75rem;">
-              <div style="font-size:.65rem;text-transform:uppercase;color:#276749;font-weight:700;margin-bottom:.35rem;">🌍 Production</div>
-              <div style="font-size:.95rem;font-weight:800;color:#276749;">v2.4.1</div>
-              <div style="font-size:.7rem;color:#718096;margin-top:.2rem;">Web App · לפני 2 ש'</div>
-              <div><span class="badge badge-green" style="font-size:.65rem;">succeeded</span></div>
-            </div>
-            <div style="flex:1;min-width:130px;background:#faf5ff;border:1.5px solid #d6bcfa;border-radius:8px;padding:.75rem;">
-              <div style="font-size:.65rem;text-transform:uppercase;color:#553c9a;font-weight:700;margin-bottom:.35rem;">🧪 Staging</div>
-              <div style="font-size:.95rem;font-weight:800;color:#553c9a;">v2.5.0-rc1</div>
-              <div style="font-size:.7rem;color:#718096;margin-top:.2rem;">Docker · לפני 30 דק'</div>
-              <div><span class="badge badge-yellow" style="font-size:.65rem;">in_progress</span></div>
-            </div>
-            <div style="flex:1;min-width:130px;background:#ebf4ff;border:1.5px solid #90cdf4;border-radius:8px;padding:.75rem;">
-              <div style="font-size:.65rem;text-transform:uppercase;color:#2b6cb0;font-weight:700;margin-bottom:.35rem;">🖥️ לקוח — טופ מוצרים</div>
-              <div style="font-size:.95rem;font-weight:800;color:#2b6cb0;">v2.3.5</div>
-              <div style="font-size:.7rem;color:#718096;margin-top:.2rem;">Windows Installer · 3 ימים</div>
-              <div><span class="badge badge-green" style="font-size:.65rem;">succeeded</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════════════════════════════════════
-     12. TICKETS VIEW
-     ══════════════════════════════════════════════════════════════════════ -->
-<div id="tickets-view" class="section-alt">
-<div class="section">
-  <div class="section-badge">12 — תצוגה</div>
-  <div class="section-title">תצוגת כרטיסים</div>
-  <div class="section-sub">ניהול Bugs, Features ו-Tasks עם תעדוף, ספרינטים, קישורים ל-CI ו-PR</div>
-
-  <div class="mockup">
-    <div class="mockup-bar">
-      <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
-      <div class="mt">DevTeam Hub — my-project / Tickets</div>
-    </div>
-    <div class="mockup-wrap">
-      <div class="mockup-sb">
-        <div class="ms">my-project</div>
-        <div class="mi a">🎫 Tickets</div>
-        <div class="mi">📋 Sprints</div>
-        <div class="mi">🏁 Milestones</div>
-      </div>
-      <div class="mockup-main" style="overflow-x:auto;">
-        <!-- Kanban columns -->
-        <div style="display:flex;gap:.6rem;min-width:600px;">
-          <div style="flex:1;background:#f8f9fb;border-radius:6px;padding:.5rem;">
-            <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;color:#718096;margin-bottom:.4rem;">פתוח</div>
-            <div style="background:#fff;border-radius:4px;padding:.45rem .5rem;margin-bottom:.3rem;border:1px solid #e2e8f0;font-size:.72rem;">
-              <span class="badge badge-red" style="font-size:.62rem;">critical</span>
-              <div style="font-weight:600;margin-top:.2rem;color:#2d3748;">Login fails on IE</div>
-              <div style="color:#aaa;font-size:.65rem;margin-top:.15rem;">#T-95 · yshai</div>
-            </div>
-            <div style="background:#fff;border-radius:4px;padding:.45rem .5rem;border:1px solid #e2e8f0;font-size:.72rem;">
-              <span class="badge badge-yellow" style="font-size:.62rem;">medium</span>
-              <div style="font-weight:600;margin-top:.2rem;color:#2d3748;">Add CSV export</div>
-              <div style="color:#aaa;font-size:.65rem;margin-top:.15rem;">#T-96 · tamar</div>
-            </div>
-          </div>
-          <div style="flex:1;background:#f8f9fb;border-radius:6px;padding:.5rem;">
-            <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;color:#718096;margin-bottom:.4rem;">בעבודה</div>
-            <div style="background:#fff;border-radius:4px;padding:.45rem .5rem;border:1px solid #e2e8f0;font-size:.72rem;">
-              <span class="badge badge-blue" style="font-size:.62rem;">high</span>
-              <div style="font-weight:600;margin-top:.2rem;color:#2d3748;">OAuth Integration</div>
-              <div style="color:#aaa;font-size:.65rem;margin-top:.15rem;">#T-89 · dan · <span style="color:#4a90d9;">PR #42</span></div>
-            </div>
-          </div>
-          <div style="flex:1;background:#f8f9fb;border-radius:6px;padding:.5rem;">
-            <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;color:#718096;margin-bottom:.4rem;">ביקורת</div>
-            <div style="background:#fff;border-radius:4px;padding:.45rem .5rem;border:1px solid #e2e8f0;font-size:.72rem;">
-              <span class="badge badge-yellow" style="font-size:.62rem;">medium</span>
-              <div style="font-weight:600;margin-top:.2rem;color:#2d3748;">Fix memory leak</div>
-              <div style="color:#aaa;font-size:.65rem;margin-top:.15rem;">#T-91 · <span style="color:#38c96d;">CI ✅</span></div>
-            </div>
-          </div>
-          <div style="flex:1;background:#f0fff4;border-radius:6px;padding:.5rem;">
-            <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;color:#276749;margin-bottom:.4rem;">הושלם</div>
-            <div style="background:#fff;border-radius:4px;padding:.45rem .5rem;border:1px solid #9ae6b4;font-size:.72rem;opacity:.7;">
-              <span class="badge badge-green" style="font-size:.62rem;">done</span>
-              <div style="font-weight:600;margin-top:.2rem;color:#2d3748;">Update Dockerfile</div>
-              <div style="color:#aaa;font-size:.65rem;margin-top:.15rem;">#T-88</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="two-col" style="margin-top:1.25rem;">
-    <div>
-      <h3 style="font-size:1rem;font-weight:700;margin-bottom:.75rem;">עדיפויות כרטיסים</h3>
-      <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
-        <span class="badge badge-grey">low</span>
-        <span class="badge badge-yellow">medium</span>
-        <span class="badge badge-blue">high</span>
-        <span class="badge badge-red">critical</span>
-      </div>
-      <h3 style="font-size:1rem;font-weight:700;margin-top:1rem;margin-bottom:.75rem;">סטטוסים</h3>
-      <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
-        <span class="badge badge-yellow">open</span>
-        <span class="badge badge-blue">in_progress</span>
-        <span class="badge badge-purple">review</span>
-        <span class="badge badge-green">done</span>
-        <span class="badge badge-grey">closed</span>
-      </div>
-    </div>
-    <div class="chart-card">
-      <div class="chart-title">כרטיסים פתוחים לפי עדיפות</div>
-      <canvas id="ticketChart" height="180"></canvas>
-    </div>
-  </div>
-</div>
-</div>
-
-<!-- ══════════════════════════════════════════════════════════════════════
-     13. CHAT / MESSAGES VIEW
-     ══════════════════════════════════════════════════════════════════════ -->
-<section id="chat-view">
-  <div class="section">
-    <div class="section-badge">13 — תצוגה</div>
-    <div class="section-title">תצוגת הודעות & צ'אט</div>
-    <div class="section-sub">חדרי צ'אט Slack-style עם קישורי הפניה עשירים — לכרטיסים, CI, פריסות ו-PR</div>
-
-    <div class="mockup">
-      <div class="mockup-bar">
-        <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
-        <div class="mt">DevTeam Hub — #deployments</div>
-      </div>
-      <div class="mockup-wrap">
-        <div class="mockup-sb">
-          <div class="ms">Channels</div>
-          <div class="mi"># general</div>
-          <div class="mi"># engineering</div>
-          <div class="mi a"># deployments</div>
-          <div class="mi"># incidents</div>
-          <div class="ms">projects</div>
-          <div class="mi" style="font-size:.67rem;"><span style="background:#38c96d;width:7px;height:7px;border-radius:50%;display:inline-block;margin-left:.3rem;"></span>my-project</div>
-        </div>
-        <div class="mockup-main">
-          <!-- messages -->
-          <div style="font-size:.72rem;margin-bottom:.6rem;">
-            <div style="display:flex;gap:.5rem;align-items:flex-start;margin-bottom:.55rem;">
-              <div style="width:28px;height:28px;background:#4a90d9;border-radius:5px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.7rem;flex-shrink:0;">D</div>
-              <div>
-                <span style="font-weight:700;color:#1a1d2e;">Dan</span>
-                <span style="color:#aaa;font-size:.65rem;margin-right:.3rem;">10:24</span>
-                <div style="margin-top:.2rem;line-height:1.5;">
-                  פרסנו לסביבת staging —
-                  <span style="background:#f0fff4;border:1px solid #9ae6b4;color:#276749;padding:1px 6px;border-radius:4px;font-weight:700;font-size:.7em;">#D-47</span>
-                  . תוצאות CI:
-                  <span style="background:#f0f8ff;border:1px solid #90caf9;color:#1565c0;padding:1px 6px;border-radius:4px;font-weight:700;font-size:.7em;">#CI-234</span>
-                  — ✅ 244 passed
-                </div>
-              </div>
-            </div>
-            <div style="display:flex;gap:.5rem;align-items:flex-start;margin-bottom:.55rem;">
-              <div style="width:28px;height:28px;background:#7b68ee;border-radius:5px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.7rem;flex-shrink:0;">T</div>
-              <div>
-                <span style="font-weight:700;color:#1a1d2e;">Tamar</span>
-                <span style="color:#aaa;font-size:.65rem;margin-right:.3rem;">10:27</span>
-                <div style="margin-top:.2rem;line-height:1.5;">
-                  יש כשל ב-PR
-                  <span style="background:#fff0f3;border:1px solid #ffb3c1;color:#c0392b;padding:1px 6px;border-radius:4px;font-weight:700;font-size:.7em;">#PR-42</span>
-                  — הכרטיס
-                  <span style="background:#fff0f3;border:1px solid #ffb3c1;color:#c0392b;padding:1px 6px;border-radius:4px;font-weight:700;font-size:.7em;">#T-95</span>
-                  מחכה לתיקון
-                </div>
-              </div>
-            </div>
-            <div style="display:flex;gap:.5rem;align-items:flex-start;">
-              <div style="width:28px;height:28px;background:#20c997;border-radius:5px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.7rem;flex-shrink:0;">Y</div>
-              <div>
-                <span style="font-weight:700;color:#1a1d2e;">Yshai</span>
-                <span style="color:#aaa;font-size:.65rem;margin-right:.3rem;">10:31</span>
-                <div style="margin-top:.2rem;line-height:1.5;">עובד על זה, deploy לפרודקשן בעוד שעה 🚀</div>
-              </div>
-            </div>
-          </div>
-          <!-- compose -->
-          <div style="border:1.5px solid #d1d5db;border-radius:6px;padding:.45rem .7rem;margin-top:.5rem;font-size:.72rem;color:#aaa;">
-            Message #deployments · Use #T-id, #CI-id, #D-id, #PR-id, @name...
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="highlight-box" style="margin-top:1.25rem;">
-      <strong>🔗 הפניות עשירות בהודעות:</strong>
-      <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:.75rem;">
-        <div style="text-align:center;">
-          <span style="background:#fff0f3;border:1px solid #ffb3c1;color:#c0392b;padding:3px 10px;border-radius:4px;font-weight:700;font-size:.82rem;">#T-123</span>
-          <div style="font-size:.72rem;color:#718096;margin-top:.3rem;">Ticket</div>
-        </div>
-        <div style="text-align:center;">
-          <span style="background:#f0f8ff;border:1px solid #90caf9;color:#1565c0;padding:3px 10px;border-radius:4px;font-weight:700;font-size:.82rem;">#CI-456</span>
-          <div style="font-size:.72rem;color:#718096;margin-top:.3rem;">CI Run</div>
-        </div>
-        <div style="text-align:center;">
-          <span style="background:#f0fff4;border:1px solid #9ae6b4;color:#276749;padding:3px 10px;border-radius:4px;font-weight:700;font-size:.82rem;">#D-789</span>
-          <div style="font-size:.72rem;color:#718096;margin-top:.3rem;">Deployment</div>
-        </div>
-        <div style="text-align:center;">
-          <span style="background:#f5f0ff;border:1px solid #d6bcfa;color:#553c9a;padding:3px 10px;border-radius:4px;font-weight:700;font-size:.82rem;">#PR-101</span>
-          <div style="font-size:.72rem;color:#718096;margin-top:.3rem;">Pull Request</div>
-        </div>
-        <div style="text-align:center;">
-          <span style="background:#ebf8ff;border:1px solid #90cdf4;color:#2b6cb0;padding:3px 10px;border-radius:4px;font-weight:700;font-size:.82rem;">@username</span>
-          <div style="font-size:.72rem;color:#718096;margin-top:.3rem;">Mention</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════════════════════════════════════
-     14. CUSTOMER PORTAL
+     17. CUSTOMER PORTAL
      ══════════════════════════════════════════════════════════════════════ -->
 <div id="portal" class="section-full section-blue">
 <div class="section">
-  <div class="section-badge">14 — פורטל</div>
+  <div class="section-badge">17 — פורטל</div>
   <div class="section-title">פורטל לקוחות</div>
-  <div class="section-sub">ממשק ייעודי ומבודד מלאכותית ללקוחות — עם אימות נפרד, layout נפרד ונתונים מסוננים</div>
+  <div class="section-sub">ממשק ייעודי ומבודד ללקוחות — עם אימות נפרד, layout נפרד ונתונים מסוננים</div>
 
   <div class="two-col">
     <div class="cards-grid" style="grid-template-columns:1fr 1fr;">
       <div class="card card-dark">
         <div class="card-icon">🎫</div>
         <div class="card-title">כרטיסי תמיכה</div>
-        <div class="card-desc">פתיחת כרטיסי bug ובקשות feature, מעקב סטטוס, סינון לפי עדיפות ומצב</div>
+        <div class="card-desc">פתיחת כרטיסים, מעקב סטטוס, סינון לפי עדיפות ומצב</div>
       </div>
       <div class="card card-dark">
         <div class="card-icon">💬</div>
         <div class="card-title">שרשור הודעות</div>
-        <div class="card-desc">ממשק Chat מול הצוות הפנימי — הודעות internal_only מוסתרות מהלקוח</div>
+        <div class="card-desc">Chat מול הצוות — הודעות internal_only מוסתרות מהלקוח</div>
       </div>
       <div class="card card-dark">
         <div class="card-icon">🏁</div>
         <div class="card-title">Milestones</div>
-        <div class="card-desc">צפייה ב-Milestones של הפרויקט, כולל progress bar וסטטוס (פעיל/הושלם)</div>
+        <div class="card-desc">צפייה ב-Milestones, progress bar וסטטוס</div>
       </div>
       <div class="card card-dark">
         <div class="card-icon">📄</div>
         <div class="card-title">תיעוד</div>
-        <div class="card-desc">גישה למסמכים ציבוריים — Spec, Architecture, Runbook, Timeline</div>
+        <div class="card-desc">גישה למסמכים ציבוריים — Spec, Architecture, Runbook</div>
       </div>
     </div>
     <div>
@@ -1565,7 +1261,6 @@ $ dt logs stats
           <tr><td>Base Controller</td><td><code>ActionController::Base</code> (לא ApplicationController)</td></tr>
           <tr><td>URL Prefix</td><td><code>/portal/</code></td></tr>
           <tr><td>Layout</td><td><code>customer_portal.html.erb</code> — עיצוב ירוק נפרד</td></tr>
-          <tr><td>Devise views</td><td>scoped_views = true — views נפרדות</td></tr>
           <tr><td>נתונים</td><td>מסוננים לפי customer_id — אין גישה לנתוני לקוחות אחרים</td></tr>
           <tr><td>הודעות</td><td>internal_only: false בלבד — הצוות רואה הכל</td></tr>
         </tbody>
@@ -1576,11 +1271,56 @@ $ dt logs stats
 </div>
 
 <!-- ══════════════════════════════════════════════════════════════════════
-     15. SUMMARY
+     18. CLI & VS CODE EXTENSION
+     ══════════════════════════════════════════════════════════════════════ -->
+<section id="cli">
+  <div class="section">
+    <div class="section-badge">18 — CLI & IDE</div>
+    <div class="section-title">CLI ו-VS Code Extension</div>
+    <div class="section-sub">ניהול מלא מתוך שורת הפקודה וה-IDE — ללא פתיחת דפדפן</div>
+
+    <div class="two-col">
+      <div>
+        <h3 style="font-size:1rem;font-weight:700;margin-bottom:1rem;">כלי שורת פקודה — <code>dt</code></h3>
+        <pre style="background:#1a1d2e;color:#e6edf3;padding:1rem;border-radius:8px;font-size:0.78rem;direction:ltr;text-align:left;margin:0;line-height:1.5;"><code>$ dt tickets list
+  #42  [high]     OAuth Integration       in_progress
+  #41  [medium]   Fix memory leak         review
+  #40  [low]      Refactor DB queries     open
+
+$ dt ci list
+  #234  main             failed   4.2 min
+  #233  feature/oauth    passed   3.8 min
+
+$ dt deploy create --env production --version 2.5.0
+  Deployment #48 created: production v2.5.0
+
+$ dt logs --service devteam-hub --level error
+  10:23:45  ERROR  Ticket creation failed</code></pre>
+      </div>
+      <div>
+        <h3 style="font-size:1rem;font-weight:700;margin-bottom:1rem;">REST API Endpoints</h3>
+        <table class="styled-table">
+          <thead><tr><th>Endpoint</th><th>פעולות</th></tr></thead>
+          <tbody>
+            <tr><td><code>/api/v1/tickets</code></td><td>list, show, create, update</td></tr>
+            <tr><td><code>/api/v1/ci_runs</code></td><td>list, show, create + test_results</td></tr>
+            <tr><td><code>/api/v1/deployments</code></td><td>list, show, create, update</td></tr>
+            <tr><td><code>/api/v1/pull_requests</code></td><td>list, show, create</td></tr>
+            <tr><td><code>/api/v1/projects</code></td><td>list, show</td></tr>
+            <tr><td><code>/api/v1/logs/*</code></td><td>query, services, push, stats</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     19. SUMMARY
      ══════════════════════════════════════════════════════════════════════ -->
 <div id="summary" class="section-full section-dark">
 <div class="section">
-  <div class="section-badge">15 — סיכום</div>
+  <div class="section-badge">19 — סיכום</div>
   <div class="section-title">סיכום ויתרונות</div>
   <div class="section-sub">DevTeam Hub מספק ערך מיידי לצוותי פיתוח הדורשים שליטה מלאה על הכלים והנתונים שלהם</div>
 
@@ -1592,8 +1332,8 @@ $ dt logs stats
     </div>
     <div class="summary-tile">
       <div class="s-icon">🔗</div>
-      <div class="s-title">אינטגרציה מלאה</div>
-      <div class="s-desc">Gitea, Jenkins, Jitsi — Webhooks דו-כיווניים. CI runs, PRs ופריסות מסונכרנים אוטומטית</div>
+      <div class="s-title">8 אינטגרציות</div>
+      <div class="s-desc">Gitea, Jenkins, Jitsi, SonarQube, Ollama, Grafana, Loki, Sentry — הכל מסונכרן אוטומטית</div>
     </div>
     <div class="summary-tile">
       <div class="s-icon">🛡️</div>
@@ -1601,9 +1341,9 @@ $ dt logs stats
       <div class="s-desc">8 שכבות: Devise, Pundit, CSRF, HMAC Webhook, בידוד פורטל, Strong Params, CSP, Modern Browser</div>
     </div>
     <div class="summary-tile">
-      <div class="s-icon">�</div>
+      <div class="s-icon">🔍</div>
       <div class="s-title">סקירת קוד אוטומטית</div>
-      <div class="s-desc">SonarQube Quality Gates + סקירת AI מקומית עם Ollama — כל השפות, אפס עלות, 100% On-Prem</div>
+      <div class="s-desc">SonarQube Quality Gates + Ollama AI — כל השפות, אפס עלות, 100% On-Prem</div>
     </div>
     <div class="summary-tile">
       <div class="s-icon">📋</div>
@@ -1611,9 +1351,9 @@ $ dt logs stats
       <div class="s-desc">Grafana Loki + Promtail — פורמט JSON אחיד, correlation IDs, דשבורדים והתראות</div>
     </div>
     <div class="summary-tile">
-      <div class="s-icon">�💬</div>
-      <div class="s-title">ממשק Slack-style</div>
-      <div class="s-desc">סרגל צד עם Projects, Channels, CI dots — עיצוב מוכר שמפתחים אוהבים</div>
+      <div class="s-icon">📊</div>
+      <div class="s-title">5 דוחות</div>
+      <div class="s-desc">CI Summary, Deployments, Test Coverage, Sprint Velocity, Estimation Accuracy</div>
     </div>
     <div class="summary-tile">
       <div class="s-icon">👤</div>
@@ -1621,24 +1361,31 @@ $ dt logs stats
       <div class="s-desc">ממשק מבודד ומאובטח ללקוחות — כרטיסים, הודעות, Milestones ומסמכים</div>
     </div>
     <div class="summary-tile">
-      <div class="s-icon">📊</div>
-      <div class="s-title">נראות מלאה</div>
-      <div class="s-desc">Today View, CI dots, Activity Feed, Reports — הצוות רואה הכל בלוח אחד</div>
+      <div class="s-icon">🔧</div>
+      <div class="s-title">CLI & VS Code</div>
+      <div class="s-desc">כלי שורת פקודה <code>dt</code> ותוסף VS Code — ניהול כרטיסים, CI ולוגים מה-IDE</div>
+    </div>
+    <div class="summary-tile">
+      <div class="s-icon">🌍</div>
+      <div class="s-title">עברית + אנגלית</div>
+      <div class="s-desc">תמיכה מלאה ב-RTL עם Bootstrap 5. העדפת שפה נשמרת בפרופיל המשתמש</div>
     </div>
   </div>
 
   <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:2rem;margin-top:1rem;">
-    <h3 style="color:#fff;font-size:1rem;font-weight:700;margin-bottom:1.25rem;">כיסוי פיצ'רים — מצב נוכחי</h3>
-    <div class="feat-bar-row"><div class="feat-name" style="color:#fff;">ניהול פרויקטים</div><div class="feat-track"><div class="feat-fill" style="width:95%;background:var(--green);"></div></div><div class="feat-pct">95%</div></div>
-    <div class="feat-bar-row"><div class="feat-name" style="color:#fff;">CI/CD Monitoring</div><div class="feat-track"><div class="feat-fill" style="width:90%;background:var(--green);"></div></div><div class="feat-pct">90%</div></div>
+    <h3 style="color:#fff;font-size:1rem;font-weight:700;margin-bottom:1.25rem;">כיסוי פיצ'רים — מצב נוכחי (87% מהסטוריז הושלמו)</h3>
+    <div class="feat-bar-row"><div class="feat-name" style="color:#fff;">ניהול פרויקטים</div><div class="feat-track"><div class="feat-fill" style="width:100%;background:var(--green);"></div></div><div class="feat-pct">100%</div></div>
+    <div class="feat-bar-row"><div class="feat-name" style="color:#fff;">CI/CD Monitoring</div><div class="feat-track"><div class="feat-fill" style="width:92%;background:var(--green);"></div></div><div class="feat-pct">92%</div></div>
     <div class="feat-bar-row"><div class="feat-name" style="color:#fff;">סקירת קוד אוטומטית</div><div class="feat-track"><div class="feat-fill" style="width:90%;background:var(--green);"></div></div><div class="feat-pct">90%</div></div>
-    <div class="feat-bar-row"><div class="feat-name" style="color:#fff;">לוגים מרכזיים</div><div class="feat-track"><div class="feat-fill" style="width:70%;background:var(--orange);"></div></div><div class="feat-pct">70%</div></div>
-    <div class="feat-bar-row"><div class="feat-name" style="color:#fff;">ניהול כרטיסים</div><div class="feat-track"><div class="feat-fill" style="width:92%;background:var(--green);"></div></div><div class="feat-pct">92%</div></div>
-    <div class="feat-bar-row"><div class="feat-name" style="color:#fff;">פריסות</div><div class="feat-track"><div class="feat-fill" style="width:88%;background:var(--green);"></div></div><div class="feat-pct">88%</div></div>
-    <div class="feat-bar-row"><div class="feat-name" style="color:#fff;">מסמכים טכניים</div><div class="feat-track"><div class="feat-fill" style="width:85%;background:var(--blue);"></div></div><div class="feat-pct">85%</div></div>
-    <div class="feat-bar-row"><div class="feat-name" style="color:#fff;">פורטל לקוחות</div><div class="feat-track"><div class="feat-fill" style="width:83%;background:var(--blue);"></div></div><div class="feat-pct">83%</div></div>
-    <div class="feat-bar-row"><div class="feat-name" style="color:#fff;">צ'אט & הודעות</div><div class="feat-track"><div class="feat-fill" style="width:75%;background:var(--orange);"></div></div><div class="feat-pct">75%</div></div>
-    <div class="feat-bar-row"><div class="feat-name" style="color:#fff;">פגישות & Jitsi</div><div class="feat-track"><div class="feat-fill" style="width:78%;background:var(--orange);"></div></div><div class="feat-pct">78%</div></div>
+    <div class="feat-bar-row"><div class="feat-name" style="color:#fff;">ניהול כרטיסים</div><div class="feat-track"><div class="feat-fill" style="width:93%;background:var(--green);"></div></div><div class="feat-pct">93%</div></div>
+    <div class="feat-bar-row"><div class="feat-name" style="color:#fff;">פריסות</div><div class="feat-track"><div class="feat-fill" style="width:100%;background:var(--green);"></div></div><div class="feat-pct">100%</div></div>
+    <div class="feat-bar-row"><div class="feat-name" style="color:#fff;">מסמכים טכניים</div><div class="feat-track"><div class="feat-fill" style="width:100%;background:var(--green);"></div></div><div class="feat-pct">100%</div></div>
+    <div class="feat-bar-row"><div class="feat-name" style="color:#fff;">דוחות ומגמות</div><div class="feat-track"><div class="feat-fill" style="width:100%;background:var(--green);"></div></div><div class="feat-pct">100%</div></div>
+    <div class="feat-bar-row"><div class="feat-name" style="color:#fff;">ניהול לקוחות</div><div class="feat-track"><div class="feat-fill" style="width:90%;background:var(--green);"></div></div><div class="feat-pct">90%</div></div>
+    <div class="feat-bar-row"><div class="feat-name" style="color:#fff;">פורטל לקוחות</div><div class="feat-track"><div class="feat-fill" style="width:100%;background:var(--green);"></div></div><div class="feat-pct">100%</div></div>
+    <div class="feat-bar-row"><div class="feat-name" style="color:#fff;">פגישות & Jitsi</div><div class="feat-track"><div class="feat-fill" style="width:83%;background:var(--blue);"></div></div><div class="feat-pct">83%</div></div>
+    <div class="feat-bar-row"><div class="feat-name" style="color:#fff;">Today & Dashboard</div><div class="feat-track"><div class="feat-fill" style="width:100%;background:var(--green);"></div></div><div class="feat-pct">100%</div></div>
+    <div class="feat-bar-row"><div class="feat-name" style="color:#fff;">CLI & VS Code</div><div class="feat-track"><div class="feat-fill" style="width:100%;background:var(--green);"></div></div><div class="feat-pct">100%</div></div>
   </div>
 </div>
 </div>
@@ -1646,8 +1393,8 @@ $ dt logs stats
 <!-- FOOTER -->
 <footer>
   <div style="margin-bottom:.5rem;">🚀 <strong style="color:rgba(255,255,255,.7);">DevTeam Hub</strong> — פלטפורמת ניהול פיתוח תוך-ארגונית</div>
-  <div>Built with Ruby on Rails 8.1 · Gitea · Jenkins · SonarQube · Ollama · Grafana Loki · Jitsi · Bulma · Hotwire</div>
-  <div style="margin-top:.5rem;font-size:.72rem;">כל הנתונים והקוד נשארים ברשת הארגונית שלך · אפס תלות בענן</div>
+  <div>Built with Ruby on Rails 8.1 · Bootstrap 5 · Hotwire · Gitea · Jenkins · SonarQube · Ollama · Grafana Loki · Jitsi · Sentry</div>
+  <div style="margin-top:.5rem;font-size:.72rem;">כל הנתונים והקוד נשארים ברשת הארגונית שלך · אפס תלות בענן · 122 User Stories · 87% Completion</div>
 </footer>
 
 <!-- ══════════════════════════════════════════════════════════════════════
@@ -1661,11 +1408,11 @@ $ dt logs stats
   new Chart(document.getElementById('moduleChart'), {
     type: 'bar',
     data: {
-      labels: ['ניהול פרויקטים', 'כרטיסים', 'CI/CD', 'פריסות', 'מסמכים', 'פגישות', 'פורטל לקוחות', "צ'אט"],
+      labels: ['ניהול פרויקטים', 'כרטיסים', 'CI/CD', 'פריסות', 'מסמכים', 'דוחות', 'פורטל לקוחות', 'CLI & Extension'],
       datasets: [{
         label: 'אחוז כיסוי',
-        data: [95, 92, 90, 88, 85, 78, 83, 75],
-        backgroundColor: ['#38c96d','#38c96d','#38c96d','#38c96d','#4a90d9','#f5a623','#4a90d9','#f5a623'],
+        data: [100, 93, 92, 100, 100, 100, 100, 100],
+        backgroundColor: ['#38c96d','#38c96d','#38c96d','#38c96d','#38c96d','#38c96d','#38c96d','#38c96d'],
         borderRadius: 5,
       }]
     },
@@ -1680,24 +1427,7 @@ $ dt logs stats
     }
   });
 
-  // 2. PR activity — bar
-  new Chart(document.getElementById('prChart'), {
-    type: 'bar',
-    data: {
-      labels: ['ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני'],
-      datasets: [
-        { label: 'נמזגו', data: [18,22,19,28,31,24], backgroundColor: '#38c96d', borderRadius: 4 },
-        { label: 'נסגרו', data: [3,2,4,2,3,1], backgroundColor: '#e84545', borderRadius: 4 }
-      ]
-    },
-    options: {
-      responsive: true,
-      plugins: { legend: { position: 'bottom' } },
-      scales: { x: { stacked: false }, y: { stacked: false } }
-    }
-  });
-
-  // 3. CI success rate — line
+  // 2. CI success rate — line
   new Chart(document.getElementById('ciChart'), {
     type: 'line',
     data: {
@@ -1724,27 +1454,7 @@ $ dt logs stats
     }
   });
 
-  // 4. Deployment types — doughnut
-  new Chart(document.getElementById('deployChart'), {
-    type: 'doughnut',
-    data: {
-      labels: ['Web App', 'Docker', 'Windows Installer', 'Windows Service'],
-      datasets: [{
-        data: [44, 30, 16, 10],
-        backgroundColor: ['#4a90d9','#38c96d','#7b68ee','#f5a623'],
-        borderWidth: 2, borderColor: '#fff'
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { position: 'bottom', labels: { font: { size: 11 } } }
-      },
-      cutout: '60%'
-    }
-  });
-
-  // 5. Security radar
+  // 3. Security radar
   new Chart(document.getElementById('securityChart'), {
     type: 'radar',
     data: {
@@ -1774,46 +1484,7 @@ $ dt logs stats
     }
   });
 
-  // 6. Test pass rate over time — line
-  new Chart(document.getElementById('testChart'), {
-    type: 'line',
-    data: {
-      labels: ['ינו', 'פבר', 'מרץ', 'אפר', 'מאי', 'יוני'],
-      datasets: [{
-        label: '% Tests Passed',
-        data: [91, 93, 90, 95, 92, 96],
-        borderColor: '#4a90d9', backgroundColor: 'rgba(74,144,217,.1)',
-        borderWidth: 2.5, tension: 0.35, fill: true, pointRadius: 4
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: { legend: { display: false } },
-      scales: { y: { min: 80, max: 100, ticks: { callback: v => v + '%' } } }
-    }
-  });
-
-  // 7. Ticket priority bar
-  new Chart(document.getElementById('ticketChart'), {
-    type: 'bar',
-    data: {
-      labels: ['critical', 'high', 'medium', 'low'],
-      datasets: [{
-        label: 'כרטיסים פתוחים',
-        data: [3, 8, 14, 6],
-        backgroundColor: ['#e84545','#4a90d9','#f5a623','#a0aec0'],
-        borderRadius: 5,
-      }]
-    },
-    options: {
-      indexAxis: 'y',
-      responsive: true,
-      plugins: { legend: { display: false } },
-      scales: { x: { beginAtZero: true } }
-    }
-  });
-
-  // 8. Code Review tools comparison — radar
+  // 4. Code Review tools comparison — radar
   new Chart(document.getElementById('codeReviewPresChart'), {
     type: 'radar',
     data: {
@@ -1852,7 +1523,7 @@ $ dt logs stats
     }
   });
 
-  // Logging tools comparison chart
+  // 5. Logging tools comparison chart
   new Chart(document.getElementById('loggingPresChart'), {
     type: 'radar',
     data: {

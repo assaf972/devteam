@@ -13,6 +13,8 @@ class Ticket < ApplicationRecord
   has_many :ticket_watchers
   has_many :watchers, through: :ticket_watchers, source: :user
   has_many :test_results, through: :ci_runs
+  has_many :ai_reviews, as: :reviewable, dependent: :destroy
+  has_many :tasks, dependent: :destroy
 
   has_many_attached :attachments
 
@@ -38,6 +40,36 @@ class Ticket < ApplicationRecord
 
   after_save :auto_create_branch_and_notify,
              if: -> { saved_change_to_assignee_id? && assignee_id.present? }
+
+  # A newly created story starts with a single task named after the story, so the
+  # team can immediately break it down and track progress via task completion.
+  after_create_commit :create_initial_task, if: :story?
+
+  # Progress of the story derived from its tasks, read from the cached columns
+  # (kept fresh by Task#refresh_ticket_stats → #recalculate_task_stats!).
+  def task_progress
+    { total: tasks_count, completed: completed_tasks_count, percent: tasks_progress_in_percents }
+  end
+
+  # Recompute and persist the cached task rollups. Uses update_columns so it does
+  # not re-trigger callbacks (avoids recursion with the Task after_commit hook).
+  def recalculate_task_stats!
+    # Query fresh (not the possibly-cached association) so callers that mutated
+    # tasks through other instances still get correct counts.
+    all_tasks      = Task.where(ticket_id: id).to_a
+    total          = all_tasks.size
+    done           = all_tasks.count(&:completed?)
+    estimate       = all_tasks.sum { |t| t.estimation_in_hours || 0 }
+    done_estimate  = all_tasks.select(&:completed?).sum { |t| t.estimation_in_hours || 0 }
+
+    update_columns(
+      tasks_count:                total,
+      completed_tasks_count:      done,
+      tasks_progress_in_percents: total.zero? ? 0 : (done * 100.0 / total).round,
+      total_tasks_estimation:     estimate.round(2),
+      completed_tasks_estimation: done_estimate.round(2)
+    )
+  end
 
   def latest_ci_run
     ci_runs.order(created_at: :desc).first
@@ -82,5 +114,9 @@ class Ticket < ApplicationRecord
 
   def auto_create_branch_and_notify
     TicketBranchService.new(self).call
+  end
+
+  def create_initial_task
+    tasks.create(description: title, user: assignee || owner)
   end
 end

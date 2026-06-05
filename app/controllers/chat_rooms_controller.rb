@@ -20,7 +20,9 @@ class ChatRoomsController < ApplicationController
   end
 
   def new
-    @chat_room = ChatRoom.new
+    # When launched from a project context, pre-link the channel to it.
+    @chat_room = ChatRoom.new(project_id: params[:project_id])
+    @chat_room.room_type = :project_room if @chat_room.project_id.present?
     @projects  = Project.active.order(:name)
   end
 

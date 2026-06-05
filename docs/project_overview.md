@@ -1,8 +1,8 @@
 # DevTeam Hub — Project Documentation
 
-> **Version:** 1.0  
-> **Last updated:** May 22, 2026  
-> **Stack:** Ruby on Rails 8.1.3 · SQLite3 · Bulma CSS · Stimulus JS · Solid Queue
+> **Version:** 2.1  
+> **Last updated:** June 5, 2026  
+> **Stack:** Ruby on Rails 8.1.3 · SQLite3 · Bootstrap 5 · Stimulus JS · Solid Queue · Ollama (local LLM)
 
 ---
 
@@ -10,16 +10,26 @@
 
 DevTeam Hub is an internal developer-team management dashboard built with Ruby on Rails 8. It centralises every aspect of a software-development team's day-to-day work into a single web application:
 
-- **Project & Sprint tracking** — manage projects, iterations, and milestones
-- **Ticket (issue) management** — Kanban-style work items with CI status badges
+- **Project & Sprint tracking** — manage projects, iterations, and milestones with quick-create actions
+- **Ticket (issue) management** — comprehensive work items with CI status badges, cross-project views, and advanced filtering
 - **Customer support** — customer accounts, support tickets, and software installation records
 - **CI/CD integration** — real-time Jenkins build results and Gitea repository events via webhooks
 - **Deployment tracking** — web, Windows installer, Windows service, and Docker deploys
 - **Meeting management** — schedule and join Jitsi video meetings from within the app
-- **Documentation** — project-scoped knowledge base with Markdown rendering
+- **Documentation** — project-scoped knowledge base with Markdown rendering and document templates
+- **Pull Request tracking** — PR records synced from Gitea with CI test result integration
 - **Notifications** — in-app and email notifications for ticket assignments and CI failures
+- **Chat rooms** — Slack-style team messaging channels with rich entity references
+- **Customer Portal** — isolated, secure portal for customers to view project status, submit tickets, and communicate
+- **Reporting** — CI summary, deployment summary, test coverage, sprint velocity, and estimation accuracy reports
+- **Calendar** — full calendar view with meetings and sprint milestones
 - **Internationalisation** — full English and Hebrew (RTL) support
 - **Today Page** — personalised landing page for each developer showing their day at a glance
+- **Admin panel** — user management and client account administration
+- **CLI & VS Code extension** — `devteam` / `dt` command-line tool and IDE integration via REST API
+- **AI Agent (local LLM)** — on-prem Ollama model for ticket readiness checks, code review (Go/Ruby/C#/Node), cucumber test review, estimation analytics, live sprint analysis, solution suggestions, **bug fixing**, and **story → task breakdown with calibrated estimates** — code never leaves the LAN (see §10)
+- **Tasks** — stories break into estimable tasks; task completion drives story progress (see §10)
+- **Log Viewer** — readable, highlighted view of the central Loki logs with service/level/search filters and a live "watch" tail (`/logs`)
 
 The application targets small-to-medium software teams (5–30 developers) who want an on-premise, self-hosted alternative to Jira + Confluence + Freshdesk combined.
 
@@ -36,10 +46,10 @@ The application targets small-to-medium software teams (5–30 developers) who w
 | Background jobs | Solid Queue |
 | Cache | Solid Cache |
 | WebSockets | Solid Cable |
-| Frontend CSS | Bulma (via cssbundling-rails) |
+| Frontend CSS | Bootstrap 5 + Custom SCSS |
 | Frontend JS | Stimulus + Turbo (Hotwire) |
-| Asset pipeline | Propshaft + jsbundling-rails |
-| Authentication | Devise |
+| Asset pipeline | Propshaft + jsbundling-rails + cssbundling-rails |
+| Authentication | Devise (dual model: User + CustomerUser) |
 | Authorisation | Pundit |
 | HTTP client | Faraday |
 | Pagination | Kaminari |
@@ -47,6 +57,7 @@ The application targets small-to-medium software teams (5–30 developers) who w
 | Search | Ransack |
 | Notifications | Noticed ~> 2.0 |
 | Error tracking | Sentry (sentry-ruby + sentry-rails) |
+| Logging | Lograge (JSON format) → Grafana Loki |
 | Markdown | Redcarpet |
 | Calendar export | iCalendar |
 | Tagging | acts-as-taggable-on |
@@ -55,6 +66,7 @@ The application targets small-to-medium software teams (5–30 developers) who w
 | Testing (unit) | RSpec + FactoryBot + Shoulda-matchers + Faker |
 | Testing (BDD) | Cucumber-rails + Capybara |
 | Deployment tooling | Kamal + Thruster |
+| Containerisation | Docker + docker-compose |
 
 ---
 
@@ -86,12 +98,36 @@ The application targets small-to-medium software teams (5–30 developers) who w
 │  │  · Notification dispatch                 │   │
 │  │  · Gitea branch creation                 │   │
 │  └──────────────────────────────────────────┘   │
+│                                                 │
+│  ┌──────────────────────────────────────────┐   │
+│  │  Customer Portal (/portal)               │   │
+│  │  · Isolated Devise model (CustomerUser)  │   │
+│  │  · Separate base controller & layout     │   │
+│  │  · Tickets, Messages, Milestones, Docs   │   │
+│  └──────────────────────────────────────────┘   │
+│                                                 │
+│  ┌──────────────────────────────────────────┐   │
+│  │  REST API (api/v1/*)                     │   │
+│  │  · CLI & VS Code Extension backend       │   │
+│  │  · Tickets, CI Runs, Deployments, PRs    │   │
+│  │  · Loki log proxy                        │   │
+│  └──────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────┘
               │                   │
      ┌────────▼───┐      ┌────────▼───────┐
      │  Jenkins   │      │   Gitea server │
      │  (webhooks)│      │  (webhooks)    │
      └────────────┘      └────────────────┘
+              │
+     ┌────────▼───────────────────────────┐
+     │  SonarQube + Ollama AI             │
+     │  (code review pipeline)            │
+     └───────────────────────────────────┘
+              │
+     ┌────────▼───────────────────────────┐
+     │  Grafana Loki + Promtail           │
+     │  (centralised logging)             │
+     └───────────────────────────────────┘
 ```
 
 **Key design choices:**
@@ -100,558 +136,273 @@ The application targets small-to-medium software teams (5–30 developers) who w
 - Polymorphic `comments` and `notifications` reduce table count
 - `serialize :params, coder: JSON` on `Notification#params` since SQLite has no native JSON column
 - Enum integers stored in DB for efficiency; all enums have named scopes
+- Dual Devise authentication models for team (User) and customer (CustomerUser) isolation
+- Kebab dropdown menus (`⋮`) for table row actions to reduce visual clutter
+- Bootstrap 5 with RTL support via `dir="rtl"` attribute
 
 ---
 
-## 4. Database Tables & Models
+## 4. UI Features & Navigation
 
-### 4.1 `users`
+### 4.1 Sidebar Navigation
 
-The application's team members. Managed by Devise.
+The application uses a Slack-style sidebar with the following sections:
 
-| Column | Type | Constraints | Notes |
-|---|---|---|---|
-| id | integer | PK | |
-| email | string | NOT NULL, unique | Devise |
-| encrypted_password | string | NOT NULL | Devise |
-| name | string | NOT NULL | display name |
-| role | integer | | enum: developer(0) team_lead(1) project_manager(2) admin(3) qa(4) |
-| preferred_language | string | | enum: "en" / "he" |
-| reset_password_token | string | unique | Devise |
-| remember_created_at | datetime | | Devise |
-| created_at / updated_at | datetime | NOT NULL | |
-
-**Associations:**
-
-- `has_many :assigned_tickets` (FK: assignee_id on tickets)
-- `has_many :triggered_ci_runs` (FK: triggered_by_id on ci_runs)
-- `has_many :deployments` (FK: deployed_by_id)
-- `has_many :authored_documents` (FK: author_id)
-- `has_many :organized_meetings` (FK: organizer_id)
-- `has_many :meetings, through: :meeting_attendees`
-- `has_many :watched_tickets, through: :ticket_watchers`
-- `has_many :notifications, polymorphic recipient`
-- `has_many :assigned_customer_tickets` (FK: assigned_to_id)
-
-**Validations:** name presence; email presence + uniqueness (delegated to Devise)
-
----
-
-### 4.2 `projects`
-
-Top-level container for all team work.
-
-| Column | Type | Constraints | Notes |
-|---|---|---|---|
-| id | integer | PK | |
-| name | string | NOT NULL | |
-| description | text | | |
-| tech_stack | string | | |
-| repo_url | string | | URL to Gitea repository |
-| gitea_repo_id | string | | Gitea internal repo identifier |
-| active | boolean | DEFAULT true | soft-delete flag |
-| created_at / updated_at | datetime | NOT NULL | |
-
-**Associations:** has_many sprints, milestones, tickets, ci_runs, deployments, documents, meetings, pull_requests, branches, installations
-
-**Validations:** name presence
-
-**Scopes:** `.active` → `where(active: true)`
-
----
-
-### 4.3 `tickets`
-
-Core work-item / issue entity.
-
-| Column | Type | Constraints | Notes |
-|---|---|---|---|
-| id | integer | PK | |
-| project_id | bigint | NOT NULL, FK | |
-| sprint_id | bigint | FK | optional |
-| assignee_id | bigint | FK → users | optional |
-| milestone_id | integer | FK | optional |
-| title | string | | |
-| description | text | | |
-| status | integer | | enum below |
-| priority | integer | DEFAULT medium | enum below |
-| story_points | integer | | |
-| branch_name | string | | linked Git branch |
-| pr_number | integer | | linked PR number |
-| latest_ci_run_id | integer | | denormalised FK |
-| created_at / updated_at | datetime | NOT NULL | |
-
-**Status enum:** `backlog(0)` `open(1)` `in_progress(2)` `in_review(3)` `testing(4)` `done(5)` `closed(6)` `blocked(7)`
-
-**Priority enum:** `low(0)` `medium(1)` `high(2)` `critical(3)`
-
-**Associations:** belongs_to project, sprint (optional), assignee/User (optional), milestone (optional); has_many comments (polymorphic), branches, pull_requests, ci_runs, ticket_watchers, test_results (through ci_runs)
-
-**Validations:** title presence, project presence
-
-**Tagging:** `acts_as_taggable_on :tags, :labels`
-
----
-
-### 4.4 `sprints`
-
-Iteration containers for tickets.
-
-| Column | Type | Constraints | Notes |
-|---|---|---|---|
-| id | integer | PK | |
-| project_id | bigint | NOT NULL, FK | |
-| name | string | NOT NULL | |
-| status | integer | DEFAULT planning | enum below |
-| start_date | date | NOT NULL | |
-| end_date | date | NOT NULL | |
-| goal | text | | sprint goal description |
-| created_at / updated_at | datetime | NOT NULL | |
-
-**Status enum:** `planning(0)` `active(1)` `completed(2)` `cancelled(3)`
-
-**Scopes:** `.active`, `.current` (active within today's date range)
-
----
-
-### 4.5 `milestones`
-
-Release gates linked to projects and tickets.
-
-| Column | Type | Constraints | Notes |
-|---|---|---|---|
-| id | integer | PK | |
-| project_id | bigint | NOT NULL, FK | |
-| name | string | | |
-| description | text | | |
-| due_date | date | | |
-| status | integer | | enum: open(0) in_progress(1) completed(2) |
-| created_at / updated_at | datetime | NOT NULL | |
-
-**Associations:** belongs_to project; has_many tickets
-
----
-
-### 4.6 `ci_runs`
-
-Records of Jenkins (or other CI) builds.
-
-| Column | Type | Constraints | Notes |
-|---|---|---|---|
-| id | integer | PK | |
-| project_id | bigint | NOT NULL, FK | |
-| ticket_id | bigint | FK | optional |
-| triggered_by_id | bigint | FK → users | optional |
-| build_number | string | NOT NULL | |
-| branch_name | string | | |
-| commit_sha | string | | |
-| status | integer | DEFAULT pending | enum below |
-| log_url | string | | link to Jenkins build log |
-| started_at | datetime | | |
-| finished_at | datetime | | |
-| created_at / updated_at | datetime | NOT NULL | |
-
-**Status enum:** `pending(0)` `running(1)` `passed(2)` `failed(3)` `cancelled(4)` `error(5)`
-
-**Methods:** `#duration` → minutes between started_at and finished_at
-
----
-
-### 4.7 `test_results`
-
-Individual test case outcomes belonging to a CI run.
-
-| Column | Type | Notes |
-|---|---|---|
-| ci_run_id | bigint | FK |
-| name | string | test name |
-| passed | boolean | |
-| duration_ms | integer | |
-| failure_message | text | |
-
----
-
-### 4.8 `deployments`
-
-Deployment events (web, installer, service, Docker).
-
-| Column | Type | Constraints | Notes |
-|---|---|---|---|
-| id | integer | PK | |
-| project_id | bigint | NOT NULL, FK | |
-| deployed_by_id | bigint | FK → users | |
-| client_account_id | bigint | FK | optional |
-| version | string | NOT NULL | |
-| environment | string | NOT NULL | production/staging/uat/etc. |
-| status | integer | DEFAULT pending | enum below |
-| deploy_type | integer | DEFAULT web_app | enum below |
-| deployed_at | datetime | | |
-| machine_name | string | | target host |
-| notes | text | | |
-| created_at / updated_at | datetime | NOT NULL | |
-
-**Status enum:** `pending(0)` `in_progress(1)` `succeeded(2)` `failed(3)` `rolled_back(4)`
-
-**Deploy type enum:** `web_app(0)` `windows_installer(1)` `windows_service(2)` `docker(3)`
-
-**Associations:** belongs_to project, deployed_by/User (optional), client_account (optional); has_many installations
-
----
-
-### 4.9 `documents`
-
-Project knowledge-base articles with Markdown content.
-
-| Column | Type | Constraints | Notes |
-|---|---|---|---|
-| id | integer | PK | |
-| project_id | bigint | NOT NULL, FK | |
-| author_id | bigint | FK → users | optional |
-| title | string | NOT NULL | |
-| content | text | NOT NULL | Markdown |
-| summary | text | | |
-| doc_type | integer | DEFAULT other | enum below |
-| version_number | string | | e.g. "1.2" |
-| created_at / updated_at | datetime | NOT NULL | |
-
-**Doc type enum:** `spec(0)` `risk_management(1)` `user_story(2)` `timeline(3)` `test_coverage(4)` `architecture(5)` `runbook(6)` `other(7)`
-
-**Features:** Active Storage attachment, polymorphic comments, `acts_as_taggable_on :tags`
-
----
-
-### 4.10 `meetings`
-
-Scheduled team meetings with optional Jitsi video link.
-
-| Column | Type | Constraints | Notes |
-|---|---|---|---|
-| id | integer | PK | |
-| project_id | bigint | FK | optional |
-| organizer_id | bigint | FK → users | optional |
-| title | string | NOT NULL | |
-| description | text | | |
-| agenda | text | | |
-| meeting_type | integer | DEFAULT other | enum below |
-| status | integer | DEFAULT scheduled | enum below |
-| scheduled_at | datetime | NOT NULL | |
-| duration_minutes | integer | | |
-| jitsi_room | string | | room name on Jitsi server |
-| recording_url | string | | link to recording |
-| notes | text | | post-meeting notes |
-| created_at / updated_at | datetime | NOT NULL | |
-
-**Meeting type enum:** `daily_standup(0)` `sprint_planning(1)` `sprint_review(2)` `retrospective(3)` `demo(4)` `one_on_one(5)` `other(6)`
-
-**Status enum:** `scheduled(0)` `in_progress(1)` `completed(2)` `cancelled(3)`
-
-**Methods:** `#jitsi_url(base_url)` builds full Jitsi room URL
-
----
-
-### 4.11 `meeting_attendees`
-
-Join table between meetings and users.
-
-| Column | Type | Notes |
-|---|---|---|
-| meeting_id | bigint | FK |
-| user_id | bigint | FK |
-| attended | boolean | marked after meeting |
-
----
-
-### 4.12 `customers`
-
-External customer accounts for support and installation tracking.
-
-| Column | Type | Constraints | Notes |
-|---|---|---|---|
-| id | integer | PK | |
-| name | string | NOT NULL | |
-| company | string | | |
-| email | string | NOT NULL, unique (case-insensitive) | |
-| phone | string | | |
-| contact_person | string | | internal contact |
-| notes | text | | |
-| active | boolean | NOT NULL, DEFAULT true | soft-delete |
-| created_at / updated_at | datetime | NOT NULL | |
-
-**Associations:** has_many customer_tickets (dependent: destroy), installations (dependent: destroy)
-
-**Validations:** name presence; email presence, uniqueness (case-insensitive), format (URI::MailTo::EMAIL_REGEXP)
-
-**Scopes:** `.active`, `.inactive`
-
-**Methods:** `#display_name` → "Name (Company)" or "Name"; `#installed_projects` → unique projects from installations
-
----
-
-### 4.13 `customer_tickets`
-
-Support tickets submitted by or on behalf of customers.
-
-| Column | Type | Constraints | Notes |
-|---|---|---|---|
-| id | integer | PK | |
-| customer_id | integer | NOT NULL, FK | |
-| assigned_to_id | integer | FK → users | optional |
-| internal_ticket_id | integer | FK → tickets | optional |
-| title | string | NOT NULL | |
-| body | text | | |
-| status | integer | NOT NULL, DEFAULT 0 | enum below |
-| priority | integer | NOT NULL, DEFAULT 1 | enum below |
-| resolved_at | datetime | | |
-| created_at / updated_at | datetime | NOT NULL | |
-
-**Status enum (prefix: true):** `open(0)` `in_progress(1)` `waiting_for_customer(2)` `resolved(3)` `closed(4)`
-
-**Priority enum (prefix: true):** `low(0)` `medium(1)` `high(2)` `critical(3)`
-
-**Scopes:** `.open_tickets` (open + in_progress + waiting), `.resolved`, `.high_priority`
-
-**Methods:** `#resolve!` sets status to resolved + resolved_at timestamp; `#link_to_internal!(ticket)` links to internal dev ticket
-
----
-
-### 4.14 `installations`
-
-Tracks which software version is installed at a customer site.
-
-| Column | Type | Constraints | Notes |
-|---|---|---|---|
-| id | integer | PK | |
-| customer_id | integer | NOT NULL, FK | |
-| project_id | integer | FK | optional — which project owns this software |
-| deployment_id | integer | FK | optional — which deployment produced this install |
-| software_name | string | NOT NULL | |
-| version | string | NOT NULL | |
-| environment | string | NOT NULL, DEFAULT 'production' | production/staging/uat/development |
-| status | integer | NOT NULL, DEFAULT 0 | enum below |
-| installed_at | datetime | | |
-| notes | text | | |
-| created_at / updated_at | datetime | NOT NULL | |
-
-**Indexes:** `[customer_id, software_name]` composite; `[status]`
-
-**Status enum (prefix: true):** `active(0)` `pending(1)` `outdated(2)` `decommissioned(3)` `failed(4)`
-
-**ENVIRONMENTS constant:** `%w[production staging uat development]`
-
-**Callback:** `after_create :mark_previous_as_outdated` — when a new Active installation is saved, all previous Active installations for the same customer + software_name are automatically set to Outdated.
-
----
-
-### 4.15 `branches`
-
-Git branches created from tickets.
-
-| Column | Type | Notes |
-|---|---|---|
-| project_id | bigint | FK |
-| ticket_id | bigint | FK |
-| name | string | NOT NULL |
-| status | integer | enum: active(0) merged(1) deleted(2) |
-| created_at_gitea | datetime | timestamp from Gitea webhook |
-
----
-
-### 4.16 `pull_requests`
-
-Pull / merge requests from Gitea.
-
-| Column | Type | Notes |
-|---|---|---|
-| project_id | bigint | FK |
-| ticket_id | bigint | FK (optional) |
-| pr_number | integer | NOT NULL |
-| title | string | NOT NULL |
-| status | integer | enum: open(0) review(1) merged(2) closed(3) |
-
----
-
-### 4.17 `client_accounts`
-
-Legacy CRM-style account records (predecessor to the full Customer module).
-
-| Column | Type | Notes |
-|---|---|---|
-| name | string | |
-| contact_name | string | |
-| contact_phone | string | |
-| email | string | |
-| notes | text | |
-
----
-
-### 4.18 `comments` (polymorphic)
-
-Comments attached to tickets, documents, meetings, or pull requests.
-
-| Column | Type | Constraints |
-|---|---|---|
-| commentable_type | string | NOT NULL (polymorphic type) |
-| commentable_id | bigint | NOT NULL (polymorphic id) |
-| author_id | bigint | FK → users |
-| body | text | |
-
----
-
-### 4.19 `notifications` (polymorphic recipient)
-
-In-app notification records.
-
-| Column | Type | Notes |
-|---|---|---|
-| recipient_type | string | polymorphic |
-| recipient_id | bigint | polymorphic |
-| type | string | notification class name (Noticed) |
-| params | text | JSON serialised payload |
-| read_at | datetime | null = unread |
-
----
-
-### 4.20 `ticket_watchers`
-
-Join table — users watching tickets for change notifications.
-
-| Column | Type |
+| Section | Items |
 |---|---|
-| ticket_id | bigint |
-| user_id | bigint |
+| **Navigation** | Today, Dashboard, Meetings, Calendar, Notifications, Documents, Customers, Active Sprint |
+| **Tickets** | All Tickets (with filters), My Tickets, Late Tickets, Backlog, Current Sprint |
+| **Sprints** | Per-project sprint links |
+| **Projects** | New Project button, project list with CI status dots (green/red/amber) |
+| **Reports** | CI Summary, Deployments, Test Coverage, Sprint Velocity, Estimation Accuracy |
+| **Admin** | Users, Client Accounts (admin-only) |
+| **Team** | Team member list with avatars, quick meeting invite |
+| **User** | Avatar, name, profile edit, language toggle, sign out |
 
----
+### 4.2 Action Dropdown Menus
 
-### 4.21 Active Storage tables
+All data tables use kebab (`⋮`) dropdown menus for row actions (edit, delete, view, etc.) instead of inline buttons. This reduces visual clutter and provides a consistent interaction pattern across the application. The menus are RTL-aware and automatically adjust alignment for Hebrew layouts.
 
-Three standard Rails Active Storage tables: `active_storage_blobs`, `active_storage_attachments`, `active_storage_variant_records`. Used for file attachments on `Document`.
+### 4.3 Cross-Project Ticket Views
 
----
+Tickets can be viewed across all projects with the following cross-project views:
 
-### 4.22 Tagging tables (`taggings`, `tags`)
-
-Provided by `acts-as-taggable-on`. Used on `Ticket` (tags, labels) and `Document` (tags).
-
----
-
-## 5. Entity-Relationship Overview
-
-```
-User ──────< Ticket (assignee)
-User ──────< CiRun (triggered_by)
-User ──────< Deployment (deployed_by)
-User ──────< Document (author)
-User ──────< MeetingAttendee >──── Meeting
-User ──────< TicketWatcher >────── Ticket
-User ──────< Notification (recipient)
-User ──────< CustomerTicket (assigned_to)
-
-Project ───< Sprint
-Project ───< Milestone ──────< Ticket
-Project ───< Ticket ─────────< Branch
-                         │───< PullRequest
-                         │───< CiRun ────< TestResult
-Project ───< CiRun
-Project ───< Deployment ────< Installation
-Project ───< Document
-Project ───< Meeting
-Project ───< Branch
-Project ───< PullRequest
-Project ───< Installation
-
-Customer ──< CustomerTicket (can link → Ticket)
-Customer ──< Installation (can link → Deployment, Project)
-
-Comment (polymorphic: Ticket | Document | Meeting | PullRequest)
-Notification (polymorphic recipient: User | ...)
-```
-
----
-
-## 6. Authentication & Authorisation
-
-### Authentication — Devise
-
-- Modules in use: `database_authenticatable`, `registerable`, `recoverable`, `rememberable`, `validatable`
-- Custom `Users::SessionsController` (locale skipped on sign-in page)
-- Custom `Users::RegistrationsController`
-- Post-login redirect → `today_path` (personalised "My Day" page)
-
-### Authorisation — Pundit
-
-- `ApplicationController` includes `Pundit::Authorization`
-- `rescue_from Pundit::NotAuthorizedError` → redirects back with flash alert
-- Role hierarchy: `developer(0)` < `team_lead(1)` < `project_manager(2)` < `admin(3)` / `qa(4)`
-
----
-
-## 7. Webhooks
-
-| Endpoint | Source | Verification |
+| View | Path | Description |
 |---|---|---|
-| `POST /webhooks/gitea` | Gitea server | HMAC-SHA256 `X-Gitea-Signature` header |
-| `POST /webhooks/jenkins` | Jenkins | Secret token in header |
-
-Webhook controller skips CSRF protection. Events handled:
-
-- **Gitea push** → creates/updates `Branch` record
-- **Gitea pull_request** → creates/updates `PullRequest` record
-- **Gitea issues** → creates `Ticket` from Gitea issue
-- **Jenkins build** → creates/updates `CiRun`; triggers failure notification job
+| All Tickets | `/tickets` | All tickets with filters for status, project, assignee, and owner |
+| My Tickets | `/tickets/mine` | Tickets assigned to the current user |
+| Late Tickets | `/tickets/late` | Overdue tickets |
+| Backlog | `/tickets/backlog` | Tickets in backlog status |
+| Current Sprint | `/tickets/current_sprint` | Tickets in the active sprint |
 
 ---
 
-## 8. Background Jobs (Solid Queue)
+## 5. Models & Database
 
-| Job | Trigger | Action |
-|---|---|---|
-| `TicketMailer#assigned` | Ticket assigned | Emails new assignee |
-| `TicketMailer#status_changed` | Ticket status change | Emails assignee + watchers |
-| `TicketMailer#ci_failed` | CI run fails | Emails ticket assignee |
-| `TicketMailer#deploy_failed` | Deployment fails | Emails deployer |
-| Branch creation job | Ticket assigned | Creates branch in Gitea via API |
+The application has 22+ database tables. Key models include:
+
+| Model | Description |
+|---|---|
+| **User** | Team members with roles (developer, team_lead, project_manager, admin, qa) |
+| **Project** | Top-level container with CI status, Gitea repo link, member management |
+| **Ticket** | Work items with status, priority, assignee, sprint, milestone, CI, PR linking |
+| **Sprint** | Iteration containers (planning → active → completed/cancelled) |
+| **Milestone** | Release gates linked to projects and tickets |
+| **CiRun** | Jenkins build records with status, duration, log URL |
+| **TestResult** | Individual test case outcomes per CI run |
+| **Deployment** | Deploy events (web/installer/service/Docker) per environment |
+| **Document** | Markdown articles with templates, attachments, and tagging |
+| **Meeting** | Scheduled meetings with Jitsi, iCal export, attendance |
+| **Customer** | External customer accounts with soft-delete |
+| **CustomerTicket** | Support tickets with resolution tracking and internal linking |
+| **Installation** | Software version tracking at customer sites with auto-outdating |
+| **PullRequest** | PR records from Gitea with CI test results |
+| **Branch** | Git branch records synced from Gitea |
+| **Notification** | Polymorphic in-app notifications (STI support) |
+| **Comment** | Polymorphic comments on tickets, documents, meetings, PRs |
+| **ChatRoom / ChatMessage** | Slack-style messaging channels |
+| **ClientAccount** | CRM-style account records |
+| **CustomerUser** | Separate Devise model for customer portal authentication |
 
 ---
 
-## 9. Internationalisation
-
-- **Locales:** English (`en`) and Hebrew (`he`)
-- **RTL:** `<html dir="rtl">` and `is-rtl` body class applied when locale is `he`
-- **User preference:** `preferred_language` column on User, stored as `"en"` / `"he"`
-- **Locale detection order:** `params[:locale]` → `current_user.preferred_language` → `I18n.default_locale`
-- **Translation files:** `config/locales/en.yml`, `config/locales/he.yml`
-
----
-
-## 10. Key URL Routes
+## 6. Key URL Routes
 
 | Path | Controller#Action | Notes |
 |---|---|---|
 | `/` | `dashboard#index` | Root, requires auth |
 | `/today` | `today#index` | Developer's personalised day view |
 | `/dashboard` | `dashboard#index` | Team-wide dashboard |
+| `/calendar` | `calendar#index` | Full calendar view |
 | `/projects` | `projects#index` | Project list |
+| `/projects/new` | `projects#new` | Create new project |
+| `/projects/:id` | `projects#show` | Project detail with members, sprints, stats |
 | `/projects/:id/tickets` | `tickets#index` | Tickets per project |
-| `/tickets/:id` | `tickets#show` | Shallow-nested ticket |
 | `/projects/:id/ci_dashboard` | `projects#ci_dashboard` | CI stats page |
+| `/projects/:id/ci_runs` | `ci_runs#index` | CI runs per project |
+| `/projects/:id/deployments` | `deployments#index` | Deployments per project |
+| `/projects/:id/sprints` | `sprints#index` | Sprints per project |
+| `/projects/:id/sprints/new` | `sprints#new` | Create new sprint |
+| `/projects/:id/pull_requests` | `pull_requests#index` | PRs per project |
+| `/projects/:id/documents` | `documents#index` | Documents per project |
+| `/tickets` | `tickets#all` | All tickets with filters |
+| `/tickets/mine` | `tickets#mine` | My assigned tickets |
+| `/tickets/late` | `tickets#late` | Overdue tickets |
+| `/tickets/backlog` | `tickets#backlog_list` | Backlog tickets |
+| `/tickets/current_sprint` | `tickets#current_sprint` | Current sprint tickets |
+| `/tickets/:id` | `tickets#show` | Ticket detail |
+| `/documents` | `all_documents#index` | All documents |
+| `/documents/:id` | `documents#show` | Document with Markdown preview |
+| `/meetings` | `meetings#index` | Meeting list |
+| `/meetings/:id` | `meetings#show` | Meeting with Jitsi join |
+| `/notifications` | `notifications#index` | In-app notifications |
 | `/customers` | `customers#index` | Customer list |
+| `/customers/:id` | `customers#show` | Customer detail |
 | `/customers/:id/customer_tickets` | `customer_tickets#index` | Support tickets |
 | `/customers/:id/installations` | `installations#index` | Installations |
-| `/webhooks/gitea` | `webhooks#gitea` | Gitea webhook receiver |
-| `/webhooks/jenkins` | `webhooks#jenkins` | Jenkins webhook receiver |
-| `/reports/ci_summary` | `reports/ci_summary#index` | CI reports |
+| `/reports/*` | reports controllers | CI, deployments, test coverage, velocity, estimation |
 | `/admin/users` | `admin/users#index` | User management |
+| `/admin/client_accounts` | `admin/client_accounts#index` | Client accounts |
+| `/profile/edit` | `profile#edit` | User profile |
+| `/portal` | `customer_portal/dashboard#index` | Customer portal |
+| `/webhooks/gitea` | `webhooks#gitea` | Gitea webhook |
+| `/webhooks/jenkins` | `webhooks#jenkins` | Jenkins webhook |
+| `/api/v1/*` | API controllers | REST API for CLI & extension |
 
 ---
 
-## 11. Environment Variables
+## 7. Authentication & Authorisation
 
-| Variable | Default | Purpose |
+### Devise (Dual Model)
+
+**Team (User):** database_authenticatable, registerable, recoverable, rememberable, validatable. Post-login redirect → `today_path`.
+
+**Customers (CustomerUser):** Separate Devise under `/portal`. Isolated base controller, separate layout, scoped data access.
+
+### Pundit
+
+- Policies on all resources
+- Role hierarchy: developer < team_lead < project_manager < admin / qa
+- `NotAuthorizedError` → redirect with flash
+
+---
+
+## 8. Webhooks & Integrations
+
+| Endpoint | Source | Verification |
 |---|---|---|
-| `JENKINS_URL` | `http://localhost:8080` | Jenkins base URL for CI links |
-| `GITEA_URL` | `http://localhost:3000` | Gitea server URL |
-| `JITSI_URL` | `https://meet.jit.si` | Jitsi video call base URL |
-| `MAILER_FROM` | `devteam@yourcompany.com` | From address for transactional email |
-| `SENTRY_DSN` | — | Sentry error tracking DSN |
-| `RAILS_MASTER_KEY` | — | Encrypts credentials |
-| `SECRET_KEY_BASE` | — | Rails session signing |
+| `POST /webhooks/gitea` | Gitea server | HMAC-SHA256 |
+| `POST /webhooks/jenkins` | Jenkins | Secret token header |
+| `POST /webhooks/exception` | Exception reporting | — |
+
+Events: Gitea push → Branch, pull_request → PullRequest, issues → Ticket. Jenkins build → CiRun + notifications.
+
+---
+
+## 9. CLI & VS Code Extension
+
+REST API at `/api/v1/` powers the `devteam` / `dt` CLI and VS Code extension:
+
+- **Tickets:** list, show, create, update
+- **CI Runs:** list, show, create, with test results
+- **Deployments:** list, show, create, update
+- **Pull Requests:** list, show, create
+- **Logs:** query Loki, list services, push logs, stats
+- **Projects:** list, show
+- **Auth:** token management
+
+---
+
+## 10. AI Agent — Local LLM Integration
+
+DevTeam Hub embeds a **local Large Language Model** into the team's workflow and
+CI process. The model runs **on-premises** on a dedicated **Mac mini** via
+[Ollama](https://ollama.com); DevTeam Hub calls it over a plain HTTP REST API on
+the LAN (`Ai::OllamaClient`, built on Faraday — no extra gem). **No code, ticket
+text, or customer data ever leaves the local network.**
+
+Every run is stored as an `AiReview` record (kind, verdict `pass`/`needs_work`/`fail`,
+0–100 score, full Markdown body, model, duration) so results are auditable and
+surface in the UI.
+
+**Services exposed to the LLM machine:**
+
+| # | Service | What it does | Trigger |
+|---|---------|--------------|---------|
+| 1 | **Ticket readiness** | Verifies story-telling / Definition of Ready; **auto-reassigns poorly-written tickets back to the owner** | Ticket page · "✅ Check readiness" |
+| 2 | **Code review** | Reviews a diff for bugs, security, lint & best practice across **Go / Ruby / C# / Node** | Ticket page · "🔍 Code review" |
+| 3 | **Cucumber test review** | Reviews `.feature` files; suggests changes, optimizations and **missing scenarios** | Ticket page · "🧪 Test review" |
+| 4 | **Estimation accuracy** | Estimated vs actual delivery time; bias, per-developer patterns, coaching | Sprint page · "📊 AI Estimation" |
+| 5 | **Sprint analysis** | Live sprint-health read (on-track? risks? next step?) | Sprint page · live panel |
+| 6 | **Solution suggestion** | Reads a ticket and proposes an implementation approach | Ticket page · "💡 Suggest solution" |
+| 7 | **Fix that bug** | Diagnoses a bug ticket and proposes a concrete, minimal fix + tests | Ticket page · "🐛 Fix that bug" |
+| 8 | **Generate tasks & estimations** | Breaks a story into estimable **Tasks**, calibrating estimates on the project's history | Ticket page · "🧩 Generate tasks & estimations" |
+| 9 | **Status presentation** | Generates a slide-style project status presentation from live metrics | Project page · "🤖 Status Presentation" |
+| 10 | **Specification document** | Generates a structured spec from the project's user stories | Project page · "🤖 Generate Spec" |
+
+**Tasks:** every story owns a list of **Tasks** (estimable slices). A story
+auto-seeds one task on creation; task completion drives the story's progress bar.
+
+**UI:** the sidebar **AI Agent** section links to **AI Reports** (`/tools/ai`),
+**Recent Review Results**, and **Recent Test Reviews**. The sprint page shows the
+analysis **live** via a lazy Turbo Frame.
+
+**Config:** `OLLAMA_URL`, `OLLAMA_MODEL`, `OLLAMA_TIMEOUT` (see `.env.example`).
+
+> Full details, setup, CI usage and the roadmap of additional services are in
+> [`docs/ai_integration.md`](ai_integration.md).
+
+---
+
+## 11. On-Premises Tools
+
+| Tool | Purpose |
+|---|---|
+| **Gitea** | Git server — repos, branches, PRs, code review |
+| **Jenkins** | CI/CD — builds, tests, deployments |
+| **Jitsi** | Video conferencing — meetings, stand-ups |
+| **SonarQube** | Static code analysis — Quality Gates, OWASP SAST |
+| **Ollama** | AI code review — Qwen2.5-Coder 32B, local |
+| **Grafana Loki** | Centralised logging — JSON, correlation IDs |
+| **Grafana** | Log dashboards and alerting |
+| **Sentry** | Error tracking and monitoring |
+
+---
+
+## 12. Internationalisation
+
+- **Locales:** English (`en`) and Hebrew (`he`) with full RTL support
+- **User preference:** `preferred_language` on User model
+- **Detection order:** `params[:locale]` → `current_user.preferred_language` → default
+- **Language toggle:** available in sidebar footer
+
+---
+
+## 13. Screenshots
+
+Application screenshots are available in both languages:
+
+- **English (LTR):** `docs/screenshots/en/`
+- **Hebrew (RTL):** `docs/screenshots/he/`
+
+| # | Page | File |
+|---|---|---|
+| 01 | Today (personal dashboard) | `01_today.png` |
+| 02 | Dashboard (team overview) | `02_dashboard.png` |
+| 03 | All Tickets (with filters) | `03_all_tickets.png` |
+| 04 | My Tickets | `04_my_tickets.png` |
+| 05 | Late Tickets | `05_late_tickets.png` |
+| 06 | Backlog | `06_backlog.png` |
+| 07 | Current Sprint | `07_current_sprint.png` |
+| 08 | Ticket Detail | `08_ticket_detail.png` |
+| 09 | Projects List | `09_projects.png` |
+| 10 | Project Detail | `10_project_detail.png` |
+| 11 | Project Tickets | `11_project_tickets.png` |
+| 12 | Project CI Runs | `12_project_ci_runs.png` |
+| 13 | Project Deployments | `13_project_deployments.png` |
+| 14 | Project Sprints | `14_project_sprints.png` |
+| 15 | Project Pull Requests | `15_project_pull_requests.png` |
+| 16 | Project Documents | `16_project_documents.png` |
+| 17 | CI Dashboard | `17_ci_dashboard.png` |
+| 18 | Meetings | `18_meetings.png` |
+| 19 | Meeting Detail | `19_meeting_detail.png` |
+| 20 | Calendar | `20_calendar.png` |
+| 21 | Notifications | `21_notifications.png` |
+| 22 | Documents (all) | `22_documents.png` |
+| 23 | Document Detail | `23_document_detail.png` |
+| 24 | Customers | `24_customers.png` |
+| 25 | Customer Detail | `25_customer_detail.png` |
+| 26 | Customer Tickets | `26_customer_tickets.png` |
+| 27 | Installations | `27_installations.png` |
+| 28 | CI Run Detail | `28_ci_run_detail.png` |
+| 29 | Deployment Detail | `29_deployment_detail.png` |
+| 30 | Sprint Detail | `30_sprint_detail.png` |
+| 31 | Pull Request Detail | `31_pull_request_detail.png` |
+| 32 | Report: CI Summary | `32_report_ci_summary.png` |
+| 33 | Report: Deployments | `33_report_deployments.png` |
+| 34 | Report: Test Coverage | `34_report_test_coverage.png` |
+| 35 | Report: Sprint Velocity | `35_report_velocity.png` |
+| 36 | Report: Estimation Accuracy | `36_report_estimation.png` |
+| 37 | Admin: Users | `37_admin_users.png` |
+| 38 | Admin: Client Accounts | `38_admin_clients.png` |
+| 39 | Profile Edit | `39_profile_edit.png` |

@@ -9,6 +9,12 @@ module ApplicationHelper
     MARKDOWN_RENDERER.render(text.to_s).html_safe
   end
 
+  # Build a Jitsi meeting room URL on the configured (self-hosted or public) server.
+  def jitsi_room_url(room)
+    base = ENV.fetch("JITSI_URL", "https://meet.jit.si").chomp("/")
+    "#{base}/#{room}"
+  end
+
   # Renders a circular avatar — Active Storage image or initials fallback.
   # size: pixel diameter (default 36)
   def user_avatar(user, size: 36, bg: "#4a90d9", css_class: "")
