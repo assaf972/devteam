@@ -44,6 +44,15 @@ Rails.application.routes.draw do
   get "logs",      to: "log_viewer#index", as: :log_viewer
   get "logs/tail", to: "log_viewer#tail",  as: :log_viewer_tail
 
+  # ── Code Review (review a Gitea PR by URL) ──────────────────────────────────
+  resources :code_reviews, only: %i[index new create show update] do
+    member do
+      post :refresh
+      post :ai_review
+    end
+    resources :comments, only: %i[create destroy], controller: "code_review_comments"
+  end
+
   # ── AI Agent (local Ollama LLM on the on-prem Mac mini) ─────────────────────
   namespace :tools do
     get "ai",              to: "ai#index",        as: :ai             # AI Reports dashboard

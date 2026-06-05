@@ -152,6 +152,11 @@
     <span class="nav-icon">📜</span> <%= t('sidebar.ci.logs') %>
   <% end %>
 
+  <%= link_to code_reviews_path,
+        class: "sidebar-nav-item #{controller_name == 'code_reviews' || controller_name == 'code_review_comments' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">🔍</span> <%= t('sidebar.ci.code_review') %>
+  <% end %>
+
   <hr class="sidebar-divider">
 
   <%# ── AI Agent ─────────────────────────────────────────────────────── %>

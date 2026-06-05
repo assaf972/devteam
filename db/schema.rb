@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_05_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_05_130000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -143,6 +143,28 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_05_120000) do
     t.string "name"
     t.text "notes"
     t.datetime "updated_at", null: false
+  end
+
+  create_table "code_reviews", force: :cascade do |t|
+    t.string "author"
+    t.string "base_branch"
+    t.datetime "created_at", null: false
+    t.string "gitea_state"
+    t.string "head_branch"
+    t.integer "pr_number", null: false
+    t.string "pr_url", null: false
+    t.bigint "project_id"
+    t.string "repo_name"
+    t.string "repo_owner"
+    t.bigint "reviewer_id"
+    t.integer "status", default: 0, null: false
+    t.text "summary"
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.index ["project_id"], name: "index_code_reviews_on_project_id"
+    t.index ["repo_owner", "repo_name", "pr_number"], name: "index_code_reviews_on_repo_owner_and_repo_name_and_pr_number"
+    t.index ["reviewer_id"], name: "index_code_reviews_on_reviewer_id"
+    t.index ["status"], name: "index_code_reviews_on_status"
   end
 
   create_table "comments", force: :cascade do |t|

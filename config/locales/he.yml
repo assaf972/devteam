@@ -314,6 +314,7 @@ he:
       test_results: "תוצאות בדיקות"
       deployments: "פריסות"
       logs: "צופה לוגים"
+      code_review: "סקירת קוד"
     admin_label: "ניהול"
     team_label: "צוות"
     ai_label: "סוכן AI"
