@@ -31,7 +31,7 @@
             <td><%= ticket.project.name %></td>
             <td><%= status_tag(ticket.status) %></td>
             <td><%= priority_tag(ticket.priority) %></td>
-            <td><%= ticket.assignee&.display_name || "—" %></td>
+            <td><span class="d-inline-flex align-items-center gap-1"><%= user_avatar(ticket.assignee, size: 20) if ticket.assignee %><%= ticket.assignee&.display_name || "—" %></span></td>
             <td><%= ticket.sprint&.name || "—" %></td>
             <td><%= render "tickets/progress_cell", ticket: ticket %></td>
           </tr>

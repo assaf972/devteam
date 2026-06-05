@@ -201,11 +201,11 @@
           </tr>
           <tr>
             <th class="text-muted fw-semibold">Assignee</th>
-            <td><%= @ticket.assignee&.display_name || "—" %></td>
+            <td><span class="d-inline-flex align-items-center gap-1"><%= user_avatar(@ticket.assignee, size: 22) if @ticket.assignee %><%= @ticket.assignee&.display_name || "—" %></span></td>
           </tr>
           <tr>
             <th class="text-muted fw-semibold">Reporter / Owner</th>
-            <td><%= @ticket.owner&.display_name || "—" %></td>
+            <td><span class="d-inline-flex align-items-center gap-1"><%= user_avatar(@ticket.owner, size: 22) if @ticket.owner %><%= @ticket.owner&.display_name || "—" %></span></td>
           </tr>
           <tr>
             <th class="text-muted fw-semibold">Sprint</th>

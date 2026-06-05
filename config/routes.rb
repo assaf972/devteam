@@ -40,6 +40,9 @@ Rails.application.routes.draw do
   get "ci/security",    to: "ci_dashboard#security",     as: :ci_security
   get "ci/performance", to: "ci_dashboard#performance",  as: :ci_performance
 
+  # ── Quick contact (toolbar: message a teammate) ─────────────────────────────
+  post "quick_contact", to: "quick_contacts#create", as: :quick_contact
+
   # ── Log Viewer (reads the central Loki store) ───────────────────────────────
   get "logs",      to: "log_viewer#index", as: :log_viewer
   get "logs/tail", to: "log_viewer#tail",  as: :log_viewer_tail

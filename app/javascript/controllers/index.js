@@ -21,3 +21,6 @@ application.register("calendar", CalendarController)
 
 import LogViewerController from "./log_viewer_controller"
 application.register("log-viewer", LogViewerController)
+
+import QuickContactController from "./quick_contact_controller"
+application.register("quick-contact", QuickContactController)

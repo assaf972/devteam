@@ -20205,6 +20205,30 @@ var log_viewer_controller_default = class extends Controller {
   }
 };
 
+// app/javascript/controllers/quick_contact_controller.js
+var quick_contact_controller_default = class extends Controller {
+  static targets = ["panel", "search", "item", "recipient", "recipientLabel", "compose", "messageInput"];
+  toggle() {
+    this.panelTarget.classList.toggle("is-hidden");
+    if (!this.panelTarget.classList.contains("is-hidden")) this.searchTarget.focus();
+  }
+  close(event) {
+    if (!this.element.contains(event.target)) this.panelTarget.classList.add("is-hidden");
+  }
+  filter() {
+    const q4 = this.searchTarget.value.toLowerCase();
+    this.itemTargets.forEach((el) => {
+      el.classList.toggle("is-hidden", !el.dataset.name.includes(q4));
+    });
+  }
+  pick(event) {
+    this.recipientTarget.value = event.params.user;
+    this.recipientLabelTarget.textContent = event.params.name;
+    this.composeTarget.classList.remove("is-hidden");
+    this.messageInputTarget.focus();
+  }
+};
+
 // app/javascript/controllers/index.js
 application.register("hello", hello_controller_default);
 application.register("flash", flash_controller_default);
@@ -20212,6 +20236,7 @@ application.register("sidebar", sidebar_controller_default);
 application.register("chat", chat_controller_default);
 application.register("calendar", calendar_controller_default);
 application.register("log-viewer", log_viewer_controller_default);
+application.register("quick-contact", quick_contact_controller_default);
 
 // node_modules/@popperjs/core/lib/index.js
 var lib_exports = {};

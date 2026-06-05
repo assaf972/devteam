@@ -16,6 +16,27 @@
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+
+    <style>
+      .topbar-contact { position: relative; display: inline-block; }
+      .contact-popover {
+        position: absolute; right: 0; top: 40px; width: 320px; max-height: 60vh; overflow: auto;
+        background: #fff; color: #12252b; border: 1px solid #e2e8f0; border-radius: 12px;
+        box-shadow: 0 14px 36px rgba(0,0,0,.20); padding: 12px; z-index: 1000;
+      }
+      .contact-popover.is-hidden { display: none; }
+      .contact-list { max-height: 38vh; overflow: auto; }
+      .contact-row { display: flex; align-items: center; gap: 8px; padding: 6px 4px; border-radius: 8px; }
+      .contact-row:hover { background: #f3f4f6; }
+      .contact-row.is-hidden { display: none; }
+      .contact-name { flex: 1; font-size: .85rem; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .contact-actions { display: flex; gap: 4px; }
+      .contact-btn { background: transparent; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer;
+        padding: 2px 7px; font-size: .9rem; line-height: 1.4; text-decoration: none; }
+      .contact-btn:hover { background: #eef2ff; }
+      .contact-compose { margin-top: 8px; border-top: 1px solid #e2e8f0; padding-top: 8px; }
+      .contact-compose.is-hidden { display: none; }
+    </style>
   </head>
 
   <body class="<%= I18n.locale.to_s == 'he' ? 'is-rtl' : '' %>">
@@ -44,6 +65,42 @@
           <%# Language switcher %>
           <%= link_to "🇮🇱", url_for(locale: :he), class: "btn btn-sm btn-link text-white px-1" %>
           <%= link_to "🇺🇸", url_for(locale: :en), class: "btn btn-sm btn-link text-white px-1" %>
+
+          <%# Find & contact a teammate (call over Jitsi or send a message) %>
+          <div class="topbar-contact" data-controller="quick-contact"
+               data-action="click@window->quick-contact#close">
+            <button class="topbar-panel-toggle" data-action="quick-contact#toggle"
+                    title="Find &amp; contact a teammate">📇</button>
+            <div class="contact-popover is-hidden" data-quick-contact-target="panel">
+              <input type="search" class="form-control form-control-sm mb-2" placeholder="Find a teammate…"
+                     data-quick-contact-target="search" data-action="keyup->quick-contact#filter">
+              <div class="contact-list">
+                <% (@sidebar_team_members || []).each do |member| %>
+                  <div class="contact-row" data-quick-contact-target="item" data-name="<%= member.display_name.downcase %>">
+                    <%= user_avatar(member, size: 26) %>
+                    <span class="contact-name"><%= member.display_name %></span>
+                    <span class="contact-actions">
+                      <%= link_to "📹", new_meeting_path(invite: member.id), class: "contact-btn", title: "Video call (Jitsi)" %>
+                      <button type="button" class="contact-btn" title="Send a message"
+                              data-action="quick-contact#pick"
+                              data-quick-contact-user-param="<%= member.id %>"
+                              data-quick-contact-name-param="<%= member.display_name %>">💬</button>
+                    </span>
+                  </div>
+                <% end %>
+              </div>
+              <%= form_with url: quick_contact_path, method: :post, class: "contact-compose is-hidden",
+                    data: { quick_contact_target: "compose" } do %>
+                <input type="hidden" name="user_id" data-quick-contact-target="recipient">
+                <div class="fs-7 text-muted mb-1">To <strong data-quick-contact-target="recipientLabel"></strong></div>
+                <div class="d-flex gap-1">
+                  <input type="text" name="body" class="form-control form-control-sm" placeholder="Message…" required
+                         data-quick-contact-target="messageInput">
+                  <button class="btn btn-sm btn-primary">Send</button>
+                </div>
+              <% end %>
+            </div>
+          </div>
 
           <%# Notifications toggle %>
           <button class="topbar-panel-toggle"

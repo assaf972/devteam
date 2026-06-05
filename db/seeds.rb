@@ -12,37 +12,40 @@ require "open-uri"
 
 # Map each user to a specific pravatar image ID for consistency.
 # IDs 1-70 are available on i.pravatar.cc.
-AVATAR_IMAGE_IDS = {
-  "assaf@devteam.local"  => 11,  # male
-  "yael@devteam.local"   => 5,   # female
-  "noam@devteam.local"   => 12,  # male
-  "dana@devteam.local"   => 9,   # female
-  "oren@devteam.local"   => 14,  # male
-  "michal@devteam.local" => 25,  # female
-  "tal@devteam.local"    => 33,  # male
-  "avi@devteam.local"    => 53   # male
+# Real user avatars now come from the local docs/users-icons/ folder (no network).
+USER_ICON_DIR   = Rails.root.join("docs/users-icons")
+USER_ICON_FILES = Dir[USER_ICON_DIR.join("*.{jpg,jpeg,png}")].sort.freeze
+
+# Stable per-person assignment so a known teammate keeps the same face on reseed.
+AVATAR_FACE_BY_EMAIL = {
+  "assaf@devteam.local"  => "face11.jpg",
+  "yael@devteam.local"   => "face5.jpg",
+  "noam@devteam.local"   => "face12.jpg",
+  "dana@devteam.local"   => "face9.jpg",
+  "oren@devteam.local"   => "face14.jpg",
+  "michal@devteam.local" => "face2.jpg",
+  "tal@devteam.local"    => "face6.jpg",
+  "avi@devteam.local"    => "face7.jpg"
 }.freeze
 
-def attach_face_avatar(user, _index)
-  # Replace existing SVG avatars with real photos; keep user-uploaded non-SVG avatars
-  if user.avatar.attached?
-    return unless user.avatar.blob.content_type == "image/svg+xml"
-    user.avatar.purge
-  end
+def attach_face_avatar(user, index)
+  return if USER_ICON_FILES.empty?
 
-  img_id = AVATAR_IMAGE_IDS[user.email] || (user.id.to_i % 70) + 1
-  url    = "https://i.pravatar.cc/200?img=#{img_id}"
+  # Seed data owns the avatar — replace whatever is there with a local icon.
+  user.avatar.purge if user.avatar.attached?
 
-  begin
-    photo_data = URI.parse(url).open(read_timeout: 10).read
-    user.avatar.attach(
-      io:           StringIO.new(photo_data),
-      filename:     "#{user.display_name.parameterize}-avatar.jpg",
-      content_type: "image/jpeg"
-    )
-  rescue StandardError => e
-    puts "    ⚠ Could not download avatar for #{user.display_name}: #{e.message}"
-  end
+  mapped = AVATAR_FACE_BY_EMAIL[user.email]
+  path   = mapped && USER_ICON_DIR.join(mapped)
+  path   = nil unless path && File.exist?(path)
+  path ||= USER_ICON_FILES[index % USER_ICON_FILES.size]
+
+  user.avatar.attach(
+    io:           File.open(path),
+    filename:     "#{user.display_name.parameterize}-avatar#{File.extname(path)}",
+    content_type: "image/jpeg"
+  )
+rescue StandardError => e
+  puts "    ⚠ Could not attach local avatar for #{user.display_name}: #{e.message}"
 end
 
 # ─────────────────────────────────────────────────────────────────

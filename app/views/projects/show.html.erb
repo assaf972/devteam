@@ -47,31 +47,29 @@
   </div>
 </div>
 
-<%# ─── Project Calendar ───────────────────────────────────────────────── %>
-<div class="card p-3 mb-3">
-  <div class="level mb-3">
-    <div class="level-left"><h3 class="fw-bold fs-5 mb-0">📅 Calendar</h3></div>
-    <div class="level-right">
-      <div class="d-flex gap-2 align-items-center fs-7">
-        <span class="badge rounded-pill" style="background:#4a90d9;">● Meetings</span>
-        <span class="badge rounded-pill" style="background:#e84545;">● Milestones</span>
-        <span class="badge rounded-pill" style="background:#38c96d;">● Sprints</span>
-      </div>
-    </div>
-  </div>
-  <div data-controller="calendar"
-       data-calendar-events-url-value="<%= calendar_events_project_path(@project, format: :json) %>"
-       data-calendar-initial-view-value="dayGridMonth"
-       style="min-height: 480px;">
-  </div>
-</div>
-
 <%# ─── Tickets ─────────────────────────────────────────────────────────── %>
+<%
+  task_total    = @project.tickets.sum(:tasks_count)
+  task_done     = @project.tickets.sum(:completed_tasks_count)
+  task_percent  = task_total.zero? ? 0 : (task_done * 100.0 / task_total).round
+  task_est_hours = @project.tickets.sum(:total_tasks_estimation)
+%>
 <div class="card p-3 mb-3" id="tickets">
   <div class="level mb-3">
     <div class="level-left"><h3 class="fw-bold fs-5 mb-0">🎫 Tickets</h3></div>
     <div class="level-right">
       <%= link_to "View All →", project_tickets_path(@project), class: "fs-7 text-muted" %>
+    </div>
+  </div>
+
+  <%# Task-based progress across the whole project (completed / total tasks) %>
+  <div class="mb-3">
+    <div class="d-flex justify-content-between fs-7 mb-1">
+      <span class="fw-semibold">Task progress</span>
+      <span class="text-muted"><%= task_done %>/<%= task_total %> tasks · <%= task_est_hours %>h estimated</span>
+    </div>
+    <div class="progress" style="height:10px;">
+      <div class="progress-bar bg-info" style="width:<%= task_percent %>%"><%= task_percent %>%</div>
     </div>
   </div>
 
@@ -112,7 +110,7 @@
             <td><%= status_tag(ticket.status) %></td>
             <td><%= priority_tag(ticket.priority) %></td>
             <td><%= render "tickets/progress_cell", ticket: ticket %></td>
-            <td><%= ticket.assignee&.display_name || '—' %></td>
+            <td><span class="d-inline-flex align-items-center gap-1"><%= user_avatar(ticket.assignee, size: 20) if ticket.assignee %><%= ticket.assignee&.display_name || '—' %></span></td>
             <td><%= ticket.updated_at.strftime('%d/%m') %></td>
             <td class="text-end">
               <%= actions_dropdown do |d| %>
