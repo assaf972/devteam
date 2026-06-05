@@ -296,6 +296,19 @@ RSpec.describe "Tickets", type: :request do
     end
   end
 
+  # ── Attachments panel on the ticket page ──────────────────────────────────
+  describe "attachments panel" do
+    it "lists the ticket's attachments" do
+      ticket.attachments.attach(io: StringIO.new("a,b\n1,2"), filename: "report.csv", content_type: "text/csv")
+      ticket.attachments.attach(io: StringIO.new("img"), filename: "mockup.png", content_type: "image/png")
+      get ticket_path(ticket)
+      expect(response.body).to include('id="attachments"')
+      expect(response.body).to include("Attachments (2)")
+      expect(response.body).to include("report.csv")
+      expect(response.body).to include("mockup.png")
+    end
+  end
+
   # ── PATCH /tickets/:id/approve ─────────────────────────────────────────────
   describe "PATCH /tickets/:id/approve" do
     it "stamps approved_at" do

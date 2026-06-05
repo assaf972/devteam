@@ -37,6 +37,16 @@ class Ticket < ApplicationRecord
 
   validates :title, presence: true
   validates :project, presence: true
+  validate :acceptable_attachments
+
+  # Attachments may be images, video, any text/* (CSV, Markdown, plain), Excel
+  # (xls/xlsx), CSV or PDF. Other application/* types (e.g. executables) are rejected.
+  ALLOWED_ATTACHMENT_TYPES = %w[
+    application/csv
+    application/vnd.ms-excel
+    application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+    application/pdf
+  ].freeze
 
   after_save :auto_create_branch_and_notify,
              if: -> { saved_change_to_assignee_id? && assignee_id.present? }
@@ -133,6 +143,19 @@ class Ticket < ApplicationRecord
 
   def auto_create_branch_and_notify
     TicketBranchService.new(self).call
+  end
+
+  # Reject attachment types we don't support (e.g. executables).
+  def acceptable_attachments
+    attachments.each do |att|
+      ct = att.blob&.content_type.to_s
+      next if ct.start_with?("image/", "video/", "text/")
+      next if ALLOWED_ATTACHMENT_TYPES.include?(ct)
+
+      errors.add(:attachments,
+                 "#{att.filename} is an unsupported type (#{ct.presence || 'unknown'}). " \
+                 "Allowed: images, video, CSV, Excel, PDF.")
+    end
   end
 
   def create_initial_task
