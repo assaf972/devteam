@@ -31,6 +31,11 @@ external AI provider.** The AI agent powers these services, all stored as audita
 7. **Fix that bug** — diagnoses a bug ticket and proposes a concrete, minimal fix + tests.
 8. **Generate tasks & estimations** — breaks a story into estimable **tasks**, calibrating the
    estimates against the project's historical estimate-vs-actual data.
+9. **Status presentation** — generates a slide-style project status presentation from live metrics.
+10. **Specification document** — generates a structured spec from the project's user stories.
+
+Both document generators (9–10) live on the project page and save the result as an editable
+**Document**.
 
 Stories break down into **tasks** (small, estimable slices); a story auto-seeds one task on
 creation and task completion drives its progress bar.

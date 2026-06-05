@@ -131,7 +131,10 @@ Rails.application.routes.draw do
     resources :ci_runs, only: [ :index, :show ], shallow: true
     resources :deployments, shallow: true
     resources :documents, shallow: true do
-      collection { get :templates }
+      collection do
+        get  :templates
+        post :generate   # AI-generate a document (presentation / spec) for the project
+      end
       member do
         post :save_as_template
         get  :new_from_template

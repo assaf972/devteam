@@ -317,6 +317,8 @@ surface in the UI.
 | 6 | **Solution suggestion** | Reads a ticket and proposes an implementation approach | Ticket page · "💡 Suggest solution" |
 | 7 | **Fix that bug** | Diagnoses a bug ticket and proposes a concrete, minimal fix + tests | Ticket page · "🐛 Fix that bug" |
 | 8 | **Generate tasks & estimations** | Breaks a story into estimable **Tasks**, calibrating estimates on the project's history | Ticket page · "🧩 Generate tasks & estimations" |
+| 9 | **Status presentation** | Generates a slide-style project status presentation from live metrics | Project page · "🤖 Status Presentation" |
+| 10 | **Specification document** | Generates a structured spec from the project's user stories | Project page · "🤖 Generate Spec" |
 
 **Tasks:** every story owns a list of **Tasks** (estimable slices). A story
 auto-seeds one task on creation; task completion drives the story's progress bar.

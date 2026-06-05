@@ -247,6 +247,9 @@
       <%= link_to "View All →", project_documents_path(@project), class: "fs-7 text-muted" %>
     </div>
   </div>
+
+  <%= render "documents/ai_generate", project: @project %>
+
   <% if @recent_documents.any? %>
     <div class="row">
       <% @recent_documents.each do |doc| %>

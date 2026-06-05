@@ -206,6 +206,24 @@ parses those into the `verdict`/`score` columns.
   parseable `TASKS:` block (`- [4h] description`) which the controller turns into
   `Task` rows attached to the ticket.
 
+### 5.9 Generate status presentation
+- **Service:** `Ai::StatusPresentationService` · **kind:** `status_presentation`
+- **Endpoint:** `POST /projects/:project_id/documents/generate?kind=presentation`
+- **UI:** "🤖 Status Presentation" button in the project page Documents card (and on the project's Documents index).
+- **What it does:** Gathers the project's live metrics (tickets by status, task
+  progress & estimates, active sprint, CI pass rate, deployments, milestones) and
+  writes a slide-style Markdown **status presentation**, saved as a `presentation`
+  Document you can edit.
+
+### 5.10 Generate specification document
+- **Service:** `Ai::SpecDocumentService` · **kind:** `spec_document`
+- **Endpoint:** `POST /projects/:project_id/documents/generate?kind=spec` (optional `topic`)
+- **UI:** "🤖 Generate Spec" (with an optional focus field) in the project Documents area.
+- **What it does:** Derives a structured **specification** (overview, goals,
+  functional requirements from the project's user stories, non-functional
+  requirements, architecture notes, acceptance criteria, out-of-scope, open
+  questions), saved as a `spec` Document.
+
 ### 5a. Tasks — story breakdown & progress
 
 Independent of the AI, every **story** ticket owns a list of **Tasks**

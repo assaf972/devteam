@@ -17,7 +17,9 @@ class AiReview < ApplicationRecord
     sprint_analysis:     4,   # sprint health based on ticket progress
     solution_suggestion: 5,   # read a ticket and suggest an approach
     bug_fix:             6,   # propose a fix for a bug ticket
-    task_breakdown:      7    # break a story into estimated tasks
+    task_breakdown:      7,   # break a story into estimated tasks
+    status_presentation: 8,   # generate a project status presentation
+    spec_document:       9    # generate a specification document
   }, prefix: true
 
   enum :status, {

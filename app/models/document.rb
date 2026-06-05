@@ -11,7 +11,8 @@ class Document < ApplicationRecord
 
   enum :doc_type, {
     spec: 0, risk_management: 1, user_story: 2, timeline: 3,
-    test_coverage: 4, architecture: 5, runbook: 6, other: 7
+    test_coverage: 4, architecture: 5, runbook: 6, other: 7,
+    presentation: 8
   }, default: :other
 
   scope :templates, -> { where(is_template: true) }

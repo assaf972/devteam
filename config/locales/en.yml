@@ -137,6 +137,7 @@ en:
       architecture: "Architecture"
       runbook: "Runbook"
       other: "Other"
+      presentation: "Presentation"
   users:
     roles:
       developer: "Developer"

@@ -162,6 +162,7 @@ he:
       architecture: "ארכיטקטורה"
       runbook: "Runbook"
       other: "אחר"
+      presentation: "מצגת"
   users:
     roles:
       developer: "מפתח"
