@@ -30,6 +30,8 @@ DevTeam Hub is an internal developer-team management dashboard built with Ruby o
 - **AI Agent (local LLM)** — on-prem Ollama model for ticket readiness checks, code review (Go/Ruby/C#/Node), cucumber test review, estimation analytics, live sprint analysis, solution suggestions, **bug fixing**, and **story → task breakdown with calibrated estimates** — code never leaves the LAN (see §10)
 - **Tasks** — stories break into estimable tasks; task completion drives story progress (see §10)
 - **Log Viewer** — readable, highlighted view of the central Loki logs with service/level/search filters and a live "watch" tail (`/logs`)
+- **Server monitoring** — remote machines post OS telemetry to a heartbeat API; the **Servers** page shows live CPU/memory/disk health and historical charts per machine (`/servers`)
+- **Chat with AI** — project-scoped assistant that answers natural-language questions about delivery, estimates and sprint status (see §10)
 
 The application targets small-to-medium software teams (5–30 developers) who want an on-premise, self-hosted alternative to Jira + Confluence + Freshdesk combined.
 
@@ -319,6 +321,7 @@ surface in the UI.
 | 8 | **Generate tasks & estimations** | Breaks a story into estimable **Tasks**, calibrating estimates on the project's history | Ticket page · "🧩 Generate tasks & estimations" |
 | 9 | **Status presentation** | Generates a slide-style project status presentation from live metrics | Project page · "🤖 Status Presentation" |
 | 10 | **Specification document** | Generates a structured spec from the project's user stories | Project page · "🤖 Generate Spec" |
+| 11 | **Chat with AI** | Project-scoped, context-aware assistant (repo + tickets + sprint + team performance). Answers "who delivers fastest / estimates best / sprint status?" and drafts docs | Project page · "💬 Chat with AI" |
 
 **Tasks:** every story owns a list of **Tasks** (estimable slices). A story
 auto-seeds one task on creation; task completion drives the story's progress bar.

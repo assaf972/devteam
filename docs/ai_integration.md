@@ -224,6 +224,22 @@ parses those into the `verdict`/`score` columns.
   requirements, architecture notes, acceptance criteria, out-of-scope, open
   questions), saved as a `spec` Document.
 
+### 5.11 Chat with AI (project-scoped assistant)
+- **Controller:** `AiChatsController` · **models:** `AiChatSession` / `AiChatMessage`
+- **Endpoint:** `/projects/:project_id/ai_chats` (opened from the project page)
+- **Context:** `Ai::ChatContextService` builds the system prompt from the project's
+  **git repository (repo URL + branch), tickets, active sprint, recent team chat
+  messages, documents, recent code (PR diffs)** and a **per-developer performance
+  summary** (delivery speed + estimation accuracy).
+- **What it does:** an OpenAI-style chat (sessions on the left, wide input bar).
+  Because the context includes the team-performance summary and sprint metrics, it
+  can answer natural-language questions such as:
+  - *"Who is the fastest delivering developer?"* (lowest avg hours per delivered ticket)
+  - *"Who has the best estimations?"* (highest estimate-vs-actual accuracy)
+  - *"What's the current sprint status?"* (progress, risks, next step)
+  It also drafts specs, risk-management docs and test plans on request. Multi-turn
+  via `Ai::OllamaClient#converse`. Degrades gracefully when the LLM is offline.
+
 ### 5a. Tasks — story breakdown & progress
 
 Independent of the AI, every **story** ticket owns a list of **Tasks**

@@ -62,6 +62,16 @@ RSpec.describe "AiChats", type: :request do
       expect(ctx).to include("http://gitea.local/devteam/print-server")
       expect(ctx).to include(project.name)
     end
+
+    it "includes per-developer delivery speed + estimation accuracy" do
+      dev = create(:user, name: "Fast Dev")
+      create(:ticket, project: project, assignee: dev, status: :done,
+             dev_estimate_hours: 8, actual_hours: "8h")
+      ctx = Ai::ChatContextService.new(project: project).context_body
+      expect(ctx).to include("Team performance")
+      expect(ctx).to include("Fast Dev")
+      expect(ctx).to include("estimation accuracy")
+    end
   end
 
   describe "project page links to its chat" do
