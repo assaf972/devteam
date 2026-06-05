@@ -21,6 +21,11 @@
     <span class="nav-icon">📊</span> <%= t('nav.dashboard') %>
   <% end %>
 
+  <%= link_to all_tickets_path,
+        class: "sidebar-nav-item #{controller_name == 'tickets' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">🎫</span> <%= t('nav.tickets') %>
+  <% end %>
+
   <%= link_to meetings_path,
         class: "sidebar-nav-item #{controller_name == 'meetings' ? 'is-active' : ''}" do %>
     <span class="nav-icon">📅</span> <%= t('nav.meetings') %>
@@ -56,36 +61,6 @@
       <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><%= t('sidebar.active_sprint_prefix') %> <%= @sidebar_current_sprint.name.truncate(18) %></span>
       <span class="badge bg-success ms-1" style="font-size:0.62rem;flex-shrink:0;"><%= t('sidebar.active_badge') %></span>
     <% end %>
-  <% end %>
-
-  <hr class="sidebar-divider">
-
-  <%# ── Tickets ─────────────────────────────────────────────────────────── %>
-  <div class="sidebar-section-label"><%= t('sidebar.tickets_label') %></div>
-
-  <%= link_to all_tickets_path,
-        class: "sidebar-nav-item #{controller_name == 'tickets' && action_name == 'all' ? 'is-active' : ''}" do %>
-    <span class="nav-icon">🎫</span> <%= t('sidebar.tickets.all_tickets') %>
-  <% end %>
-
-  <%= link_to my_tickets_path,
-        class: "sidebar-nav-item #{controller_name == 'tickets' && action_name == 'mine' ? 'is-active' : ''}" do %>
-    <span class="nav-icon">🎫</span> <%= t('sidebar.tickets.my_tickets') %>
-  <% end %>
-
-  <%= link_to late_tickets_path,
-        class: "sidebar-nav-item #{controller_name == 'tickets' && action_name == 'late' ? 'is-active' : ''}" do %>
-    <span class="nav-icon">⏰</span> <%= t('sidebar.tickets.late') %>
-  <% end %>
-
-  <%= link_to backlog_tickets_path,
-        class: "sidebar-nav-item #{controller_name == 'tickets' && action_name == 'backlog_list' ? 'is-active' : ''}" do %>
-    <span class="nav-icon">📥</span> <%= t('sidebar.tickets.backlog') %>
-  <% end %>
-
-  <%= link_to current_sprint_tickets_path,
-        class: "sidebar-nav-item #{controller_name == 'tickets' && action_name == 'current_sprint' ? 'is-active' : ''}" do %>
-    <span class="nav-icon">🏃</span> <%= t('sidebar.tickets.current_sprint') %>
   <% end %>
 
   <hr class="sidebar-divider">
