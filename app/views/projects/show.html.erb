@@ -131,68 +131,28 @@
   <% end %>
 </div>
 
-<%# ─── Tickets ─────────────────────────────────────────────────────────── %>
-<div class="card p-3 mb-3" id="tickets">
+<%# ─── Channels (project chat) ──────────────────────────────────────────── %>
+<div class="card p-3 mb-3" id="channels">
   <div class="level mb-3">
-    <div class="level-left"><h3 class="fw-bold fs-5 mb-0">🎫 Tickets</h3></div>
+    <div class="level-left"><h3 class="fw-bold fs-5 mb-0">💬 Channels</h3></div>
     <div class="level-right">
-      <%= link_to "View All →", project_tickets_path(@project), class: "fs-7 text-muted" %>
+      <%= link_to "➕ New channel", new_chat_room_path(project_id: @project.id), class: "btn btn-sm btn-outline-primary" %>
     </div>
   </div>
-
-  <%# Filter tabs: open / completed / awaiting estimation %>
-  <div class="btn-group btn-group-sm mb-3" role="group" aria-label="Ticket filters">
-    <% [
-         [ "open",             "Open" ],
-         [ "completed",        "Completed" ],
-         [ "needs_estimation", "Needs Estimation" ]
-       ].each do |key, label| %>
-      <%= link_to project_path(@project, ticket_filter: key, anchor: "tickets"),
-            class: "btn #{@ticket_filter == key ? 'btn-primary' : 'btn-outline-secondary'}" do %>
-        <%= label %>
-        <span class="badge bg-light text-dark ms-1"><%= @ticket_counts[key.to_sym] %></span>
-      <% end %>
-    <% end %>
-  </div>
-
-  <% if @panel_tickets.any? %>
-    <table class="table table-hover w-100 fs-7 mb-0">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Title</th>
-          <th>Status</th>
-          <th>Priority</th>
-          <th>Assignee</th>
-          <th>Updated</th>
-          <th class="text-end"></th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @panel_tickets.each do |ticket| %>
-          <tr>
-            <td><%= link_to "T-#{ticket.id}", ticket_path(ticket), class: "fw-bold text-primary" %></td>
-            <td><%= link_to ticket.title.truncate(60), ticket_path(ticket) %></td>
-            <td><%= status_tag(ticket.status) %></td>
-            <td><%= priority_tag(ticket.priority) %></td>
-            <td><%= ticket.assignee&.display_name || '—' %></td>
-            <td><%= ticket.updated_at.strftime('%d/%m') %></td>
-            <td class="text-end">
-              <%= actions_dropdown do |d| %>
-                <% Ticket.statuses.keys.each do |st| %>
-                  <% next if st == ticket.status || st == "backlog" %>
-                  <% d.button_action "Mark #{t("tickets.statuses.#{st}")}", update_status_ticket_path(ticket, status: st), icon: "→" %>
-                <% end %>
-                <% d.divider %>
-                <% d.button_action "Move to backlog", move_to_sprint_ticket_path(ticket, target: "backlog"), icon: "📥" %>
-              <% end %>
-            </td>
-          </tr>
+  <% project_rooms = @project.chat_rooms.active.order(:name) %>
+  <% if project_rooms.any? %>
+    <div class="d-flex flex-wrap gap-2">
+      <% project_rooms.each do |room| %>
+        <%= link_to chat_room_path(room), class: "btn btn-sm btn-light border" do %>
+          # <%= room.name %>
+          <% if room.last_message %>
+            <span class="text-muted fs-7 ms-1">· <%= time_ago_in_words(room.last_message.created_at) %> ago</span>
+          <% end %>
         <% end %>
-      </tbody>
-    </table>
+      <% end %>
+    </div>
   <% else %>
-    <p class="text-muted fs-7 mb-0">No tickets in this view.</p>
+    <p class="text-muted fs-7 mb-0">No channels yet — create one to start chatting about this project.</p>
   <% end %>
 </div>
 

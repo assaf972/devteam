@@ -26,9 +26,9 @@ RSpec.describe "Projects", type: :request do
     end
 
     describe "tickets panel filter" do
-      let!(:open_ticket)      { create(:ticket, project: project, status: :in_progress, dev_estimate_hours: 5) }
-      let!(:done_ticket)      { create(:ticket, project: project, status: :done) }
-      let!(:unestimated)      { create(:ticket, project: project, status: :open, dev_estimate_hours: nil) }
+      let!(:open_ticket) { create(:ticket, project: project, status: :in_progress, dev_estimate_hours: 5) }
+      let!(:done_ticket) { create(:ticket, project: project, status: :done) }
+      let!(:unestimated) { create(:ticket, project: project, status: :open, dev_estimate_hours: nil) }
 
       it "defaults to open tickets (excludes completed)" do
         get project_path(project)
@@ -55,6 +55,7 @@ RSpec.describe "Projects", type: :request do
         expect(response.body).to include(move_to_sprint_ticket_path(open_ticket, target: "backlog"))
       end
     end
+  end
 
   describe "POST /projects" do
     it "creates a project and redirects" do
@@ -76,6 +77,7 @@ RSpec.describe "Projects", type: :request do
       expect(response).to redirect_to(project_path(project))
       expect(project.reload.name).to eq("Renamed")
     end
+  end
 
   # ── Channels now live inside a project ────────────────────────────────────
   describe "project channels" do
@@ -90,7 +92,6 @@ RSpec.describe "Projects", type: :request do
     it "pre-links a new channel to the project when launched from it" do
       get new_chat_room_path(project_id: project.id)
       expect(response).to have_http_status(:success)
-      # the project's option is pre-selected in the linked-project dropdown
       expect(response.body).to match(/<option selected="selected" value="#{project.id}"/)
     end
   end
