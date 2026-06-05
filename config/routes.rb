@@ -43,6 +43,10 @@ Rails.application.routes.draw do
   # ── Quick contact (toolbar: message a teammate) ─────────────────────────────
   post "quick_contact", to: "quick_contacts#create", as: :quick_contact
 
+  # ── Team ceremonies ─────────────────────────────────────────────────────────
+  get "daily_meeting", to: "daily_meetings#show", as: :daily_meeting
+  get "retro_meeting", to: "retro_meetings#show", as: :retro_meeting
+
   # ── Log Viewer (reads the central Loki store) ───────────────────────────────
   get "logs",      to: "log_viewer#index", as: :log_viewer
   get "logs/tail", to: "log_viewer#tail",  as: :log_viewer_tail

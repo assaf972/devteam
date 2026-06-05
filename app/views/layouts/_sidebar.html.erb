@@ -26,6 +26,16 @@
     <span class="nav-icon">📅</span> <%= t('nav.meetings') %>
   <% end %>
 
+  <%= link_to daily_meeting_path,
+        class: "sidebar-nav-item #{controller_name == 'daily_meetings' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">🗣️</span> Daily Meeting
+  <% end %>
+
+  <%= link_to retro_meeting_path,
+        class: "sidebar-nav-item #{controller_name == 'retro_meetings' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">🔁</span> Retro
+  <% end %>
+
   <%= link_to calendar_path,
         class: "sidebar-nav-item #{controller_name == 'calendar' ? 'is-active' : ''}" do %>
     <span class="nav-icon">🗓️</span> <%= t('nav.calendar') %>
