@@ -1435,6 +1435,20 @@ docs_to_seed = [
     doc_type:        :other,
     summary:         "Brochure for the 2026 release: project-scoped AI chat (ask who delivers fastest / estimates best / sprint status), server monitoring, staged tickets, sprints, and ceremonies.",
     version_number:  "1.0"
+  },
+  {
+    file:            "docs/product_overview_en.html",
+    title:           "Product Overview (English)",
+    doc_type:        :other,
+    summary:         "Product document: the need for agile, ticket management & automatic testing; spec→production lifecycle on a local AI engine; iterations, automated ceremonies and Jitsi for remote teams.",
+    version_number:  "1.0"
+  },
+  {
+    file:            "docs/product_overview_he.html",
+    title:           "סקירת מוצר (עברית)",
+    doc_type:        :other,
+    summary:         "מסמך מוצר: הצורך באג'ייל, ניהול כרטיסים ובדיקות אוטומטיות; מחזור החיים ממפרט לייצור על מנוע AI מקומי; איטרציות, פגישות אוטומטיות ו-Jitsi לצוותים מרוחקים.",
+    version_number:  "1.0"
   }
 ]
 
