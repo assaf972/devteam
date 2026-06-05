@@ -20229,6 +20229,21 @@ var quick_contact_controller_default = class extends Controller {
   }
 };
 
+// app/javascript/controllers/ai_chat_controller.js
+var ai_chat_controller_default = class extends Controller {
+  static targets = ["scroll", "input"];
+  connect() {
+    if (this.hasScrollTarget) this.scrollTarget.scrollTop = this.scrollTarget.scrollHeight;
+    if (this.hasInputTarget) this.inputTarget.focus();
+  }
+  submitOnEnter(event) {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      this.inputTarget.form.requestSubmit();
+    }
+  }
+};
+
 // app/javascript/controllers/index.js
 application.register("hello", hello_controller_default);
 application.register("flash", flash_controller_default);
@@ -20237,6 +20252,7 @@ application.register("chat", chat_controller_default);
 application.register("calendar", calendar_controller_default);
 application.register("log-viewer", log_viewer_controller_default);
 application.register("quick-contact", quick_contact_controller_default);
+application.register("ai-chat", ai_chat_controller_default);
 
 // node_modules/@popperjs/core/lib/index.js
 var lib_exports = {};

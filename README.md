@@ -37,8 +37,18 @@ external AI provider.** The AI agent powers these services, all stored as audita
 Both document generators (9–10) live on the project page and save the result as an editable
 **Document**.
 
+11. **💬 Chat with AI** — a project-scoped, OpenAI-style assistant (opened from the project page).
+    It loads the project's **git repo, tickets, sprint, team messages, recent code and a
+    per-developer performance summary** as context, so you can just ask:
+    *"Who is the fastest delivering developer?"*, *"Who has the best estimations?"*,
+    *"What's the current sprint status?"* — and have it draft specs, risk docs and test plans on the spot.
+
 Stories break down into **tasks** (small, estimable slices); a story auto-seeds one task on
 creation and task completion drives its progress bar.
+
+> **New in 2026:** server/heartbeat monitoring, richer deployments, staged ticket approval,
+> per-project sprint lists with estimated/actual hours, and dedicated ceremony pages
+> (standup, planning, refinement, review, retro). See **[`docs/whats_new_2026.html`](docs/whats_new_2026.html)**.
 
 ## 📜 Log viewer
 

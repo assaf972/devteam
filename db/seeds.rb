@@ -1427,6 +1427,13 @@ docs_to_seed = [
     doc_type:        :architecture,
     summary:         "Free local-LLM scan + Mac mini M5 hardware recommendation for on-prem dev AI (code review, fixes, docs, presentations).",
     version_number:  "1.0"
+  },
+  {
+    file:            "docs/whats_new_2026.html",
+    title:           "What's New (2026) — Feature Brochure",
+    doc_type:        :other,
+    summary:         "Brochure for the 2026 release: project-scoped AI chat (ask who delivers fastest / estimates best / sprint status), server monitoring, staged tickets, sprints, and ceremonies.",
+    version_number:  "1.0"
   }
 ]
 

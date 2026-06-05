@@ -26,6 +26,7 @@ class User < ApplicationRecord
   has_many :member_projects, through: :project_memberships, source: :project
   has_many :activities,        foreign_key: :user_id,         dependent: :destroy
   has_many :subject_activities, class_name: "Activity", foreign_key: :subject_user_id, dependent: :nullify
+  has_many :ai_chat_sessions, dependent: :destroy
 
   validates :name, presence: true
   validates :email, presence: true, uniqueness: true

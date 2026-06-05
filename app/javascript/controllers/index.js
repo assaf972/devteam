@@ -24,3 +24,6 @@ application.register("log-viewer", LogViewerController)
 
 import QuickContactController from "./quick_contact_controller"
 application.register("quick-contact", QuickContactController)
+
+import AiChatController from "./ai_chat_controller"
+application.register("ai-chat", AiChatController)
