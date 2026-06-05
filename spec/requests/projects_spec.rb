@@ -79,6 +79,24 @@ RSpec.describe "Projects", type: :request do
     end
   end
 
+  # ── Channels now live inside a project ────────────────────────────────────
+  describe "project channels" do
+    it "lists the project's channels with a project-scoped new-channel link" do
+      room = ChatRoom.create!(name: "proj-#{project.id}-general", project: project, room_type: :project_room)
+      get project_path(project)
+      expect(response.body).to include("Channels")
+      expect(response.body).to include(chat_room_path(room))
+      expect(response.body).to include(new_chat_room_path(project_id: project.id))
+    end
+
+    it "pre-links a new channel to the project when launched from it" do
+      get new_chat_room_path(project_id: project.id)
+      expect(response).to have_http_status(:success)
+      # the project's option is pre-selected in the linked-project dropdown
+      expect(response.body).to match(/<option selected="selected" value="#{project.id}"/)
+    end
+  end
+
   # ── GET /projects/:id/dashboard ───────────────────────────────────────────
   describe "GET /projects/:id/dashboard" do
     before do

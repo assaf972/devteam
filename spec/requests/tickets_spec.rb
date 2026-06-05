@@ -59,6 +59,9 @@ RSpec.describe "Tickets", type: :request do
       expect(response.body).not_to match(%r{sidebar-section-label">#{I18n.t('sidebar.tickets_label')}<})
       # Dashboard was removed from the main nav (now lives under projects/sprints)
       expect(response.body).not_to include(%(nav-icon">📊</span> #{I18n.t('nav.dashboard')}))
+      # Channels were removed from the main nav (now live inside a project)
+      expect(response.body).not_to include(%(sidebar-section-label">\n    #{I18n.t('sidebar.channels_label')}))
+      expect(response.body).not_to match(%r{sidebar-section-label">\s*#{I18n.t('sidebar.channels_label')}})
     end
   end
 
