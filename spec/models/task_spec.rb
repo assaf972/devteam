@@ -48,6 +48,43 @@ RSpec.describe Task, type: :model do
     end
   end
 
+  describe "Task.parse_hours" do
+    it "parses hours, days and combinations (1d = 8h)" do
+      expect(Task.parse_hours("4h")).to eq(4.0)
+      expect(Task.parse_hours("1d")).to eq(8.0)
+      expect(Task.parse_hours("2d 4h")).to eq(20.0)
+      expect(Task.parse_hours("3")).to eq(3.0)
+      expect(Task.parse_hours(nil)).to be_nil
+    end
+  end
+
+  describe "cached ticket rollups kept in sync" do
+    let(:bug) { create(:ticket, project: project, kind: :bug_fix) }
+
+    it "updates total_tasks_estimation and progress as tasks change" do
+      create(:task, ticket: bug, estimation: "4h")
+      create(:task, ticket: bug, estimation: "1d") # 8h
+      bug.reload
+      expect(bug.tasks_count).to eq(2)
+      expect(bug.total_tasks_estimation).to eq(12.0)
+      expect(bug.tasks_progress_in_percents).to eq(0)
+
+      bug.tasks.first.complete!
+      bug.reload
+      expect(bug.completed_tasks_count).to eq(1)
+      expect(bug.tasks_progress_in_percents).to eq(50)
+    end
+
+    it "recalculates when a task is deleted" do
+      t1 = create(:task, ticket: bug, estimation: "4h")
+      create(:task, ticket: bug, estimation: "2h")
+      t1.destroy
+      bug.reload
+      expect(bug.tasks_count).to eq(1)
+      expect(bug.total_tasks_estimation).to eq(2.0)
+    end
+  end
+
   describe "auto-creating the first task for a story" do
     it "creates one task named after the story on create" do
       story = create(:ticket, project: project, kind: :story, title: "As a user I want X")

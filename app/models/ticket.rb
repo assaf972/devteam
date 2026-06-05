@@ -45,13 +45,28 @@ class Ticket < ApplicationRecord
   # team can immediately break it down and track progress via task completion.
   after_create_commit :create_initial_task, if: :story?
 
-  # Progress of the story derived from its tasks: how many are completed.
+  # Progress of the story derived from its tasks, read from the cached columns
+  # (kept fresh by Task#refresh_ticket_stats → #recalculate_task_stats!).
   def task_progress
-    total = tasks.count
-    return { total: 0, completed: 0, percent: 0 } if total.zero?
+    { total: tasks_count, completed: completed_tasks_count, percent: tasks_progress_in_percents }
+  end
 
-    done = tasks.completed.count
-    { total: total, completed: done, percent: (done * 100.0 / total).round }
+  # Recompute and persist the cached task rollups. Uses update_columns so it does
+  # not re-trigger callbacks (avoids recursion with the Task after_commit hook).
+  def recalculate_task_stats!
+    # Query fresh (not the possibly-cached association) so callers that mutated
+    # tasks through other instances still get correct counts.
+    all_tasks = Task.where(ticket_id: id).to_a
+    total     = all_tasks.size
+    done      = all_tasks.count(&:completed?)
+    estimate  = all_tasks.sum { |t| t.estimation_in_hours || 0 }
+
+    update_columns(
+      tasks_count:                total,
+      completed_tasks_count:      done,
+      tasks_progress_in_percents: total.zero? ? 0 : (done * 100.0 / total).round,
+      total_tasks_estimation:     estimate.round(2)
+    )
   end
 
   def latest_ci_run

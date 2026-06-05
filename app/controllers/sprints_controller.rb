@@ -36,6 +36,12 @@ class SprintsController < ApplicationController
     @points_total   = tickets.sum(:story_points)
     @points_done    = tickets.where(status: [ :done, :closed ]).sum(:story_points)
 
+    # Task-based progress & estimation (from the cached ticket rollups).
+    @task_estimation_total = tickets.sum(:total_tasks_estimation)
+    @tasks_total           = tickets.sum(:tasks_count)
+    @tasks_done            = tickets.sum(:completed_tasks_count)
+    @task_progress_percent = @tasks_total.zero? ? 0 : (@tasks_done * 100.0 / @tasks_total).round
+
     @workload = tickets.where.not(status: [ :done, :closed ])
                        .where.not(assignee_id: nil)
                        .joins(:assignee).group("users.name").count
@@ -82,6 +88,9 @@ class SprintsController < ApplicationController
   def build_sprint_insights
     insights = []
     insights << { level: "info", text: "#{@progress_percent}% done with #{@sprint.days_remaining} day(s) remaining." }
+    if @tasks_total.positive?
+      insights << { level: "info", text: "Task progress: #{@task_progress_percent}% (#{@tasks_done}/#{@tasks_total} tasks) · #{@task_estimation_total}h estimated." }
+    end
     insights << { level: "danger",  text: "#{@blocked} ticket(s) are blocked." } if @blocked.positive?
 
     if @sprint.active? && @total_tickets.positive?

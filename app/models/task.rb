@@ -7,6 +7,9 @@ class Task < ApplicationRecord
 
   validates :description, presence: true
 
+  # Keep the ticket's cached task rollups (progress / estimation) in sync.
+  after_commit :refresh_ticket_stats
+
   scope :completed,   -> { where.not(completed_at: nil) }
   scope :in_progress, -> { where.not(started_at: nil).where(completed_at: nil) }
   scope :not_started, -> { where(started_at: nil, completed_at: nil) }
@@ -43,5 +46,35 @@ class Task < ApplicationRecord
 
   def status_badge_class
     STATUS_BADGES.fetch(status, "bg-secondary")
+  end
+
+  # Parse a free-form duration like "4h", "1d", "2d 4h" into hours (1 day = 8h).
+  def self.parse_hours(value)
+    return nil if value.blank?
+
+    s = value.to_s.downcase.strip
+    total = 0.0
+    matched = false
+    s.scan(/(\d+(?:\.\d+)?)\s*d/)  { |v| total += v.first.to_f * 8.0; matched = true }
+    s.scan(/(\d+(?:\.\d+)?)\s*h/)  { |v| total += v.first.to_f;       matched = true }
+    return total.round(2) if matched
+
+    Float(s)
+  rescue ArgumentError, TypeError
+    nil
+  end
+
+  def estimation_in_hours
+    self.class.parse_hours(estimation)
+  end
+
+  def actual_in_hours
+    self.class.parse_hours(actual)
+  end
+
+  private
+
+  def refresh_ticket_stats
+    Ticket.find_by(id: ticket_id)&.recalculate_task_stats!
   end
 end

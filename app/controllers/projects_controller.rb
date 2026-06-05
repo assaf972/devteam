@@ -84,6 +84,12 @@ class ProjectsController < ApplicationController
     @ci_passed = ci_window.passed.count
     @ci_pass_rate = @ci_total.zero? ? nil : (@ci_passed * 100.0 / @ci_total).round
 
+    # Task-based progress & estimation (from the cached ticket rollups).
+    @task_estimation_total = tickets.sum(:total_tasks_estimation)
+    @tasks_total           = tickets.sum(:tasks_count)
+    @tasks_done            = tickets.sum(:completed_tasks_count)
+    @task_progress_percent = @tasks_total.zero? ? 0 : (@tasks_done * 100.0 / @tasks_total).round
+
     # Open-work distribution across the team.
     @workload = not_closed.where.not(assignee_id: nil)
                           .joins(:assignee).group("users.name").count
@@ -192,6 +198,9 @@ class ProjectsController < ApplicationController
   def build_project_insights
     insights = []
     insights << { level: "success", text: "Project is #{@progress_percent}% complete (#{@done_tickets}/#{@total_tickets} tickets done)." }
+    if @tasks_total.positive?
+      insights << { level: "info", text: "Task progress: #{@task_progress_percent}% (#{@tasks_done}/#{@tasks_total} tasks) · #{@task_estimation_total}h estimated across all tasks." }
+    end
     insights << { level: "danger",  text: "#{@blocked} ticket(s) are blocked and need attention." } if @blocked.positive?
     insights << { level: "warning", text: "#{@needs_estimation} open ticket(s) have no dev estimate." } if @needs_estimation.positive?
     insights << { level: "info",    text: "No active sprint — schedule one to keep work moving." } if @active_sprint.nil?

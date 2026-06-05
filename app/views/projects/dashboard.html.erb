@@ -48,6 +48,16 @@
   <div class="col-6 col-md-3">
     <div class="card p-3 text-center"><div class="fw-bold fs-4 <%= 'text-warning' if @needs_estimation.positive? %>"><%= @needs_estimation %></div><div class="text-muted fs-7">Need estimate</div></div>
   </div>
+  <div class="col-6 col-md-3">
+    <div class="card p-3 text-center">
+      <div class="fw-bold fs-4"><%= @task_progress_percent %>%</div>
+      <div class="text-muted fs-7">Task progress</div>
+      <div class="progress mt-1" style="height:4px;"><div class="progress-bar bg-info" style="width:<%= @task_progress_percent %>%"></div></div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card p-3 text-center"><div class="fw-bold fs-4"><%= @task_estimation_total %>h</div><div class="text-muted fs-7">Task estimation</div></div>
+  </div>
 </div>
 
 <%= render "shared/insights", insights: @insights %>

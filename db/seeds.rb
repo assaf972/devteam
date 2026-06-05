@@ -1373,4 +1373,82 @@ end
 
 puts "  ✓ #{doc_count} documents seeded from docs/ folder"
 
+# ──────────────────────────────────────────────────────────────────────────────
+# Assign tickets to sprints so sprint dashboards have data
+#   done/closed → a completed sprint · active work → the active sprint · backlog → none
+# ──────────────────────────────────────────────────────────────────────────────
+assigned = 0
+Ticket.includes(project: :sprints).find_each do |ticket|
+  next if ticket.sprint_id.present? || ticket.status == "backlog"
+
+  sprints = ticket.project.sprints
+  target =
+    if %w[done closed].include?(ticket.status)
+      sprints.where(status: :completed).order(:start_date).last
+    else
+      sprints.find_by(status: :active)
+    end
+  next unless target
+
+  ticket.update_column(:sprint_id, target.id) # skip callbacks
+  assigned += 1
+end
+puts "  ✓ #{assigned} tickets assigned to sprints"
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Tasks  (break every ticket into estimable tasks; some done, some not)
+# ──────────────────────────────────────────────────────────────────────────────
+TASK_TEMPLATES = [
+  "Design the data model", "Write the service object", "Add controller actions",
+  "Build the UI", "Wire up the Stimulus controller", "Add request specs",
+  "Add cucumber scenarios", "Update the documentation", "Handle edge cases",
+  "Add i18n strings", "Refactor for clarity", "Add input validations",
+  "Add background job", "Add the webhook handler", "Performance pass"
+].freeze
+TASK_ESTIMATES = %w[1h 2h 3h 4h 6h 1d].freeze
+
+# Completion fraction is driven by the ticket's status so the data looks real.
+def completion_fraction(status)
+  case status
+  when "done", "closed"       then 1.0
+  when "in_review", "testing" then 0.8
+  when "in_progress"          then 0.5
+  when "open"                 then 0.25
+  else                             0.0 # backlog / blocked
+  end
+end
+
+task_count = 0
+Ticket.includes(:tasks, :project).find_each do |ticket|
+  next if ticket.tasks.count >= 3 # already seeded — keep idempotent
+
+  member = ticket.assignee || ticket.owner || ticket.project.members.to_a.sample
+  target = 3 + (ticket.id % 4) # 3–6 tasks per ticket
+
+  while ticket.tasks.count < target
+    idx = ticket.id + ticket.tasks.count
+    ticket.tasks.create!(
+      description: TASK_TEMPLATES[idx % TASK_TEMPLATES.size],
+      estimation:  TASK_ESTIMATES[idx % TASK_ESTIMATES.size],
+      user:        member
+    )
+    task_count += 1
+  end
+
+  # Mark a status-driven fraction complete; the next one is "in progress".
+  all_tasks = ticket.tasks.order(:created_at).to_a
+  done_n    = (all_tasks.size * completion_fraction(ticket.status)).round
+  all_tasks.each_with_index do |task, i|
+    if i < done_n
+      task.update!(started_at: 4.days.ago, completed_at: (3 - (i % 3)).days.ago)
+    elsif i == done_n && done_n < all_tasks.size && completion_fraction(ticket.status).positive?
+      task.update!(started_at: 1.day.ago) # one in-progress task
+    end
+  end
+
+  ticket.recalculate_task_stats!
+end
+puts "  ✓ #{task_count} tasks seeded across #{Ticket.count} tickets " \
+     "(#{Task.completed.count} completed)"
+
 puts "✅ Seed complete!"

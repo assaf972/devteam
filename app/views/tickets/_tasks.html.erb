@@ -5,6 +5,9 @@
     <h3 class="subfw-bold mb-0">🧩 Tasks
       <span class="text-muted fs-7">(<%= progress[:completed] %>/<%= progress[:total] %> done)</span>
     </h3>
+    <% if ticket.total_tasks_estimation.to_f.positive? %>
+      <span class="badge bg-light text-dark ms-2" title="Total tasks estimation">⏱ <%= ticket.total_tasks_estimation %>h</span>
+    <% end %>
     <span class="badge bg-success ms-auto"><%= progress[:percent] %>%</span>
   </div>
 
