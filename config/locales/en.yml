@@ -291,6 +291,7 @@ en:
       deployments: "Deployments"
       logs: "Log Viewer"
       code_review: "Code Review"
+      servers: "Servers"
     admin_label: "Admin"
     team_label: "Team"
     ai_label: "AI Agent"

@@ -89,4 +89,21 @@ RSpec.describe Sprint, type: :model do
       expect(sprint.duration_days).to eq(14)
     end
   end
+
+  describe "estimated / actual hour totals" do
+    let(:project) { create(:project) }
+    let(:sprint)  { create(:sprint, project: project) }
+
+    it "sums dev + QA estimates and actual hours across tickets" do
+      create(:ticket, project: project, sprint: sprint, dev_estimate_hours: 8, tester_estimate_hours: 2, actual_hours: "1d 2h") # 10h
+      create(:ticket, project: project, sprint: sprint, dev_estimate_hours: 4, actual_hours: "3h")
+      expect(sprint.total_estimated_hours).to eq(14.0)
+      expect(sprint.total_actual_hours).to eq(13.0)
+    end
+
+    it "is zero with no tickets" do
+      expect(sprint.total_estimated_hours).to eq(0)
+      expect(sprint.total_actual_hours).to eq(0)
+    end
+  end
 end

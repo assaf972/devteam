@@ -96,6 +96,19 @@ RSpec.describe "Projects", type: :request do
     end
   end
 
+  # ── Sprints list on the project page ──────────────────────────────────────
+  describe "project sprints list" do
+    it "lists the project's sprints with estimated and actual totals" do
+      sprint = create(:sprint, project: project, name: "Sprint Alpha")
+      create(:ticket, project: project, sprint: sprint, dev_estimate_hours: 8, actual_hours: "6h")
+      get project_path(project)
+      expect(response.body).to include('id="sprints"')
+      expect(response.body).to include("Sprint Alpha")
+      expect(response.body).to include("Estimated")
+      expect(response.body).to include("Actual")
+    end
+  end
+
   # ── GET /projects/:id/dashboard ───────────────────────────────────────────
   describe "GET /projects/:id/dashboard" do
     before do

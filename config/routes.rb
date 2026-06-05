@@ -19,6 +19,9 @@ Rails.application.routes.draw do
       get  "logs/services", to: "logs#services"
       post "logs/push",     to: "logs#push"
       get  "logs/stats",    to: "logs#stats"
+
+      # Heartbeat ingestion from remote machines (OS telemetry)
+      resources :heartbeats, only: %i[create]
     end
   end
 
@@ -49,6 +52,10 @@ Rails.application.routes.draw do
   # Planning · Backlog refinement · Sprint review (demo)
   get "ceremonies/:kind", to: "ceremonies#show", as: :ceremony,
       constraints: { kind: /planning|refinement|review/ }
+
+  # ── Server / remote-machine monitoring (heartbeats) ─────────────────────────
+  get "servers",      to: "servers#index", as: :servers
+  get "server",       to: "servers#show",  as: :server   # ?ip=<ip_address>
 
   # ── Log Viewer (reads the central Loki store) ───────────────────────────────
   get "logs",      to: "log_viewer#index", as: :log_viewer

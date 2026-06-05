@@ -50,6 +50,27 @@
             <% if @deployment.machine_name.present? %>
               <tr><th class="ps-3 text-muted fw-normal">Machine</th><td><code><%= @deployment.machine_name %></code></td></tr>
             <% end %>
+            <% if @deployment.server_name.present? || @deployment.ip_address.present? %>
+              <tr><th class="ps-3 text-muted fw-normal">Server</th><td>
+                <% if @deployment.ip_address.present? %>
+                  <%= link_to "#{@deployment.server_name.presence || @deployment.ip_address} (#{@deployment.ip_address})", server_path(ip: @deployment.ip_address) %>
+                <% else %><%= @deployment.server_name %><% end %>
+                <% if @deployment.server_id.present? %><span class="text-muted fs-7"> · <%= @deployment.server_id %></span><% end %>
+              </td></tr>
+            <% end %>
+            <% if @deployment.server_os.present? %>
+              <tr><th class="ps-3 text-muted fw-normal">Server OS</th><td><%= @deployment.server_os %></td></tr>
+            <% end %>
+            <% if @deployment.os_status_hash.any? %>
+              <% st = @deployment.os_status_hash %>
+              <tr><th class="ps-3 text-muted fw-normal">OS status (at deploy)</th><td class="fs-7">
+                CPU <%= st["cpu"] %>% · MEM <%= st["mem"] %>% · DISK <%= st["disk"] %>%
+                <% if st["errors"].to_i.positive? %><span class="badge bg-danger ms-1"><%= st["errors"] %> errors</span><% end %>
+              </td></tr>
+            <% end %>
+            <% if @deployment.log_file_url.present? %>
+              <tr><th class="ps-3 text-muted fw-normal">Log file</th><td><code class="fs-7"><%= @deployment.log_file_url %></code></td></tr>
+            <% end %>
             <tr><th class="ps-3 text-muted fw-normal">Deployed By</th><td><%= @deployment.deployed_by&.name || "—" %></td></tr>
             <tr><th class="ps-3 text-muted fw-normal">Deployed At</th><td><%= @deployment.deployed_at&.strftime("%b %-d, %Y %H:%M") || "—" %></td></tr>
             <% if @deployment.client_account %>
