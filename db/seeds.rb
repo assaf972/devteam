@@ -1315,7 +1315,8 @@ projects.each do |project|
       pr.files_changed = [
         "app/services/#{project.name.parameterize(separator: '_')}_service.rb",
         "app/controllers/#{project.name.parameterize(separator: '_')}_controller.rb",
-        "spec/requests/#{project.name.parameterize(separator: '_')}_api_spec.rb"
+        "spec/requests/#{project.name.parameterize(separator: '_')}_api_spec.rb",
+        "features/#{project.name.parameterize(separator: '_')}.feature"
       ]
       pr.pr_comments_data = [
         { "author" => "qa-bot", "body" => "Regression checks passed in staging." },

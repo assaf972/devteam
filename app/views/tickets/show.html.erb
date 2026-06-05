@@ -157,6 +157,9 @@
       <% end %>
     </div>
 
+    <%# Files changed (from the ticket's pull requests) %>
+    <%= render "tickets/files_changed", ticket: @ticket %>
+
     <%# Attachments %>
     <% if @ticket.attachments.attached? %>
       <div class="card p-3 mb-3">

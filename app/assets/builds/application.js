@@ -20244,6 +20244,41 @@ var ai_chat_controller_default = class extends Controller {
   }
 };
 
+// app/javascript/controllers/gherkin_editor_controller.js
+var gherkin_editor_controller_default = class extends Controller {
+  static targets = ["input", "highlight"];
+  connect() {
+    this.render();
+  }
+  render() {
+    this.highlightTarget.innerHTML = this.highlight(this.inputTarget.value);
+    this.sync();
+  }
+  sync() {
+    this.highlightTarget.scrollTop = this.inputTarget.scrollTop;
+    this.highlightTarget.scrollLeft = this.inputTarget.scrollLeft;
+  }
+  highlight(text) {
+    let html = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    html = html.split("\n").map((line) => {
+      if (/^\s*#/.test(line)) return `<span class='gh-comment'>${line}</span>`;
+      if (/^\s*@/.test(line)) return `<span class='gh-tag'>${line}</span>`;
+      line = line.replace(
+        /^(\s*)(Feature|Background|Rule|Scenario Outline|Scenario|Examples):/,
+        "$1<span class='gh-feature'>$2:</span>"
+      );
+      line = line.replace(
+        /^(\s*)(Given|When|Then|And|But)\b/,
+        "$1<span class='gh-step'>$2</span>"
+      );
+      return line;
+    }).join("\n");
+    html = html.replace(/"[^"]*"/g, (m4) => `<span class='gh-string'>${m4}</span>`);
+    html = html.replace(/&lt;[^&<>]+?&gt;/g, (m4) => `<span class='gh-param'>${m4}</span>`);
+    return html + "\n";
+  }
+};
+
 // app/javascript/controllers/index.js
 application.register("hello", hello_controller_default);
 application.register("flash", flash_controller_default);
@@ -20253,6 +20288,7 @@ application.register("calendar", calendar_controller_default);
 application.register("log-viewer", log_viewer_controller_default);
 application.register("quick-contact", quick_contact_controller_default);
 application.register("ai-chat", ai_chat_controller_default);
+application.register("gherkin-editor", gherkin_editor_controller_default);
 
 // node_modules/@popperjs/core/lib/index.js
 var lib_exports = {};
