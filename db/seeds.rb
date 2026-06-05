@@ -1350,6 +1350,13 @@ docs_to_seed = [
     doc_type:        :architecture,
     summary:         "Unified log management with Grafana Loki + Promtail — format, tools, API, CLI, and CI integration.",
     version_number:  "1.0"
+  },
+  {
+    file:            "docs/local_llm_onprem_guide.html",
+    title:           "AI in On-Premises Projects — Local LLM & Hardware Guide",
+    doc_type:        :architecture,
+    summary:         "Free local-LLM scan + Mac mini M5 hardware recommendation for on-prem dev AI (code review, fixes, docs, presentations).",
+    version_number:  "1.0"
   }
 ]
 
