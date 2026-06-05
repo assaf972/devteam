@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_06_100000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_06_110000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -57,6 +57,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_100000) do
     t.index ["user_id"], name: "index_activities_on_user_id"
   end
 
+  create_table "ai_chat_messages", force: :cascade do |t|
+    t.integer "ai_chat_session_id", null: false
+    t.text "content", null: false
+    t.datetime "created_at", null: false
+    t.string "role", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ai_chat_session_id"], name: "index_ai_chat_messages_on_ai_chat_session_id"
+  end
+
+  create_table "ai_chat_sessions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "llm_model"
+    t.bigint "project_id"
+    t.bigint "sprint_id"
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["project_id"], name: "index_ai_chat_sessions_on_project_id"
+    t.index ["user_id"], name: "index_ai_chat_sessions_on_user_id"
+  end
+
   create_table "ai_reviews", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -84,9 +105,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_100000) do
     t.datetime "created_at", null: false
     t.datetime "created_at_gitea"
     t.string "name"
-    t.bigint "project_id", null: false
+    t.integer "project_id", null: false
     t.integer "status"
-    t.bigint "ticket_id", null: false
+    t.integer "ticket_id", null: false
     t.datetime "updated_at", null: false
     t.index ["project_id"], name: "index_branches_on_project_id"
     t.index ["ticket_id"], name: "index_branches_on_ticket_id"
@@ -124,11 +145,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_100000) do
     t.datetime "created_at", null: false
     t.datetime "finished_at"
     t.string "log_url"
-    t.bigint "project_id", null: false
+    t.integer "project_id", null: false
     t.datetime "started_at"
     t.integer "status"
-    t.bigint "ticket_id"
-    t.bigint "triggered_by_id"
+    t.integer "ticket_id"
+    t.integer "triggered_by_id"
     t.datetime "updated_at", null: false
     t.index ["project_id"], name: "index_ci_runs_on_project_id"
     t.index ["ticket_id"], name: "index_ci_runs_on_ticket_id"
@@ -168,9 +189,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_100000) do
   end
 
   create_table "comments", force: :cascade do |t|
-    t.bigint "author_id"
+    t.integer "author_id"
     t.text "body"
-    t.bigint "commentable_id", null: false
+    t.integer "commentable_id", null: false
     t.string "commentable_type", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -239,11 +260,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_100000) do
   end
 
   create_table "deployments", force: :cascade do |t|
-    t.bigint "client_account_id"
+    t.integer "client_account_id"
     t.datetime "created_at", null: false
     t.integer "deploy_type"
     t.datetime "deployed_at"
-    t.bigint "deployed_by_id"
+    t.integer "deployed_by_id"
     t.text "env_vars"
     t.string "environment"
     t.string "ip_address"
@@ -251,7 +272,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_100000) do
     t.string "machine_name"
     t.text "notes"
     t.text "os_status"
-    t.bigint "project_id", null: false
+    t.integer "project_id", null: false
     t.string "server_id"
     t.string "server_name"
     t.string "server_os"
@@ -265,19 +286,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_100000) do
   end
 
   create_table "documents", force: :cascade do |t|
-    t.bigint "author_id"
+    t.integer "author_id"
     t.text "content"
     t.datetime "created_at", null: false
     t.integer "doc_type"
-    t.boolean "is_template"
-    t.bigint "project_id", null: false
+    t.boolean "is_template", default: false, null: false
+    t.integer "project_id", null: false
     t.text "summary"
     t.integer "template_id"
     t.string "title"
     t.datetime "updated_at", null: false
     t.string "version_number"
     t.index ["author_id"], name: "index_documents_on_author_id"
+    t.index ["is_template"], name: "index_documents_on_is_template"
     t.index ["project_id"], name: "index_documents_on_project_id"
+    t.index ["template_id"], name: "index_documents_on_template_id"
   end
 
   create_table "installations", force: :cascade do |t|
@@ -302,9 +325,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_100000) do
   create_table "meeting_attendees", force: :cascade do |t|
     t.boolean "attended"
     t.datetime "created_at", null: false
-    t.bigint "meeting_id", null: false
+    t.integer "meeting_id", null: false
     t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
+    t.integer "user_id", null: false
     t.index ["meeting_id"], name: "index_meeting_attendees_on_meeting_id"
     t.index ["user_id"], name: "index_meeting_attendees_on_user_id"
   end
@@ -317,11 +340,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_100000) do
     t.string "jitsi_room"
     t.integer "meeting_type"
     t.text "notes"
-    t.bigint "organizer_id"
-    t.bigint "project_id"
+    t.integer "organizer_id"
+    t.integer "project_id"
     t.string "recording_url"
     t.datetime "scheduled_at"
-    t.integer "sprint_id", null: false
+    t.integer "sprint_id"
     t.integer "status"
     t.string "title"
     t.datetime "updated_at", null: false
@@ -335,7 +358,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_100000) do
     t.text "description"
     t.date "due_date"
     t.string "name"
-    t.bigint "project_id", null: false
+    t.integer "project_id", null: false
     t.integer "status"
     t.datetime "updated_at", null: false
     t.index ["project_id"], name: "index_milestones_on_project_id"
@@ -390,11 +413,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_100000) do
     t.datetime "merged_at"
     t.text "pr_comments_data"
     t.integer "pr_number"
-    t.bigint "project_id", null: false
+    t.integer "project_id", null: false
     t.integer "status"
     t.datetime "synced_at"
     t.text "test_code"
-    t.bigint "ticket_id", null: false
+    t.integer "ticket_id", null: false
     t.string "title"
     t.datetime "updated_at", null: false
     t.index ["project_id"], name: "index_pull_requests_on_project_id"
@@ -422,7 +445,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_100000) do
     t.date "end_date"
     t.text "goals"
     t.string "name"
-    t.bigint "project_id", null: false
+    t.integer "project_id", null: false
     t.date "start_date"
     t.integer "status"
     t.text "things_that_went_right"
@@ -435,10 +458,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_100000) do
   create_table "taggings", force: :cascade do |t|
     t.string "context", limit: 128
     t.datetime "created_at", precision: nil
-    t.bigint "tag_id"
-    t.bigint "taggable_id"
+    t.integer "tag_id"
+    t.integer "taggable_id"
     t.string "taggable_type"
-    t.bigint "tagger_id"
+    t.integer "tagger_id"
     t.string "tagger_type"
     t.string "tenant", limit: 128
     t.index ["context"], name: "index_taggings_on_context"
@@ -478,7 +501,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_100000) do
   end
 
   create_table "test_results", force: :cascade do |t|
-    t.bigint "ci_run_id", null: false
+    t.integer "ci_run_id", null: false
     t.datetime "created_at", null: false
     t.integer "duration_ms"
     t.integer "failed"
@@ -493,9 +516,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_100000) do
 
   create_table "ticket_watchers", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.bigint "ticket_id", null: false
+    t.integer "ticket_id", null: false
     t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
+    t.integer "user_id", null: false
     t.index ["ticket_id"], name: "index_ticket_watchers_on_ticket_id"
     t.index ["user_id"], name: "index_ticket_watchers_on_user_id"
   end
@@ -504,7 +527,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_100000) do
     t.string "actual_hours"
     t.integer "actual_velocity"
     t.datetime "approved_at"
-    t.bigint "assignee_id"
+    t.integer "assignee_id"
     t.string "branch_name"
     t.integer "completed_tasks_count", default: 0
     t.decimal "completed_tasks_estimation", precision: 8, scale: 2, default: "0.0"
@@ -521,8 +544,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_100000) do
     t.integer "pr_number"
     t.string "pr_url"
     t.integer "priority"
-    t.bigint "project_id", null: false
-    t.bigint "sprint_id"
+    t.integer "project_id", null: false
+    t.integer "sprint_id"
     t.integer "status"
     t.integer "story_points"
     t.integer "tasks_count", default: 0
@@ -565,6 +588,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_100000) do
   add_foreign_key "activities", "tickets"
   add_foreign_key "activities", "users"
   add_foreign_key "activities", "users", column: "subject_user_id"
+  add_foreign_key "ai_chat_messages", "ai_chat_sessions"
   add_foreign_key "branches", "projects"
   add_foreign_key "branches", "tickets"
   add_foreign_key "chat_messages", "chat_rooms"

@@ -79,6 +79,11 @@
           <%= link_to "🇮🇱", url_for(locale: :he), class: "btn btn-sm btn-link text-white px-1" %>
           <%= link_to "🇺🇸", url_for(locale: :en), class: "btn btn-sm btn-link text-white px-1" %>
 
+          <%# Chat with AI (reachable on every page) %>
+          <%= link_to "💬 Chat with AI", ai_chats_path,
+                class: "topbar-panel-toggle text-white text-decoration-none",
+                style: "white-space:nowrap;", title: "Chat with the AI assistant" %>
+
           <%# Agile ceremonies menu (reachable on every page) %>
           <details class="topbar-menu">
             <summary class="topbar-panel-toggle" title="Agile ceremonies">📅 Ceremonies</summary>

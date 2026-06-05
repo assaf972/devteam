@@ -46,6 +46,11 @@ Rails.application.routes.draw do
   # ── Quick contact (toolbar: message a teammate) ─────────────────────────────
   post "quick_contact", to: "quick_contacts#create", as: :quick_contact
 
+  # ── Chat with AI (context-aware assistant) ──────────────────────────────────
+  resources :ai_chats, only: %i[index show create] do
+    member { post :message }
+  end
+
   # ── Team ceremonies ─────────────────────────────────────────────────────────
   get "daily_meeting", to: "daily_meetings#show", as: :daily_meeting
   get "retro_meeting", to: "retro_meetings#show", as: :retro_meeting

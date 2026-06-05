@@ -51,6 +51,19 @@ module Ai
       raise Error, "Could not reach Ollama at #{BASE_URL}: #{e.message}"
     end
 
+    # Multi-turn conversation. `messages` is an array of { role:, content: }
+    # (roles: system / user / assistant) — used by the Chat with AI page.
+    def converse(messages:, temperature: 0.3)
+      response = @conn.post("/api/chat") do |req|
+        req.body = { model: @model, stream: false, options: { temperature: temperature }, messages: messages }
+      end
+      raise Error, "Ollama responded #{response.status}" unless response.success?
+
+      response.body.dig("message", "content").to_s
+    rescue Faraday::Error => e
+      raise Error, "Could not reach Ollama at #{BASE_URL}: #{e.message}"
+    end
+
     # Single-prompt completion (no system role).
     def generate(prompt:, temperature: 0.2)
       response = @conn.post("/api/generate") do |req|

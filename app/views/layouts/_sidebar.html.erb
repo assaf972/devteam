@@ -26,11 +26,6 @@
     <span class="nav-icon">📅</span> <%= t('nav.meetings') %>
   <% end %>
 
-  <%= link_to calendar_path,
-        class: "sidebar-nav-item #{controller_name == 'calendar' ? 'is-active' : ''}" do %>
-    <span class="nav-icon">🗓️</span> <%= t('nav.calendar') %>
-  <% end %>
-
   <%= link_to notifications_path,
         class: "sidebar-nav-item #{controller_name == 'notifications' ? 'is-active' : ''}" do %>
     <span class="nav-icon">🔔</span> <%= t('nav.notifications') %>
@@ -55,19 +50,6 @@
       <span class="nav-icon">🏃</span>
       <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><%= t('sidebar.active_sprint_prefix') %> <%= @sidebar_current_sprint.name.truncate(18) %></span>
       <span class="badge bg-success ms-1" style="font-size:0.62rem;flex-shrink:0;"><%= t('sidebar.active_badge') %></span>
-    <% end %>
-  <% end %>
-
-  <hr class="sidebar-divider">
-
-  <%# ── Sprints ─────────────────────────────────────────────────────────── %>
-  <div class="sidebar-section-label"><%= t('sidebar.sprints_label') %></div>
-
-  <% @sidebar_projects.each do |project| %>
-    <%= link_to project_sprints_path(project),
-          class: "sidebar-nav-item #{controller_name == 'sprints' && params[:project_id].to_s == project.id.to_s ? 'is-active' : ''}" do %>
-      <span class="nav-icon">🏃</span>
-      <span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><%= project.name.truncate(20) %></span>
     <% end %>
   <% end %>
 
