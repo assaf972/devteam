@@ -47,6 +47,7 @@
             <%= priority_tag(ticket.priority) %>
           </div>
           <p class="fs-7 fw-semibold"><%= ticket.title %></p>
+          <div class="d-flex flex-wrap gap-1 my-1"><%= render "tickets/progress_badges", ticket: ticket %></div>
           <% if ticket.assignee %>
             <p class="fs-7 text-muted mt-1">👤 <%= ticket.assignee.display_name %></p>
           <% end %>

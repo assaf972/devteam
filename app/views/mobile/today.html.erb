@@ -69,7 +69,10 @@
       %>
       <%= link_to ticket_path(ticket), class: "ticket-item px-3" do %>
         <span class="ticket-dot <%= dot_class %>"></span>
-        <div class="ticket-title"><%= ticket.title.truncate(48) %></div>
+        <div style="flex:1;overflow:hidden;">
+          <div class="ticket-title"><%= ticket.title.truncate(48) %></div>
+          <div class="d-flex flex-wrap gap-1 mt-1"><%= render "tickets/progress_badges", ticket: ticket %></div>
+        </div>
         <div>
           <span class="tag is-light is-small"><%= ticket.status.humanize %></span>
         </div>

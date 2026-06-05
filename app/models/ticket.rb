@@ -56,16 +56,18 @@ class Ticket < ApplicationRecord
   def recalculate_task_stats!
     # Query fresh (not the possibly-cached association) so callers that mutated
     # tasks through other instances still get correct counts.
-    all_tasks = Task.where(ticket_id: id).to_a
-    total     = all_tasks.size
-    done      = all_tasks.count(&:completed?)
-    estimate  = all_tasks.sum { |t| t.estimation_in_hours || 0 }
+    all_tasks      = Task.where(ticket_id: id).to_a
+    total          = all_tasks.size
+    done           = all_tasks.count(&:completed?)
+    estimate       = all_tasks.sum { |t| t.estimation_in_hours || 0 }
+    done_estimate  = all_tasks.select(&:completed?).sum { |t| t.estimation_in_hours || 0 }
 
     update_columns(
       tasks_count:                total,
       completed_tasks_count:      done,
       tasks_progress_in_percents: total.zero? ? 0 : (done * 100.0 / total).round,
-      total_tasks_estimation:     estimate.round(2)
+      total_tasks_estimation:     estimate.round(2),
+      completed_tasks_estimation: done_estimate.round(2)
     )
   end
 

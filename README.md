@@ -6,7 +6,7 @@ support portal, **and a local AI agent** in one place — built for teams runnin
 (Gitea) and CI (Jenkins) infrastructure rather than relying on SaaS providers.
 
 ## Why on-premises
-
+  
 DevTeam Hub is built for teams that **cannot or will not** put their work on third-party SaaS — for
 data-residency, NDA, air-gapped, or cost reasons. Everything runs on infrastructure you control:
 

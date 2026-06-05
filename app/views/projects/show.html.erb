@@ -98,6 +98,7 @@
           <th>Title</th>
           <th>Status</th>
           <th>Priority</th>
+          <th>Progress</th>
           <th>Assignee</th>
           <th>Updated</th>
           <th class="text-end"></th>
@@ -110,6 +111,7 @@
             <td><%= link_to ticket.title.truncate(60), ticket_path(ticket) %></td>
             <td><%= status_tag(ticket.status) %></td>
             <td><%= priority_tag(ticket.priority) %></td>
+            <td><%= render "tickets/progress_cell", ticket: ticket %></td>
             <td><%= ticket.assignee&.display_name || '—' %></td>
             <td><%= ticket.updated_at.strftime('%d/%m') %></td>
             <td class="text-end">

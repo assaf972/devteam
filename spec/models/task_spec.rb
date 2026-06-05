@@ -73,6 +73,8 @@ RSpec.describe Task, type: :model do
       bug.reload
       expect(bug.completed_tasks_count).to eq(1)
       expect(bug.tasks_progress_in_percents).to eq(50)
+      # completed-hours tracks the estimation of completed tasks
+      expect(bug.completed_tasks_estimation).to eq(4.0)
     end
 
     it "recalculates when a task is deleted" do

@@ -23,6 +23,7 @@
         <div style="flex:1;overflow:hidden;">
           <div class="ticket-title"><%= ticket.title.truncate(44) %></div>
           <div class="ticket-project"><%= ticket.project&.name %></div>
+          <div class="d-flex flex-wrap gap-1 mt-1"><%= render "tickets/progress_badges", ticket: ticket %></div>
         </div>
         <span class="tag is-rounded is-small <%= st_class %>"><%= ticket.status.to_s.humanize %></span>
       <% end %>

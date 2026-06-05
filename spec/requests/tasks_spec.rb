@@ -57,4 +57,24 @@ RSpec.describe "Tasks", type: :request do
       expect(response.body).to include("First task")
     end
   end
+
+  describe "progress badges (percent + hours) wherever a ticket appears" do
+    before do
+      create(:task, ticket: ticket, estimation: "2h")
+      create(:task, ticket: ticket, estimation: "6h").complete!
+      ticket.reload
+    end
+
+    it "shows the percent and hours badges on the ticket page" do
+      get ticket_path(ticket)
+      expect(response.body).to include("🧩 #{ticket.tasks_progress_in_percents}%")
+      expect(response.body).to include("⏱ 6/8h") # 6 of 8 estimated hours done
+    end
+
+    it "shows the badges in the cross-project ticket list" do
+      get all_tickets_path
+      expect(response.body).to include("🧩 #{ticket.tasks_progress_in_percents}%")
+      expect(response.body).to include("6/8h")
+    end
+  end
 end
