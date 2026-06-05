@@ -125,7 +125,10 @@ Rails.application.routes.draw do
   resources :projects do
     resources :tickets, shallow: true
     resources :sprints, shallow: true do
-      member { get :dashboard }
+      member do
+        get   :dashboard
+        patch :activate   # make this the project's current (active) sprint
+      end
     end
     resources :milestones, shallow: true
     resources :ci_runs, only: [ :index, :show ], shallow: true

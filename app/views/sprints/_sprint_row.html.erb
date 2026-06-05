@@ -11,6 +11,10 @@
     <div>
       <%= actions_dropdown do |d| %>
         <% d.link t('common.view'), sprint_path(sprint), icon: '👁' %>
+        <% unless sprint.current? %>
+          <% d.button_action "Set as current", activate_sprint_path(sprint), icon: '★',
+                confirm: "Make \"#{sprint.name}\" the current sprint? The previous current sprint will be closed." %>
+        <% end %>
         <% d.link t('common.actions.edit'), edit_sprint_path(sprint), icon: '✏️' %>
         <% d.divider %>
         <% d.delete t('common.delete'), sprint_path(sprint), confirm: t('common.confirm_delete') %>

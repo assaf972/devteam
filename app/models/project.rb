@@ -17,6 +17,11 @@ class Project < ApplicationRecord
 
   validates :name, presence: true
 
+  # The project's current sprint is its active one (only one can be active).
+  def current_sprint
+    sprints.active.first
+  end
+
   scope :active, -> { where(active: true) }
 
   after_create :create_default_documents

@@ -1,6 +1,6 @@
 class SprintsController < ApplicationController
   before_action :set_project, only: %i[index new create]
-  before_action :set_sprint,  only: %i[show edit update destroy dashboard]
+  before_action :set_sprint,  only: %i[show edit update destroy dashboard activate]
 
   def index
     @sprints = @project.sprints.order(start_date: :desc)
@@ -64,6 +64,12 @@ class SprintsController < ApplicationController
     else
       render :new, status: :unprocessable_entity
     end
+  end
+
+  # Set this sprint as the project's current (active) one — closes the previous.
+  def activate
+    @sprint.make_current!
+    redirect_to @sprint, notice: "\"#{@sprint.name}\" is now the current sprint for #{@project.name}."
   end
 
   def edit; end

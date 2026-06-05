@@ -13,11 +13,31 @@ class Sprint < ApplicationRecord
   validates :start_date, :end_date, presence: true
   validate :end_date_after_start_date
 
+  # Only one sprint per project may be active ("current") at a time — whenever a
+  # sprint becomes active, any other active sprint in the project is closed out.
+  after_save :enforce_single_current, if: -> { saved_change_to_status? && active? }
+
   scope :active,    -> { where(status: :active) }
   scope :planning,  -> { where(status: :planning) }
   scope :completed, -> { where(status: :completed) }
   scope :current,   -> { active.where("start_date <= ? AND end_date >= ?", Date.today, Date.today) }
   scope :upcoming,  -> { where("start_date > ?", Date.today).order(:start_date) }
+
+  # The "current" sprint of a project is its active one.
+  def current?
+    active?
+  end
+
+  # Make this the project's current sprint (activates it; closes the previous one).
+  def make_current!
+    update!(status: :active)
+  end
+
+  # Everyone involved in the sprint = the distinct assignees and owners of its tickets.
+  def participants
+    ids = tickets.pluck(:assignee_id, :owner_id).flatten.compact.uniq
+    User.where(id: ids).order(:name)
+  end
 
   def duration_days
     (end_date - start_date).to_i
@@ -35,6 +55,13 @@ class Sprint < ApplicationRecord
   end
 
   private
+
+  # Close any other active sprint in the same project (update_all skips callbacks
+  # so this never recurses).
+  def enforce_single_current
+    project.sprints.active.where.not(id: id)
+           .update_all(status: :completed, updated_at: Time.current)
+  end
 
   def end_date_after_start_date
     return unless start_date && end_date
