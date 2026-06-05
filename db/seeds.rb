@@ -1550,4 +1550,22 @@ end
 puts "  ✓ #{task_count} tasks seeded across #{Ticket.count} tickets " \
      "(#{Task.completed.count} completed)"
 
+# ──────────────────────────────────────────────────────────────────────────────
+# Sample ticket attachments (image + CSV) on a few stories
+# ──────────────────────────────────────────────────────────────────────────────
+require "stringio"
+sample_image = USER_ICON_FILES.first
+attach_csv   = "ticket_id,title,status\n1,Example export,open\n2,Another row,done\n"
+attached_count = 0
+Ticket.where(kind: :story).order(:id).limit(4).each do |ticket|
+  next if ticket.attachments.attached?
+
+  if sample_image && File.exist?(sample_image)
+    ticket.attachments.attach(io: File.open(sample_image), filename: "mockup-#{ticket.id}.jpg", content_type: "image/jpeg")
+  end
+  ticket.attachments.attach(io: StringIO.new(attach_csv), filename: "report-#{ticket.id}.csv", content_type: "text/csv")
+  attached_count += 1
+end
+puts "  ✓ sample attachments added to #{attached_count} tickets"
+
 puts "✅ Seed complete!"
