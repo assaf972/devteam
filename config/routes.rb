@@ -46,6 +46,10 @@ Rails.application.routes.draw do
   # ── Quick contact (toolbar: message a teammate) ─────────────────────────────
   post "quick_contact", to: "quick_contacts#create", as: :quick_contact
 
+  # ── Cucumber feature-file editor (dark console + Gherkin highlighting) ───────
+  get  "cucumber_tests/edit",   to: "cucumber_tests#edit",   as: :edit_cucumber_test
+  post "cucumber_tests/review", to: "cucumber_tests#review", as: :review_cucumber_test
+
 
   # ── Team ceremonies ─────────────────────────────────────────────────────────
   get "daily_meeting", to: "daily_meetings#show", as: :daily_meeting

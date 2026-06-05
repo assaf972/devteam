@@ -1,4 +1,6 @@
 # Gitea API integration service
+require "base64"
+
 class GiteaService
   BASE_URL = ENV.fetch("GITEA_URL", "http://localhost:3001")
   API_TOKEN = ENV.fetch("GITEA_TOKEN", "")
@@ -118,6 +120,20 @@ class GiteaService
   rescue Faraday::Error => e
     Rails.logger.error "GiteaService#pull_request_file_details failed: #{e.message}"
     []
+  end
+
+  # Fetch the raw text content of a file from a repo (best-effort).
+  def file_content(repo_owner:, repo_name:, path:, ref: nil)
+    params = ref.present? ? { ref: ref } : {}
+    response = @conn.get("/api/v1/repos/#{repo_owner}/#{repo_name}/contents/#{path}", params)
+    return nil unless response.success?
+
+    body = response.body
+    return nil unless body.is_a?(Hash) && body["content"].present?
+    body["encoding"] == "base64" ? Base64.decode64(body["content"]) : body["content"]
+  rescue Faraday::Error => e
+    Rails.logger.error "GiteaService#file_content failed: #{e.message}"
+    nil
   end
 
   # Fetch PR review comments
