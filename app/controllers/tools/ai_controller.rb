@@ -79,6 +79,40 @@ module Tools
       redirect_to tools_ai_review_path(review), notice: result_notice(review)
     end
 
+    # ── Service #7: "Fix that bug" — diagnose + propose a fix ──────────────────
+    def fix_bug
+      ticket = Ticket.find(params[:ticket_id])
+      review = Ai::BugFixService.new(reviewable: ticket, user: current_user).call
+      redirect_to tools_ai_review_path(review), notice: result_notice(review)
+    end
+
+    # ── Service #8: break a story into estimated tasks (creates Task records) ──
+    def generate_tasks
+      ticket = Ticket.find(params[:ticket_id])
+      review = Ai::TaskBreakdownService.new(reviewable: ticket, user: current_user).call
+
+      created = 0
+      if review.status_completed?
+        Ai::TaskBreakdownService.parse_tasks(review.body).each do |attrs|
+          ticket.tasks.create(
+            description: attrs[:description],
+            estimation:  attrs[:estimation],
+            user:        ticket.assignee || ticket.owner
+          )
+          created += 1
+        end
+      end
+
+      notice = if review.status_failed?
+        ai_error(review)
+      elsif created.zero?
+        "AI ran but produced no parseable tasks — see the full report."
+      else
+        "AI generated #{created} task(s) with estimations."
+      end
+      redirect_to ticket_path(ticket, anchor: "tasks"), notice: notice
+    end
+
     # ── Service #5: live sprint analysis (lazy Turbo Frame) ───────────────────
     def sprint_analysis
       @sprint = Sprint.find(params[:sprint_id])

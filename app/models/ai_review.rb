@@ -15,7 +15,9 @@ class AiReview < ApplicationRecord
     test_review:         2,   # cucumber test review & missing-coverage suggestions
     estimation_analysis: 3,   # estimated vs actual delivery time
     sprint_analysis:     4,   # sprint health based on ticket progress
-    solution_suggestion: 5    # read a ticket and suggest an approach
+    solution_suggestion: 5,   # read a ticket and suggest an approach
+    bug_fix:             6,   # propose a fix for a bug ticket
+    task_breakdown:      7    # break a story into estimated tasks
   }, prefix: true
 
   enum :status, {

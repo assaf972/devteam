@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_05_130000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_05_140000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -440,6 +440,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_05_130000) do
     t.index ["name"], name: "index_tags_on_name", unique: true
   end
 
+  create_table "tasks", force: :cascade do |t|
+    t.string "actual"
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.text "description", null: false
+    t.string "estimation"
+    t.datetime "started_at"
+    t.integer "ticket_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["ticket_id"], name: "index_tasks_on_ticket_id"
+    t.index ["user_id"], name: "index_tasks_on_user_id"
+  end
+
   create_table "test_results", force: :cascade do |t|
     t.bigint "ci_run_id", null: false
     t.datetime "created_at", null: false
@@ -556,6 +570,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_05_130000) do
   add_foreign_key "pull_requests", "tickets"
   add_foreign_key "sprints", "projects"
   add_foreign_key "taggings", "tags"
+  add_foreign_key "tasks", "tickets"
   add_foreign_key "test_results", "ci_runs"
   add_foreign_key "ticket_watchers", "tickets"
   add_foreign_key "ticket_watchers", "users"

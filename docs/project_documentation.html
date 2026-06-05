@@ -184,6 +184,7 @@
   <a href="#webhooks">Webhooks & Integrations</a>
   <a href="#cli">CLI & VS Code Extension</a>
   <a href="#tools">On-Premises Tools</a>
+  <a href="#ai-agent">AI Agent (Local LLM)</a>
   <a href="#i18n">Internationalisation</a>
   <a href="#screenshots">Screenshots</a>
   <div class="sidebar-section">Resources</div>
@@ -503,8 +504,46 @@
   </tbody>
 </table>
 
-<!-- 11. I18N -->
-<h2 id="i18n">11. Internationalisation</h2>
+<!-- 11. AI AGENT -->
+<h2 id="ai-agent">11. AI Agent — Local LLM Integration</h2>
+<p>
+  DevTeam Hub embeds a <strong>local LLM running on an on-prem Mac mini</strong> (via
+  <a href="https://ollama.com" target="_blank" rel="noopener">Ollama</a>), reached over a plain REST
+  API on the LAN (<code>Ai::OllamaClient</code>, built on Faraday). <strong>No code, ticket text, or
+  customer data is ever sent to an external AI provider</strong> — inference stays on infrastructure
+  you control, which is exactly what air-gapped, regulated and NDA-bound teams need.
+</p>
+<p>
+  Every run is persisted as an auditable <code>AiReview</code> record (kind, status, verdict, score,
+  full response, prompt, duration). Services live in <code>app/services/ai/</code> and share a common
+  <code>Ai::BaseService</code> lifecycle; HTTP entry points are under <code>/tools/ai/*</code>.
+</p>
+<table>
+  <thead><tr><th>#</th><th>Service</th><th>What it does</th><th>Trigger</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td><strong>Ticket readiness</strong></td><td>Verifies story-telling / Definition of Ready; auto-reassigns poorly-written tickets back to the owner</td><td>Ticket page · "✅ Check readiness"</td></tr>
+    <tr><td>2</td><td><strong>Code review</strong></td><td>Reviews a diff for bugs, security, lint &amp; best practice across Go / Ruby / C# / Node</td><td>Ticket page · "🔍 Code review"</td></tr>
+    <tr><td>3</td><td><strong>Cucumber test review</strong></td><td>Reviews <code>.feature</code> files; suggests changes and missing scenarios</td><td>Ticket page · "🧪 Test review"</td></tr>
+    <tr><td>4</td><td><strong>Estimation accuracy</strong></td><td>Estimated vs actual delivery time; bias, per-developer patterns, coaching</td><td>Sprint page · "📊 AI Estimation"</td></tr>
+    <tr><td>5</td><td><strong>Sprint analysis</strong></td><td>Live sprint-health read (on track? risks? next step?)</td><td>Sprint page · live panel</td></tr>
+    <tr><td>6</td><td><strong>Solution suggestion</strong></td><td>Reads a ticket and proposes an implementation approach</td><td>Ticket page · "💡 Suggest solution"</td></tr>
+    <tr><td>7</td><td><strong>Fix that bug</strong></td><td>Diagnoses a bug ticket and proposes a concrete, minimal fix + tests</td><td>Ticket page · "🐛 Fix that bug"</td></tr>
+    <tr><td>8</td><td><strong>Generate tasks &amp; estimations</strong></td><td>Breaks a story into estimable Tasks, calibrating estimates on the project's historical estimate-vs-actual data</td><td>Ticket page · "🧩 Generate tasks &amp; estimations"</td></tr>
+  </tbody>
+</table>
+<p>
+  <strong>Tasks:</strong> stories break into <code>Task</code> records (small, estimable slices with
+  estimation / actual / start / complete timestamps). A story auto-seeds one task on creation, and
+  task completion drives the story's progress bar — making AI-generated breakdowns immediately useful.
+</p>
+<p>
+  <strong>Config:</strong> <code>OLLAMA_URL</code>, <code>OLLAMA_MODEL</code>,
+  <code>OLLAMA_TIMEOUT</code> (see <code>.env.example</code>). Full setup, CI usage and the roadmap of
+  additional services are in <code>docs/ai_integration.md</code>.
+</p>
+
+<!-- 12. I18N -->
+<h2 id="i18n">12. Internationalisation</h2>
 <ul>
   <li><strong>Locales:</strong> English (<code>en</code>) and Hebrew (<code>he</code>) with full RTL support</li>
   <li><strong>User preference:</strong> <code>preferred_language</code> on User model</li>
@@ -512,8 +551,8 @@
   <li><strong>Language toggle:</strong> available in sidebar footer</li>
 </ul>
 
-<!-- 12. SCREENSHOTS -->
-<h2 id="screenshots">12. Screenshots</h2>
+<!-- 13. SCREENSHOTS -->
+<h2 id="screenshots">13. Screenshots</h2>
 <p>Application screenshots are available in both languages. Below are the English (LTR) versions:</p>
 
 <h3>Today & Dashboard</h3>

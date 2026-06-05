@@ -11,6 +11,14 @@
   <%= button_to "💡 Suggest solution", tools_ai_solution_suggestion_path(ticket_id: ticket.id),
         class: "btn btn-sm btn-outline-primary w-100 mb-2" %>
 
+  <%# "Fix that bug" — diagnose and propose a fix %>
+  <%= button_to "🐛 Fix that bug", tools_ai_fix_bug_path(ticket_id: ticket.id),
+        class: "btn btn-sm btn-outline-danger w-100 mb-2" %>
+
+  <%# "Generate tasks and estimations" — break the story into estimated tasks %>
+  <%= button_to "🧩 Generate tasks & estimations", tools_ai_generate_tasks_path(ticket_id: ticket.id),
+        class: "btn btn-sm btn-outline-primary w-100 mb-2" %>
+
   <%# Service #2 — code review of a pasted diff %>
   <details class="mb-2">
     <summary class="btn btn-sm btn-outline-secondary w-100">🔍 Code review</summary>

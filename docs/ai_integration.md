@@ -185,6 +185,43 @@ parses those into the `verdict`/`score` columns.
   approach — steps, likely files/components, edge cases and risks, and which tests
   to add. If the ticket is too vague, it lists the questions to ask the owner.
 
+### 5.7 Fix that bug
+- **Service:** `Ai::BugFixService` · **kind:** `bug_fix`
+- **Endpoint:** `POST /tools/ai/fix_bug?ticket_id=…`
+- **UI:** "🐛 Fix that bug" button on the ticket page.
+- **What it does:** Reads a bug ticket (description + reproduction steps), reasons
+  about the **most likely root cause**, and proposes a concrete, minimal fix —
+  with code where helpful, tests to add, and risks. Confidence **score** 0–100;
+  verdict `fail` means there isn't enough information to diagnose (and lists what's
+  missing).
+
+### 5.8 Generate tasks & estimations
+- **Service:** `Ai::TaskBreakdownService` · **kind:** `task_breakdown`
+- **Endpoint:** `POST /tools/ai/generate_tasks?ticket_id=…`
+- **UI:** "🧩 Generate tasks & estimations" button on the ticket page.
+- **What it does:** Breaks a story into precise, independently estimable **Task**
+  records (see §5a). Crucially, it **calibrates the time estimates against the
+  project's historical estimate-vs-actual data** — if the team consistently
+  underestimates, the suggested estimates skew upward. The model returns a
+  parseable `TASKS:` block (`- [4h] description`) which the controller turns into
+  `Task` rows attached to the ticket.
+
+### 5a. Tasks — story breakdown & progress
+
+Independent of the AI, every **story** ticket owns a list of **Tasks**
+(`app/models/task.rb`, `tasks` table). A task has a `description`, an `estimation`
+and an `actual` (free-form like `4h` / `1d`), plus `started_at` / `completed_at`
+timestamps from which its status (`not_started` / `in_progress` / `completed`) is
+derived.
+
+- **Auto-creation:** when a story ticket is created, DevTeam Hub seeds a single
+  task named after the story, so the team can break it down immediately.
+- **Why tasks:** it's easier to estimate a small slice of a story than the whole
+  thing, and `Ticket#task_progress` derives the story's **progress** (completed /
+  total → percentage) shown on the ticket page.
+- **AI breakdown:** "🧩 Generate tasks & estimations" (§5.8) fills this list
+  automatically with calibrated estimates.
+
 ---
 
 ## 6. Where to find it in the UI
@@ -193,7 +230,9 @@ parses those into the `verdict`/`score` columns.
   - **AI Reports** (`/tools/ai`) — connection status, per-service counts, recent runs, recent failures.
   - **Recent Review Results** (`/tools/ai/reviews`) — all code reviews.
   - **Recent Test Reviews** (`/tools/ai/test_reviews`) — all cucumber test reviews.
-- **Ticket page → 🤖 AI Agent panel** — readiness check, suggest solution, code review, test review.
+- **Ticket page → 🤖 AI Agent panel** — readiness check, suggest solution,
+  🐛 fix that bug, 🧩 generate tasks & estimations, code review, test review.
+  The ticket also shows a **🧩 Tasks** panel with completion progress.
 - **Sprint page** — a live AI sprint-analysis panel (auto-loads) + a 📊 AI Estimation button.
 
 ---

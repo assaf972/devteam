@@ -53,6 +53,9 @@
       <% end %>
     </div>
 
+    <%# Tasks (story breakdown + progress) %>
+    <%= render "tickets/tasks", ticket: @ticket %>
+
     <%# Comments (before the CI panel) %>
     <div class="card p-3 mb-3" id="comments">
       <h3 class="subfw-bold">Comments (<%= @comments.size %>)</h3>

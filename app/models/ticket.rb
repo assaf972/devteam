@@ -14,6 +14,7 @@ class Ticket < ApplicationRecord
   has_many :watchers, through: :ticket_watchers, source: :user
   has_many :test_results, through: :ci_runs
   has_many :ai_reviews, as: :reviewable, dependent: :destroy
+  has_many :tasks, dependent: :destroy
 
   has_many_attached :attachments
 
@@ -39,6 +40,19 @@ class Ticket < ApplicationRecord
 
   after_save :auto_create_branch_and_notify,
              if: -> { saved_change_to_assignee_id? && assignee_id.present? }
+
+  # A newly created story starts with a single task named after the story, so the
+  # team can immediately break it down and track progress via task completion.
+  after_create_commit :create_initial_task, if: :story?
+
+  # Progress of the story derived from its tasks: how many are completed.
+  def task_progress
+    total = tasks.count
+    return { total: 0, completed: 0, percent: 0 } if total.zero?
+
+    done = tasks.completed.count
+    { total: total, completed: done, percent: (done * 100.0 / total).round }
+  end
 
   def latest_ci_run
     ci_runs.order(created_at: :desc).first
@@ -83,5 +97,9 @@ class Ticket < ApplicationRecord
 
   def auto_create_branch_and_notify
     TicketBranchService.new(self).call
+  end
+
+  def create_initial_task
+    tasks.create(description: title, user: assignee || owner)
   end
 end

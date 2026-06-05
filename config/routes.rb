@@ -66,6 +66,8 @@ Rails.application.routes.draw do
     post "ai/test_review",         to: "ai#test_review",         as: :ai_test_review
     post "ai/estimation_analysis", to: "ai#estimation_analysis", as: :ai_estimation_analysis
     post "ai/solution_suggestion", to: "ai#solution_suggestion", as: :ai_solution_suggestion
+    post "ai/fix_bug",             to: "ai#fix_bug",             as: :ai_fix_bug
+    post "ai/generate_tasks",      to: "ai#generate_tasks",      as: :ai_generate_tasks
 
     # Sprint analysis — GET drives the lazy Turbo Frame (live render on the
     # sprint page); POST forces a refresh.
@@ -181,6 +183,13 @@ Rails.application.routes.draw do
       patch :update_status
     end
     resources :comments, only: %i[create destroy]
+    resources :tasks, only: %i[create update destroy] do
+      member do
+        patch :start
+        patch :complete
+        patch :reopen
+      end
+    end
   end
 
   # Sprint comments

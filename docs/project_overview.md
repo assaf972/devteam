@@ -27,7 +27,8 @@ DevTeam Hub is an internal developer-team management dashboard built with Ruby o
 - **Today Page** — personalised landing page for each developer showing their day at a glance
 - **Admin panel** — user management and client account administration
 - **CLI & VS Code extension** — `devteam` / `dt` command-line tool and IDE integration via REST API
-- **AI Agent (local LLM)** — on-prem Ollama model for ticket readiness checks, code review (Go/Ruby/C#/Node), cucumber test review, estimation analytics, live sprint analysis, and solution suggestions — code never leaves the LAN (see §10)
+- **AI Agent (local LLM)** — on-prem Ollama model for ticket readiness checks, code review (Go/Ruby/C#/Node), cucumber test review, estimation analytics, live sprint analysis, solution suggestions, **bug fixing**, and **story → task breakdown with calibrated estimates** — code never leaves the LAN (see §10)
+- **Tasks** — stories break into estimable tasks; task completion drives story progress (see §10)
 - **Log Viewer** — readable, highlighted view of the central Loki logs with service/level/search filters and a live "watch" tail (`/logs`)
 
 The application targets small-to-medium software teams (5–30 developers) who want an on-premise, self-hosted alternative to Jira + Confluence + Freshdesk combined.
@@ -314,6 +315,11 @@ surface in the UI.
 | 4 | **Estimation accuracy** | Estimated vs actual delivery time; bias, per-developer patterns, coaching | Sprint page · "📊 AI Estimation" |
 | 5 | **Sprint analysis** | Live sprint-health read (on-track? risks? next step?) | Sprint page · live panel |
 | 6 | **Solution suggestion** | Reads a ticket and proposes an implementation approach | Ticket page · "💡 Suggest solution" |
+| 7 | **Fix that bug** | Diagnoses a bug ticket and proposes a concrete, minimal fix + tests | Ticket page · "🐛 Fix that bug" |
+| 8 | **Generate tasks & estimations** | Breaks a story into estimable **Tasks**, calibrating estimates on the project's history | Ticket page · "🧩 Generate tasks & estimations" |
+
+**Tasks:** every story owns a list of **Tasks** (estimable slices). A story
+auto-seeds one task on creation; task completion drives the story's progress bar.
 
 **UI:** the sidebar **AI Agent** section links to **AI Reports** (`/tools/ai`),
 **Recent Review Results**, and **Recent Test Reviews**. The sprint page shows the

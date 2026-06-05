@@ -19,7 +19,7 @@ data-residency, NDA, air-gapped, or cost reasons. Everything runs on infrastruct
 
 DevTeam Hub embeds a **local LLM running on an on-prem Mac mini** (via [Ollama](https://ollama.com)),
 reached over a plain REST API on the LAN. **No code, ticket text, or customer data is ever sent to an
-external AI provider.** The AI agent powers six services, all stored as auditable `AiReview` records:
+external AI provider.** The AI agent powers these services, all stored as auditable `AiReview` records:
 
 1. **Ticket readiness** — verifies story-telling / Definition of Ready and **auto-reassigns
    poorly-written tickets back to their owner**.
@@ -28,6 +28,12 @@ external AI provider.** The AI agent powers six services, all stored as auditabl
 4. **Estimation analytics** — estimated vs actual delivery time, with per-developer coaching.
 5. **Live sprint analysis** — real-time sprint-health read rendered on the sprint page.
 6. **Solution suggestions** — reads a ticket and proposes an implementation approach.
+7. **Fix that bug** — diagnoses a bug ticket and proposes a concrete, minimal fix + tests.
+8. **Generate tasks & estimations** — breaks a story into estimable **tasks**, calibrating the
+   estimates against the project's historical estimate-vs-actual data.
+
+Stories break down into **tasks** (small, estimable slices); a story auto-seeds one task on
+creation and task completion drives its progress bar.
 
 ## 📜 Log viewer
 
