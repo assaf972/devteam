@@ -1,25 +1,25 @@
-# Chat with AI — an OpenAI-style assistant that loads the current project/sprint,
-# tickets, team messages and recent code as context for every reply.
+# Chat with AI — scoped to a project so the context (including the project's git
+# repository) is always relevant. Reached from the project page.
 class AiChatsController < ApplicationController
-  before_action :load_sessions
-  before_action :set_session, only: %i[show message]
+  before_action :set_project_from_param, only: %i[index create]
+  before_action :set_session,            only: %i[show message]
 
   def index
-    @session = @sessions.first
+    @sessions = project_sessions
+    @session  = @sessions.first
   end
 
-  def show; end
+  def show
+    @sessions = project_sessions
+  end
 
-  # Start a new chat (optionally with a first message and a project).
+  # Start a new chat for this project (optionally with a first message).
   def create
-    @session = current_user.ai_chat_sessions.create!(project: default_project, sprint: default_sprint)
-    if params[:message].present?
-      converse!(@session, params[:message])
-    end
+    @session = current_user.ai_chat_sessions.create!(project: @project, sprint: @project.current_sprint)
+    converse!(@session, params[:message]) if params[:message].present?
     redirect_to ai_chat_path(@session)
   end
 
-  # Send a message in an existing chat → build context, call the LLM, store reply.
   def message
     converse!(@session, params[:message]) if params[:message].present?
     redirect_to ai_chat_path(@session, anchor: "bottom")
@@ -27,23 +27,20 @@ class AiChatsController < ApplicationController
 
   private
 
-  def load_sessions
-    @sessions = current_user.ai_chat_sessions.recent.limit(50)
+  def set_project_from_param
+    @project = Project.find(params[:project_id])
   end
 
   def set_session
     @session = current_user.ai_chat_sessions.find(params[:id])
+    @project = @session.project
   end
 
-  def default_project
-    Sprint.active.first&.project || Project.active.first || Project.first
+  def project_sessions
+    current_user.ai_chat_sessions.where(project: @project).recent.limit(50)
   end
 
-  def default_sprint
-    default_project&.sprints&.active&.first
-  end
-
-  # Append the user's message, call the local LLM with fresh context, append reply.
+  # Append the user's message, call the local LLM with fresh project context.
   def converse!(session, text)
     session.ai_chat_messages.create!(role: "user", content: text.to_s.strip)
     session.update!(title: text.to_s.strip.truncate(60)) if session.title.blank?

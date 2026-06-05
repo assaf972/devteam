@@ -7,7 +7,7 @@
     [ "📊 Sprint status",            "Summarize the current sprint status, progress and risks." ],
     [ "💡 Next steps",               "Based on the tickets and sprint, what should the team focus on next?" ]
   ]
-  post_url = session ? message_ai_chat_path(session) : ai_chats_path
+  post_url = session ? message_ai_chat_path(session) : project_ai_chats_path(@project)
 %>
 <style>
   .ai-chat-layout { display:flex; gap:0; height:calc(100vh - 130px); border:1px solid #e2e8f0; border-radius:12px; overflow:hidden; background:#fff; }
@@ -36,7 +36,7 @@
 
 <div class="ai-chat-layout" data-controller="ai-chat">
   <aside class="ai-chat-sessions">
-    <%= button_to "➕ New chat", ai_chats_path, method: :post, class: "btn btn-primary btn-sm w-100 mb-3" %>
+    <%= button_to "➕ New chat", project_ai_chats_path(@project), method: :post, class: "btn btn-primary btn-sm w-100 mb-3" %>
     <div class="text-muted fs-8 text-uppercase mb-1" style="letter-spacing:.05em;">Previous chats</div>
     <% sessions.each do |s| %>
       <%= link_to s.display_title, ai_chat_path(s),

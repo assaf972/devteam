@@ -39,6 +39,8 @@ module Ai
     def project_section
       <<~TXT.strip
         Project: #{@project.name}
+        Git repository: #{@project.repo_url.presence || '(not configured)'}
+        Default branch: #{@project.default_branch.presence || 'main'}
         Tech stack: #{@project.tech_stack}
         Description: #{@project.description.to_s.truncate(400)}
       TXT
@@ -84,12 +86,13 @@ module Ai
 
     def code_section
       prs = @project.pull_requests.where.not(code_changed: [ nil, "" ]).order(updated_at: :desc).limit(3)
-      return nil if prs.empty?
+      header = "Code lives in the project's git repository: #{@project.repo_url.presence || '(repo URL not configured)'}"
+      return header if prs.empty?
 
       blocks = prs.map do |pr|
         "PR ##{pr.pr_number} #{pr.title}:\n```diff\n#{pr.code_changed.to_s.truncate(1500)}\n```"
       end
-      "Recent code changes:\n#{blocks.join("\n\n")}"
+      "#{header}\nRecent code changes from this repository:\n#{blocks.join("\n\n")}"
     end
   end
 end

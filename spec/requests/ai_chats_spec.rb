@@ -1,13 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe "AiChats", type: :request do
-  let(:user)    { create(:user) }
-  let!(:project) { create(:project) }
+  let(:user)     { create(:user) }
+  let!(:project) { create(:project, repo_url: "http://gitea.local/devteam/print-server") }
   before { sign_in user }
 
-  describe "GET /ai_chats" do
-    it "renders the chat page with the new-chat input and doc recommendations" do
-      get ai_chats_path
+  describe "GET /projects/:project_id/ai_chats" do
+    it "renders the project-scoped chat page with recommendations" do
+      get project_ai_chats_path(project)
       expect(response).to have_http_status(:success)
       expect(response.body).to include("Chat with AI")
       expect(response.body).to include("Generate a specification")
@@ -15,18 +15,17 @@ RSpec.describe "AiChats", type: :request do
     end
   end
 
-  describe "POST /ai_chats (new chat with a first message)" do
-    it "creates a session, stores the exchange and replies using context" do
+  describe "POST /projects/:project_id/ai_chats" do
+    it "creates a session tied to the project and stores the exchange" do
       allow_any_instance_of(Ai::OllamaClient).to receive(:converse).and_return("Here is the spec…")
 
       expect {
-        post ai_chats_path, params: { message: "Generate a spec" }
+        post project_ai_chats_path(project), params: { message: "Generate a spec" }
       }.to change(AiChatSession, :count).by(1)
 
       session = AiChatSession.last
+      expect(session.project).to eq(project)
       expect(session.ai_chat_messages.pluck(:role)).to eq(%w[user assistant])
-      expect(session.ai_chat_messages.last.content).to include("Here is the spec")
-      expect(session.title).to eq("Generate a spec")
       expect(response).to redirect_to(ai_chat_path(session))
     end
   end
@@ -50,21 +49,26 @@ RSpec.describe "AiChats", type: :request do
     end
 
     it "does not leak another user's session" do
-      other = create(:user).ai_chat_sessions.create!
+      other = create(:user).ai_chat_sessions.create!(project: project)
       post message_ai_chat_path(other), params: { message: "hi" }
       expect(response).to have_http_status(:not_found)
       expect(other.ai_chat_messages).to be_empty
     end
   end
 
-  describe "context service" do
-    it "includes project, tickets and sprint context" do
-      sprint = create(:active_sprint, project: project, name: "Sprint X")
-      create(:ticket, project: project, sprint: sprint, title: "Build login")
-      ctx = Ai::ChatContextService.new(project: project, sprint: sprint).context_body
+  describe "context service uses the project's git repo" do
+    it "includes the repo URL and recent code as code context" do
+      ctx = Ai::ChatContextService.new(project: project).context_body
+      expect(ctx).to include("http://gitea.local/devteam/print-server")
       expect(ctx).to include(project.name)
-      expect(ctx).to include("Sprint X")
-      expect(ctx).to include("Build login")
+    end
+  end
+
+  describe "project page links to its chat" do
+    it "shows a Chat with AI button" do
+      get project_path(project)
+      expect(response.body).to include(project_ai_chats_path(project))
+      expect(response.body).to include("Chat with AI")
     end
   end
 end

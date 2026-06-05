@@ -46,10 +46,6 @@ Rails.application.routes.draw do
   # ── Quick contact (toolbar: message a teammate) ─────────────────────────────
   post "quick_contact", to: "quick_contacts#create", as: :quick_contact
 
-  # ── Chat with AI (context-aware assistant) ──────────────────────────────────
-  resources :ai_chats, only: %i[index show create] do
-    member { post :message }
-  end
 
   # ── Team ceremonies ─────────────────────────────────────────────────────────
   get "daily_meeting", to: "daily_meetings#show", as: :daily_meeting
@@ -145,6 +141,10 @@ Rails.application.routes.draw do
   end
 
   resources :projects do
+    # Chat with AI — scoped to the project (code context = the project's repo)
+    resources :ai_chats, only: %i[index create show], shallow: true do
+      member { post :message }
+    end
     resources :tickets, shallow: true
     resources :sprints, shallow: true do
       member do
