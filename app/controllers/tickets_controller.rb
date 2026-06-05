@@ -1,6 +1,6 @@
 class TicketsController < ApplicationController
   before_action :set_project, only: [ :index, :new, :create ]
-  before_action :set_ticket,  only: [ :show, :edit, :update, :destroy, :move_to_sprint, :update_status ]
+  before_action :set_ticket,  only: [ :show, :edit, :update, :destroy, :move_to_sprint, :update_status, :approve ]
 
   def index
     @tickets = @project.tickets.includes(:assignee, :sprint, :ci_runs).order(priority: :desc, created_at: :desc)
@@ -126,6 +126,13 @@ class TicketsController < ApplicationController
     end
   end
 
+  # Approve a ticket — marks it ready to move on from the drafting stage to
+  # refinement/estimation. Triggered from the ticket page or a row action.
+  def approve
+    @ticket.approve! unless @ticket.approved?
+    redirect_back fallback_location: ticket_path(@ticket), notice: "Ticket approved."
+  end
+
   # Quick status change from a row actions dropdown (e.g. the project page).
   def update_status
     if Ticket.statuses.key?(params[:status]) && @ticket.update(status: params[:status])
@@ -163,7 +170,7 @@ class TicketsController < ApplicationController
       :title, :description, :status, :priority, :kind, :level,
       :how_to_reproduce, :test_plan, :actual_velocity, :sprint_id, :assignee_id, :owner_id,
       :milestone_id, :story_points, :tag_list, :pr_number, :pr_url,
-      :dev_estimate_hours, :tester_estimate_hours, :actual_hours,
+      :dev_estimate_hours, :tester_estimate_hours, :actual_hours, :approved_at,
       attachments: []
     )
   end

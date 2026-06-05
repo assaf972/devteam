@@ -204,6 +204,7 @@ Rails.application.routes.draw do
     member do
       patch :move_to_sprint
       patch :update_status
+      patch :approve
     end
     resources :comments, only: %i[create destroy]
     resources :tasks, only: %i[create update destroy] do

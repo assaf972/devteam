@@ -153,6 +153,10 @@
             <td><%= ticket.updated_at.strftime('%d/%m') %></td>
             <td class="text-end">
               <%= actions_dropdown do |d| %>
+                <% unless ticket.approved? %>
+                  <% d.button_action "Approve ticket", approve_ticket_path(ticket), icon: "✓" %>
+                  <% d.divider %>
+                <% end %>
                 <% Ticket.statuses.keys.each do |st| %>
                   <% next if st == ticket.status || st == "backlog" %>
                   <% d.button_action "Mark #{t("tickets.statuses.#{st}")}", update_status_ticket_path(ticket, status: st), icon: "→" %>

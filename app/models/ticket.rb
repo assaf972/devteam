@@ -45,6 +45,25 @@ class Ticket < ApplicationRecord
   # team can immediately break it down and track progress via task completion.
   after_create_commit :create_initial_task, if: :story?
 
+  # ── Lifecycle stage ──────────────────────────────────────────────────────
+  # A ticket moves: drafted → approved → estimated (refined) → in delivery.
+  def approved?
+    approved_at.present?
+  end
+
+  def approve!
+    update!(approved_at: Time.current)
+  end
+
+  # Still needs refinement until it has both a story-point and a dev-hour estimate.
+  def needs_refinement?
+    story_points.blank? || dev_estimate_hours.blank?
+  end
+
+  def estimated?
+    !needs_refinement?
+  end
+
   # Progress of the story derived from its tasks, read from the cached columns
   # (kept fresh by Task#refresh_ticket_stats → #recalculate_task_stats!).
   def task_progress
