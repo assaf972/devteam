@@ -55,7 +55,6 @@ RSpec.describe "Projects", type: :request do
         expect(response.body).to include(move_to_sprint_ticket_path(open_ticket, target: "backlog"))
       end
     end
-  end
 
   describe "POST /projects" do
     it "creates a project and redirects" do
@@ -77,7 +76,6 @@ RSpec.describe "Projects", type: :request do
       expect(response).to redirect_to(project_path(project))
       expect(project.reload.name).to eq("Renamed")
     end
-  end
 
   # ── Channels now live inside a project ────────────────────────────────────
   describe "project channels" do
