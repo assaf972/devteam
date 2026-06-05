@@ -57,6 +57,8 @@ RSpec.describe "Tickets", type: :request do
       get today_path
       expect(response.body).to include(%(nav-icon">🎫</span> #{I18n.t('nav.tickets')}))
       expect(response.body).not_to match(%r{sidebar-section-label">#{I18n.t('sidebar.tickets_label')}<})
+      # Dashboard was removed from the main nav (now lives under projects/sprints)
+      expect(response.body).not_to include(%(nav-icon">📊</span> #{I18n.t('nav.dashboard')}))
     end
   end
 

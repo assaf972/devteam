@@ -16,11 +16,6 @@
     <span class="nav-icon">📋</span> <%= t('nav.today') %>
   <% end %>
 
-  <%= link_to dashboard_path,
-        class: "sidebar-nav-item #{controller_name == 'dashboard' ? 'is-active' : ''}" do %>
-    <span class="nav-icon">📊</span> <%= t('nav.dashboard') %>
-  <% end %>
-
   <%= link_to all_tickets_path,
         class: "sidebar-nav-item #{controller_name == 'tickets' ? 'is-active' : ''}" do %>
     <span class="nav-icon">🎫</span> <%= t('nav.tickets') %>

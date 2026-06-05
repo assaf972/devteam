@@ -1,5 +1,5 @@
 class ProjectsController < ApplicationController
-  before_action :set_project, only: [ :show, :edit, :update, :destroy, :report, :ci_dashboard, :calendar_events ]
+  before_action :set_project, only: [ :show, :edit, :update, :destroy, :dashboard, :report, :ci_dashboard, :calendar_events ]
 
   def index
     @projects = Project.order(:name)
@@ -59,6 +59,42 @@ class ProjectsController < ApplicationController
   def destroy
     @project.destroy
     redirect_to projects_path, notice: "Project deleted."
+  end
+
+  # Analytical dashboard summarising and analysing a single project.
+  def dashboard
+    tickets        = @project.tickets
+    not_closed     = tickets.where.not(status: [ :done, :closed ])
+    @total_tickets = tickets.count
+    @done_tickets  = tickets.where(status: [ :done, :closed ]).count
+    @open_tickets  = not_closed.count
+    @blocked       = tickets.where(status: :blocked).count
+    @needs_estimation = not_closed.where(dev_estimate_hours: nil).count
+    @progress_percent = @total_tickets.zero? ? 0 : (@done_tickets * 100.0 / @total_tickets).round
+
+    @status_counts   = tickets.group(:status).count
+    @priority_counts = not_closed.group(:priority).count
+
+    @active_sprint = @project.sprints.active.first
+    @open_prs      = @project.pull_requests.where(status: :open).count
+    @deploys_30    = @project.deployments.where(created_at: 30.days.ago..).count
+
+    ci_window  = @project.ci_runs.where(created_at: 7.days.ago..)
+    @ci_total  = ci_window.count
+    @ci_passed = ci_window.passed.count
+    @ci_pass_rate = @ci_total.zero? ? nil : (@ci_passed * 100.0 / @ci_total).round
+
+    # Open-work distribution across the team.
+    @workload = not_closed.where.not(assignee_id: nil)
+                          .joins(:assignee).group("users.name").count
+                          .sort_by { |_, v| -v }
+
+    # Estimation accuracy across completed tickets that have both values.
+    completed = tickets.where(status: [ :done, :closed ]).includes(:assignee)
+    rows = completed.select { |t| t.dev_estimate_hours.present? && t.actual_hours_in_hours.present? }
+    @estimation = estimation_summary(rows)
+
+    @insights = build_project_insights
   end
 
   def report
@@ -132,6 +168,52 @@ class ProjectsController < ApplicationController
   end
 
   private
+
+  # Summarise estimated-vs-actual hours for a set of completed tickets.
+  def estimation_summary(rows)
+    return { count: 0 } if rows.empty?
+
+    variances = rows.map do |t|
+      est = t.dev_estimate_hours.to_f
+      est.zero? ? nil : ((t.actual_hours_in_hours.to_f - est) / est * 100)
+    end.compact
+
+    avg = variances.empty? ? 0 : (variances.sum / variances.size).round
+    {
+      count:        rows.size,
+      avg_variance: avg, # +ve = took longer than estimated
+      over:         variances.count { |v| v > 10 },
+      under:        variances.count { |v| v < -10 },
+      accuracy:     [ 100 - variances.map(&:abs).then { |a| a.empty? ? 0 : (a.sum / a.size) }, 0 ].max.round
+    }
+  end
+
+  # Rule-based highlights — deterministic, always available (no LLM needed).
+  def build_project_insights
+    insights = []
+    insights << { level: "success", text: "Project is #{@progress_percent}% complete (#{@done_tickets}/#{@total_tickets} tickets done)." }
+    insights << { level: "danger",  text: "#{@blocked} ticket(s) are blocked and need attention." } if @blocked.positive?
+    insights << { level: "warning", text: "#{@needs_estimation} open ticket(s) have no dev estimate." } if @needs_estimation.positive?
+    insights << { level: "info",    text: "No active sprint — schedule one to keep work moving." } if @active_sprint.nil?
+
+    if @ci_pass_rate
+      level = @ci_pass_rate >= 90 ? "success" : (@ci_pass_rate >= 70 ? "warning" : "danger")
+      insights << { level: level, text: "CI pass rate is #{@ci_pass_rate}% over the last 7 days." }
+    end
+
+    if @estimation[:count].positive?
+      v = @estimation[:avg_variance]
+      if v > 15
+        insights << { level: "warning", text: "Team tends to underestimate — completed work took ~#{v}% longer than estimated." }
+      elsif v < -15
+        insights << { level: "info", text: "Team tends to overestimate — completed work finished ~#{v.abs}% faster than estimated." }
+      else
+        insights << { level: "success", text: "Estimates are reliable (avg variance #{v}%)." }
+      end
+    end
+
+    insights
+  end
 
   def set_project
     @project = Project.find(params[:id])

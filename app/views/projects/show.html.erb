@@ -8,6 +8,7 @@
     </div>
   </div>
   <div class="level-right">
+    <%= link_to "📊 Dashboard", dashboard_project_path(@project), class: "btn btn-primary btn-sm is-light" %>
     <%= link_to t("common.actions.edit"), edit_project_path(@project), class: "btn btn-secondary btn-sm is-warning" %>
     <%= link_to t("sprints.new_sprint"), new_project_sprint_path(@project), class: "btn btn-primary btn-sm" %>
     <% if @project.repo_url.present? %>

@@ -113,7 +113,9 @@ Rails.application.routes.draw do
 
   resources :projects do
     resources :tickets, shallow: true
-    resources :sprints, shallow: true
+    resources :sprints, shallow: true do
+      member { get :dashboard }
+    end
     resources :milestones, shallow: true
     resources :ci_runs, only: [ :index, :show ], shallow: true
     resources :deployments, shallow: true
@@ -132,6 +134,7 @@ Rails.application.routes.draw do
     resources :project_memberships, only: %i[create destroy]
     resources :activities,           only: %i[index]
     member do
+      get :dashboard
       get :report
       get :ci_dashboard
       get :calendar_events

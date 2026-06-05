@@ -1,6 +1,6 @@
 class SprintsController < ApplicationController
   before_action :set_project, only: %i[index new create]
-  before_action :set_sprint,  only: %i[show edit update destroy]
+  before_action :set_sprint,  only: %i[show edit update destroy dashboard]
 
   def index
     @sprints = @project.sprints.order(start_date: :desc)
@@ -19,6 +19,29 @@ class SprintsController < ApplicationController
     @pull_requests = @sprint.pull_requests.includes(:ticket).order(created_at: :desc)
     @comments      = @sprint.comments.includes(:author).order(:created_at)
     @comment       = Comment.new
+  end
+
+  # Analytical dashboard summarising and analysing a single sprint.
+  # The "analyse" half is the live AI sprint analysis embedded in the view.
+  def dashboard
+    tickets         = @sprint.tickets.includes(:assignee)
+    @total_tickets  = tickets.count
+    @done_tickets   = tickets.where(status: [ :done, :closed ]).count
+    @in_progress    = tickets.where(status: [ :in_progress, :in_review, :testing ]).count
+    @not_started    = tickets.where(status: [ :backlog, :open ]).count
+    @blocked        = tickets.where(status: :blocked).count
+    @progress_percent = @sprint.progress_percent
+
+    @status_counts  = tickets.group(:status).count
+    @points_total   = tickets.sum(:story_points)
+    @points_done    = tickets.where(status: [ :done, :closed ]).sum(:story_points)
+
+    @workload = tickets.where.not(status: [ :done, :closed ])
+                       .where.not(assignee_id: nil)
+                       .joins(:assignee).group("users.name").count
+                       .sort_by { |_, v| -v }
+
+    @insights = build_sprint_insights
   end
 
   def new
@@ -54,6 +77,27 @@ class SprintsController < ApplicationController
   end
 
   private
+
+  # Rule-based highlights for the sprint dashboard (deterministic, no LLM).
+  def build_sprint_insights
+    insights = []
+    insights << { level: "info", text: "#{@progress_percent}% done with #{@sprint.days_remaining} day(s) remaining." }
+    insights << { level: "danger",  text: "#{@blocked} ticket(s) are blocked." } if @blocked.positive?
+
+    if @sprint.active? && @total_tickets.positive?
+      remaining_share = (@total_tickets - @done_tickets) * 100.0 / @total_tickets
+      total_days      = [ @sprint.duration_days, 1 ].max
+      time_used_share = (total_days - @sprint.days_remaining) * 100.0 / total_days
+      if remaining_share > (100 - time_used_share) + 15
+        insights << { level: "warning", text: "Behind pace — #{remaining_share.round}% of tickets remain with #{(100 - time_used_share).round}% of the time gone." }
+      else
+        insights << { level: "success", text: "On pace to complete the sprint." }
+      end
+    end
+
+    insights << { level: "warning", text: "#{@not_started} ticket(s) not started yet." } if @not_started.positive? && @sprint.active?
+    insights
+  end
 
   def set_project
     @project = Project.find(params[:project_id])

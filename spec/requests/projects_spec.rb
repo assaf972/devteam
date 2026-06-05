@@ -78,4 +78,26 @@ RSpec.describe "Projects", type: :request do
       expect(project.reload.name).to eq("Renamed")
     end
   end
+
+  # ── GET /projects/:id/dashboard ───────────────────────────────────────────
+  describe "GET /projects/:id/dashboard" do
+    before do
+      create(:ticket, project: project, status: :done)
+      create(:ticket, project: project, status: :blocked)
+      create(:ticket, project: project, status: :open, dev_estimate_hours: nil)
+    end
+
+    it "renders the analytical dashboard with summary and insights" do
+      get dashboard_project_path(project)
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include("Dashboard")
+      expect(response.body).to include("Analysis &amp; Insights")
+      expect(response.body).to include("Tickets by status")
+    end
+
+    it "is linked from the project page" do
+      get project_path(project)
+      expect(response.body).to include(dashboard_project_path(project))
+    end
+  end
 end

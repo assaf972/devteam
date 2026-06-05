@@ -184,4 +184,30 @@ RSpec.describe "Sprints", type: :request do
       expect(response).to redirect_to(new_user_session_path)
     end
   end
+
+  # ── GET /sprints/:id/dashboard ────────────────────────────────────────────
+  describe "GET /sprints/:id/dashboard" do
+    let!(:sprint) { create(:active_sprint, project: project) }
+
+    before do
+      create(:ticket, project: project, sprint: sprint, status: :done, story_points: 3)
+      create(:ticket, project: project, sprint: sprint, status: :in_progress, story_points: 5)
+    end
+
+    it "renders the analytical dashboard with summary, insights and the AI frame" do
+      get dashboard_sprint_path(sprint)
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include("Dashboard")
+      expect(response.body).to include("Analysis &amp; Insights")
+      expect(response.body).to include("Tickets by status")
+      # Live AI analysis is embedded as a lazy turbo frame
+      expect(response.body).to include('id="ai_sprint_analysis"')
+      expect(response.body).to include(tools_ai_sprint_analysis_path(sprint_id: sprint.id))
+    end
+
+    it "is linked from the sprint page" do
+      get sprint_path(sprint)
+      expect(response.body).to include(dashboard_sprint_path(sprint))
+    end
+  end
 end
