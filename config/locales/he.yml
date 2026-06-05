@@ -316,6 +316,7 @@ he:
       deployments: "פריסות"
       logs: "צופה לוגים"
       code_review: "סקירת קוד"
+      servers: "שרתים"
     admin_label: "ניהול"
     team_label: "צוות"
     ai_label: "סוכן AI"

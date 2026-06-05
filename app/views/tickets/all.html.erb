@@ -85,6 +85,10 @@
             <td><%= render "tickets/progress_cell", ticket: ticket %></td>
             <td class="text-end" onclick="event.stopPropagation();" style="cursor:default;">
               <%= actions_dropdown do |d| %>
+                <% unless ticket.approved? %>
+                  <% d.button_action "Approve ticket", approve_ticket_path(ticket), icon: '✓' %>
+                  <% d.divider %>
+                <% end %>
                 <% d.button_action t('tickets.move.current_sprint'), move_to_sprint_ticket_path(ticket, target: 'current'), icon: '🏃' %>
                 <% d.button_action t('tickets.move.next_sprint'),    move_to_sprint_ticket_path(ticket, target: 'next'),    icon: '⏭️' %>
                 <% d.divider %>

@@ -39,6 +39,16 @@ class Sprint < ApplicationRecord
     User.where(id: ids).order(:name)
   end
 
+  # Estimated hours across the sprint's tickets (dev + QA estimates).
+  def total_estimated_hours
+    tickets.to_a.sum { |t| (t.dev_estimate_hours || 0) + (t.tester_estimate_hours || 0) }.round(1)
+  end
+
+  # Actual hours logged across the sprint's tickets.
+  def total_actual_hours
+    tickets.to_a.sum { |t| t.actual_hours_in_hours || 0 }.round(1)
+  end
+
   def duration_days
     (end_date - start_date).to_i
   end

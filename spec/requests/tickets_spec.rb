@@ -154,11 +154,11 @@ RSpec.describe "Tickets", type: :request do
       expect(desc_pos).to be < htr_pos
     end
 
-    it "groups the estimate fields in an Evaluation & Time section" do
+    it "exposes the estimate fields once the ticket is approved for refinement" do
+      ticket.update!(approved_at: Time.current, story_points: nil, dev_estimate_hours: nil)
       get edit_ticket_path(ticket)
-      expect(response.body).to include("Evaluation")
+      expect(response.body).to include("Refinement &amp; Estimation")
       expect(response.body).to include("ticket_dev_estimate_hours")
-      expect(response.body).to include("ticket_actual_hours")
     end
   end
 
@@ -293,6 +293,40 @@ RSpec.describe "Tickets", type: :request do
       patch move_to_sprint_ticket_path(ticket, target: "current")
       expect(ticket.reload.sprint).to be_nil
       expect(flash[:alert]).to be_present
+    end
+  end
+
+  # ── PATCH /tickets/:id/approve ─────────────────────────────────────────────
+  describe "PATCH /tickets/:id/approve" do
+    it "stamps approved_at" do
+      expect(ticket.approved_at).to be_nil
+      patch approve_ticket_path(ticket), headers: { "HTTP_REFERER" => ticket_path(ticket) }
+      expect(ticket.reload.approved_at).to be_present
+      expect(flash[:notice]).to include("approved")
+    end
+  end
+
+  # ── Staged edit form ───────────────────────────────────────────────────────
+  describe "staged edit form" do
+    it "shows only the basics for an unapproved ticket (no estimation fields)" do
+      get edit_ticket_path(ticket)
+      expect(response.body).to include("Approve ticket")
+      expect(response.body).not_to include("ticket_story_points")
+    end
+
+    it "shows estimation fields once approved but not yet estimated" do
+      ticket.update!(approved_at: Time.current, story_points: nil, dev_estimate_hours: nil)
+      get edit_ticket_path(ticket)
+      expect(response.body).to include("Refinement &amp; Estimation")
+      expect(response.body).to include("ticket_story_points")
+    end
+
+    it "shows the tasks panel (not estimation fields) once estimated" do
+      ticket.update!(approved_at: Time.current, story_points: 5, dev_estimate_hours: 8)
+      get edit_ticket_path(ticket)
+      expect(response.body).to include('id="tasks"')
+      expect(response.body).to include("Generate tasks &amp; estimations")
+      expect(response.body).not_to include("Refinement &amp; Estimation")
     end
   end
 

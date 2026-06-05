@@ -141,6 +141,11 @@
     <span class="nav-icon">🔍</span> <%= t('sidebar.ci.code_review') %>
   <% end %>
 
+  <%= link_to servers_path,
+        class: "sidebar-nav-item #{controller_name == 'servers' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">🖥️</span> <%= t('sidebar.ci.servers') %>
+  <% end %>
+
   <hr class="sidebar-divider">
 
   <%# ── AI Agent ─────────────────────────────────────────────────────── %>

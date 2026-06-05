@@ -981,7 +981,74 @@ deployments_data.each do |d|
   end
 end
 
-puts "  ✓ #{deployments_data.size} deployments"
+puts "  ✓ #{deployments_data.size} curated deployments"
+
+# ─────────────────────────────────────────────────────────────────
+# Servers + enriched deployments (5 servers, 100 deployments) + heartbeats
+# ─────────────────────────────────────────────────────────────────
+SERVERS = [
+  { ip: "10.0.10.21", name: "prod-web-01", os: "Ubuntu 22.04 LTS" },
+  { ip: "10.0.10.22", name: "prod-app-02", os: "Windows Server 2022" },
+  { ip: "10.0.20.31", name: "staging-01",  os: "Ubuntu 22.04 LTS" },
+  { ip: "10.0.30.41", name: "db-01",       os: "Debian 12" },
+  { ip: "10.0.40.51", name: "edge-win-01", os: "Windows Server 2019" }
+].freeze
+
+os_snapshot = -> { { "cpu" => rand(10..95), "mem" => rand(20..92), "disk" => rand(30..95),
+                     "errors" => (rand < 0.2 ? rand(1..6) : 0) } }
+server_for  = ->(srv) { { server_name: srv[:name], server_id: "srv-#{srv[:ip].split('.').last}",
+                          server_os: srv[:os], ip_address: srv[:ip] } }
+
+# Backfill server info onto the curated deployments.
+Deployment.where(ip_address: nil).find_each do |dep|
+  srv = SERVERS.sample
+  dep.update!(**server_for.call(srv), os_status: os_snapshot.call,
+              log_file_url: "/var/log/devteam/deploy/#{dep.project_id}-#{dep.version}.log")
+end
+
+# Grow to 100 total deployments distributed across the 5 servers.
+deployers = [ admin, noam, dana, oren, team_lead, avi, pm_user ].compact
+versions  = %w[1.0.0 1.1.0 1.2.0 2.0.0 2.1.0 3.0.0 3.1.0 4.0.0]
+gen_statuses = %i[succeeded succeeded succeeded failed in_progress pending rolled_back]
+while Deployment.count < 100
+  project = projects.sample
+  srv     = SERVERS.sample
+  status  = gen_statuses.sample
+  Deployment.create!(
+    project:     project,
+    version:     "#{versions.sample}-#{rand(100..999)}",
+    environment: %w[staging production].sample,
+    deploy_type: Deployment.deploy_types.keys.sample,
+    status:      status,
+    deployed_at: (status == :pending ? nil : today - rand(0..60)),
+    deployed_by: deployers.sample,
+    notes:       "Automated deployment to #{srv[:name]}.",
+    os_status:   os_snapshot.call,
+    log_file_url: "/var/log/devteam/deploy/#{project.id}-#{rand(10_000)}.log",
+    **server_for.call(srv)
+  )
+end
+puts "  ✓ #{Deployment.count} deployments across #{SERVERS.size} servers"
+
+# Heartbeat time-series — 48 hourly samples per server (CPU/mem/disk/errors).
+ServerHeartbeat.delete_all
+SERVERS.each do |srv|
+  base_cpu = rand(25..55); base_mem = rand(40..70); base_disk = rand(45..78)
+  48.times do |i|
+    ServerHeartbeat.create!(
+      ip_address:   srv[:ip],
+      server_name:  srv[:name],
+      server_os:    srv[:os],
+      cpu:          (base_cpu + rand(-15..30)).clamp(2, 99),
+      mem:          (base_mem + rand(-10..25)).clamp(5, 99),
+      disk:         (base_disk + (i / 12)).clamp(5, 99),
+      error_count:  (rand < 0.1 ? rand(1..4) : 0),
+      log_file_url: "/var/log/devteam/#{srv[:name]}.log",
+      recorded_at:  (47 - i).hours.ago
+    )
+  end
+end
+puts "  ✓ #{ServerHeartbeat.count} server heartbeats"
 
 # ─────────────────────────────────────────────────────────────────
 # CI runs + test results (for dashboards/reports)

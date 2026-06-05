@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_05_160000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_06_100000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -246,14 +246,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_05_160000) do
     t.bigint "deployed_by_id"
     t.text "env_vars"
     t.string "environment"
+    t.string "ip_address"
+    t.string "log_file_url"
     t.string "machine_name"
     t.text "notes"
+    t.text "os_status"
     t.bigint "project_id", null: false
+    t.string "server_id"
+    t.string "server_name"
+    t.string "server_os"
     t.integer "status"
     t.datetime "updated_at", null: false
     t.string "version"
     t.index ["client_account_id"], name: "index_deployments_on_client_account_id"
     t.index ["deployed_by_id"], name: "index_deployments_on_deployed_by_id"
+    t.index ["ip_address"], name: "index_deployments_on_ip_address"
     t.index ["project_id"], name: "index_deployments_on_project_id"
   end
 
@@ -394,6 +401,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_05_160000) do
     t.index ["ticket_id"], name: "index_pull_requests_on_ticket_id"
   end
 
+  create_table "server_heartbeats", force: :cascade do |t|
+    t.integer "cpu"
+    t.datetime "created_at", null: false
+    t.integer "disk"
+    t.integer "error_count", default: 0
+    t.string "ip_address", null: false
+    t.string "log_file_url"
+    t.integer "mem"
+    t.datetime "recorded_at", null: false
+    t.string "server_name"
+    t.string "server_os"
+    t.datetime "updated_at", null: false
+    t.index ["ip_address", "recorded_at"], name: "index_server_heartbeats_on_ip_address_and_recorded_at"
+    t.index ["ip_address"], name: "index_server_heartbeats_on_ip_address"
+  end
+
   create_table "sprints", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.date "end_date"
@@ -480,6 +503,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_05_160000) do
   create_table "tickets", force: :cascade do |t|
     t.string "actual_hours"
     t.integer "actual_velocity"
+    t.datetime "approved_at"
     t.bigint "assignee_id"
     t.string "branch_name"
     t.integer "completed_tasks_count", default: 0
