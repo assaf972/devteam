@@ -46,6 +46,9 @@ Rails.application.routes.draw do
   # ── Team ceremonies ─────────────────────────────────────────────────────────
   get "daily_meeting", to: "daily_meetings#show", as: :daily_meeting
   get "retro_meeting", to: "retro_meetings#show", as: :retro_meeting
+  # Planning · Backlog refinement · Sprint review (demo)
+  get "ceremonies/:kind", to: "ceremonies#show", as: :ceremony,
+      constraints: { kind: /planning|refinement|review/ }
 
   # ── Log Viewer (reads the central Loki store) ───────────────────────────────
   get "logs",      to: "log_viewer#index", as: :log_viewer

@@ -36,6 +36,19 @@
       .contact-btn:hover { background: #eef2ff; }
       .contact-compose { margin-top: 8px; border-top: 1px solid #e2e8f0; padding-top: 8px; }
       .contact-compose.is-hidden { display: none; }
+
+      .topbar-menu { position: relative; display: inline-block; }
+      .topbar-menu > summary { list-style: none; cursor: pointer; white-space: nowrap; }
+      .topbar-menu > summary::-webkit-details-marker { display: none; }
+      .ceremony-menu {
+        position: absolute; right: 0; top: 40px; width: 230px; background: #fff; color: #12252b;
+        border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 14px 36px rgba(0,0,0,.20);
+        padding: 8px; z-index: 1000;
+      }
+      .ceremony-menu-label { font-size: .68rem; text-transform: uppercase; letter-spacing: .05em; color: #64748b; padding: 4px 8px; }
+      .ceremony-item { display: block; padding: 8px 10px; border-radius: 8px; font-size: .85rem;
+        color: #12252b; text-decoration: none; }
+      .ceremony-item:hover { background: #f3f4f6; color: #0b7a75; }
     </style>
   </head>
 
@@ -65,6 +78,19 @@
           <%# Language switcher %>
           <%= link_to "🇮🇱", url_for(locale: :he), class: "btn btn-sm btn-link text-white px-1" %>
           <%= link_to "🇺🇸", url_for(locale: :en), class: "btn btn-sm btn-link text-white px-1" %>
+
+          <%# Agile ceremonies menu (reachable on every page) %>
+          <details class="topbar-menu">
+            <summary class="topbar-panel-toggle" title="Agile ceremonies">📅 Ceremonies</summary>
+            <div class="ceremony-menu">
+              <div class="ceremony-menu-label">Agile ceremonies</div>
+              <%= link_to "🗣️ Daily Standup",       daily_meeting_path,          class: "ceremony-item" %>
+              <%= link_to "📋 Sprint Planning",      ceremony_path("planning"),   class: "ceremony-item" %>
+              <%= link_to "🔍 Backlog Refinement",   ceremony_path("refinement"), class: "ceremony-item" %>
+              <%= link_to "🎬 Sprint Review / Demo", ceremony_path("review"),     class: "ceremony-item" %>
+              <%= link_to "🔁 Retrospective",        retro_meeting_path,          class: "ceremony-item" %>
+            </div>
+          </details>
 
           <%# Find & contact a teammate (call over Jitsi or send a message) %>
           <div class="topbar-contact" data-controller="quick-contact"
