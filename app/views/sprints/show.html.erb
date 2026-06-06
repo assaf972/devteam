@@ -27,6 +27,8 @@
             form: { data: { turbo_confirm: "Make this the current sprint for #{@project.name}? The previous current sprint will be closed." } } %>
     <% end %>
     <%= link_to "📊 Dashboard", dashboard_sprint_path(@sprint), class: "btn btn-primary btn-sm is-light" %>
+    <%= button_to "📊 AI Estimation", tools_ai_estimation_analysis_path(sprint_id: @sprint.id),
+          method: :post, class: "btn btn-secondary btn-sm" %>
     <%= link_to t("common.actions.edit"), edit_sprint_path(@sprint), class: "btn btn-secondary btn-sm is-warning is-light" %>
     <%= button_to t("common.delete"), sprint_path(@sprint), method: :delete,
           data: { turbo_confirm: t("common.confirm_delete") }, class: "btn btn-secondary btn-sm is-danger is-light" %>
