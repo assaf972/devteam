@@ -33,12 +33,17 @@
     </div>
   </div>
   <div class="level-right">
-    <% if @ticket %><%= link_to "← Back to ticket", ticket_path(@ticket), class: "btn btn-secondary btn-sm" %><% end %>
+    <% if @pull_request %>
+      <%= link_to "← Back to PR ##{@pull_request.pr_number}", pull_request_path(@pull_request), class: "btn btn-secondary btn-sm" %>
+    <% elsif @ticket %>
+      <%= link_to "← Back to ticket", ticket_path(@ticket), class: "btn btn-secondary btn-sm" %>
+    <% end %>
   </div>
 </div>
 
 <%= form_with url: review_cucumber_test_path, method: :post do %>
   <%= hidden_field_tag :ticket_id, @ticket&.id %>
+  <%= hidden_field_tag :pull_request_id, @pull_request&.id %>
   <%= hidden_field_tag :path, @path %>
 
   <div class="gherkin-wrap mb-2" data-controller="gherkin-editor">

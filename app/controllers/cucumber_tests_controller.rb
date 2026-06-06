@@ -18,18 +18,26 @@ class CucumberTestsController < ApplicationController
   private
 
   def set_context
-    @ticket  = Ticket.find_by(id: params[:ticket_id])
-    @project = @ticket&.project
+    @pull_request = PullRequest.find_by(id: params[:pull_request_id])
+    @ticket  = @pull_request&.ticket || Ticket.find_by(id: params[:ticket_id])
+    @project = @ticket&.project || @pull_request&.project
     @path    = params[:path].to_s
   end
 
-  # Editor seed: posted content wins; otherwise fetch from the project's Gitea
-  # repo (best-effort); otherwise a starter template.
+  # Editor seed: posted content wins; otherwise the file's content from the PR;
+  # otherwise fetch from the project's Gitea repo (best-effort); otherwise a starter.
   def loaded_content
     return params[:content] if params[:content].present?
 
-    fetched = fetch_from_gitea
-    fetched.presence || starter_template
+    pr_file_content.presence || fetch_from_gitea.presence || starter_template
+  end
+
+  # Content of @path from the pull request's stored files (seeded fake data).
+  def pr_file_content
+    return nil unless @pull_request && @path.present?
+
+    file = @pull_request.pr_files.find { |f| f["path"].to_s == @path }
+    file && file["content"]
   end
 
   def fetch_from_gitea

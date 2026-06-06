@@ -3,6 +3,11 @@
   badge_class   = "bg-#{status_colors.fetch(@pull_request.status, 'secondary')}"
 %>
 
+<style>
+  .pr-file-item:hover { background: #f3f4f6; }
+  .pr-file-item.active-file { background: #e6efff; }
+</style>
+
 <div class="d-flex align-items-start justify-content-between mb-3">
   <div>
     <%= link_to project_pull_requests_path(@project), class: "text-muted small text-decoration-none" do %>
@@ -60,56 +65,90 @@
   <%# ── Left column ───────────────────────────────────────────── %>
   <div class="col-lg-8">
 
-    <%# Changed Files %>
-    <div class="card shadow-sm mb-3">
+    <%# Files — navigator + code viewer (edit .feature files in the test editor) %>
+    <% files = @pull_request.pr_files %>
+    <div class="card shadow-sm mb-3" data-controller="pr-files">
       <div class="card-header d-flex align-items-center justify-content-between">
-        <strong><i class="bi bi-file-earmark-code me-2"></i>Changed Files</strong>
-        <span class="badge bg-secondary"><%= @pull_request.changed_files.size %></span>
+        <strong><i class="bi bi-file-earmark-code me-2"></i>Files</strong>
+        <span class="badge bg-secondary"><%= files.size %></span>
       </div>
-      <% if @pull_request.changed_files.any? %>
-        <ul class="list-group list-group-flush">
-          <% @pull_request.source_files.each do |f| %>
-            <li class="list-group-item py-1 ps-3 font-monospace small"><i class="bi bi-file-code me-2 text-primary"></i><%= f %></li>
-          <% end %>
-          <% @pull_request.test_files.each do |f| %>
-            <li class="list-group-item py-1 ps-3 font-monospace small text-success"><i class="bi bi-check2-square me-2"></i><%= f %></li>
-          <% end %>
-        </ul>
+      <% if files.any? %>
+        <div class="row g-0">
+          <%# file list %>
+          <div class="col-md-4 border-end" style="max-height:540px;overflow:auto;">
+            <% files.each_with_index do |f, i| %>
+              <% feature = f["path"].to_s.end_with?(".feature") %>
+              <button type="button"
+                      class="btn text-start w-100 border-0 rounded-0 px-3 py-2 pr-file-item <%= 'active-file' if i.zero? %>"
+                      data-pr-files-target="item" data-index="<%= i %>" data-action="pr-files#select">
+                <div class="font-monospace small text-truncate"><%= feature ? "🧪" : "📄" %> <%= f["path"] %></div>
+                <div class="fs-8">
+                  <span class="text-success">+<%= f["additions"] || 0 %></span>
+                  <span class="text-danger">-<%= f["deletions"] || 0 %></span>
+                  <span class="badge bg-light text-dark border ms-1"><%= f["language"] %></span>
+                </div>
+              </button>
+            <% end %>
+          </div>
+          <%# code viewer %>
+          <div class="col-md-8">
+            <% files.each_with_index do |f, i| %>
+              <div data-pr-files-target="panel" data-index="<%= i %>" class="<%= 'd-none' unless i.zero? %>">
+                <div class="d-flex align-items-center gap-2 px-3 py-2 border-bottom bg-light">
+                  <code class="small flex-grow-1 text-truncate"><%= f["path"] %></code>
+                  <% if f["path"].to_s.end_with?(".feature") %>
+                    <%= link_to "🧪 Edit test", edit_cucumber_test_path(pull_request_id: @pull_request.id, path: f["path"]),
+                          class: "btn btn-sm btn-outline-primary" %>
+                  <% elsif f["url"].present? %>
+                    <%= link_to "View on Gitea ↗", f["url"], target: "_blank", rel: "noopener", class: "btn btn-sm btn-outline-secondary" %>
+                  <% end %>
+                </div>
+                <pre class="mb-0 p-3 overflow-auto" style="max-height:480px;background:#0d1117;color:#e6edf3;font-size:.82rem;"><%= f["content"].presence || "(no preview — view on Gitea)" %></pre>
+              </div>
+            <% end %>
+          </div>
+        </div>
       <% else %>
         <div class="card-body text-muted small"><i class="bi bi-info-circle me-1"></i>No file data — click Refresh from Gitea.</div>
       <% end %>
     </div>
-
-    <%# Code Diff %>
-    <% if @pull_request.code_changed.present? %>
-      <div class="card shadow-sm mb-3">
-        <div class="card-header">
-          <strong><i class="bi bi-code-slash me-2"></i>Source Diff</strong>
-        </div>
-        <div class="card-body p-0">
-          <pre class="mb-0 p-3 overflow-auto font-monospace small" style="max-height:480px;background:#0d1117;color:#e6edf3;"><%= @pull_request.code_changed %></pre>
-        </div>
-      </div>
-    <% end %>
-
-    <%# Test Diff %>
-    <% if @pull_request.test_code.present? %>
-      <div class="card shadow-sm mb-3">
-        <div class="card-header">
-          <strong><i class="bi bi-check2-all me-2"></i>Test Diff</strong>
-        </div>
-        <div class="card-body p-0">
-          <pre class="mb-0 p-3 overflow-auto font-monospace small" style="max-height:480px;background:#0d1117;color:#a5d6a7;"><%= @pull_request.test_code %></pre>
-        </div>
-      </div>
-    <% end %>
 
   </div>
 
   <%# ── Right column ──────────────────────────────────────────── %>
   <div class="col-lg-4">
 
-    <%# CI / Test Results %>
+    <%# Tests in this PR (with results + coverage) %>
+    <% prtests = @pull_request.pr_tests %>
+    <% if prtests.any? %>
+      <div class="card shadow-sm mb-3">
+        <div class="card-header d-flex align-items-center justify-content-between">
+          <strong><i class="bi bi-check2-all me-2"></i>Tests (<%= prtests.size %>)</strong>
+          <% if @pull_request.coverage_percent.present? %>
+            <span class="badge bg-info text-dark">Coverage <%= @pull_request.coverage_percent %>%</span>
+          <% end %>
+        </div>
+        <table class="table table-sm mb-0 small align-middle">
+          <tbody>
+            <% prtests.each do |t| %>
+              <% st = t["status"].to_s %>
+              <% badge = st == "passed" ? "bg-success" : (st == "failed" ? "bg-danger" : "bg-secondary") %>
+              <tr>
+                <td style="width:1%;"><span class="badge <%= badge %>"><%= st == "passed" ? "✓" : (st == "failed" ? "✗" : "⤳") %></span></td>
+                <td>
+                  <div class="fw-semibold"><%= t["name"] %></div>
+                  <div class="text-muted"><code class="fs-8"><%= t["file"] %></code></div>
+                </td>
+                <td><span class="badge bg-light text-dark border"><%= t["suite"] %></span></td>
+                <td class="text-end text-muted text-nowrap"><%= t["time_ms"] %>ms</td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+
+    <%# CI / Test Results summary %>
     <div class="card shadow-sm mb-3">
       <div class="card-header">
         <strong><i class="bi bi-cpu me-2"></i>CI Results</strong>
@@ -196,9 +235,9 @@
           <strong><i class="bi bi-chat-left-text me-2"></i>Team Comments</strong>
         </div>
         <ul class="list-group list-group-flush">
-          <% @pull_request.comments.includes(:user).order(:created_at).each do |c| %>
+          <% @pull_request.comments.includes(:author).order(:created_at).each do |c| %>
             <li class="list-group-item small py-2">
-              <div class="fw-semibold"><%= c.user&.name.presence || "Anon" %> <span class="text-muted fw-normal"><%= c.created_at.strftime("%b %-d") %></span></div>
+              <div class="fw-semibold"><%= c.author&.display_name.presence || "Anon" %> <span class="text-muted fw-normal"><%= c.created_at.strftime("%b %-d") %></span></div>
               <div><%= c.body %></div>
             </li>
           <% end %>

@@ -1334,6 +1334,131 @@ end
 
 puts "  ✓ Fake pull requests seeded for all projects"
 
+# ──────────────────────────────────────────────────────────────────────────────
+# Rich PR data for EVERY ticket: per-file content (for the code viewer/editor)
+# and structured test results (for the test list + coverage).
+# ──────────────────────────────────────────────────────────────────────────────
+def pr_language_for(project)
+  ts = project.tech_stack.to_s
+  return "csharp"     if ts.match?(/C#|\.NET|VB/i)
+  return "javascript" if ts.match?(/Vue|Node|Next|Nest|TypeScript|JavaScript/i)
+  "ruby"
+end
+
+def pr_feature_content(ticket)
+  name = ticket.title.truncate(60)
+  <<~GHERKIN
+    Feature: #{name}
+      As a user
+      I want the behaviour described in T-#{ticket.id}
+      So that the product works as expected
+
+      Background:
+        Given the application is running
+
+      Scenario: Happy path
+        Given a valid request
+        When the user performs the action
+        Then the expected result is returned
+
+      Scenario: Validation error
+        Given an invalid request
+        When the user performs the action
+        Then a helpful error is shown
+  GHERKIN
+end
+
+def pr_source_content(ticket, lang)
+  klass = ticket.title.split.first(3).map(&:capitalize).join.gsub(/\W/, "").presence || "Feature"
+  case lang
+  when "csharp"
+    "public class #{klass}Service\n{\n    public Result Handle(Request request)\n    {\n        if (!request.Valid) return Result.Error(\"invalid\");\n        // T-#{ticket.id}: #{ticket.title.truncate(50)}\n        return Result.Ok(Process(request));\n    }\n}\n"
+  when "javascript"
+    "export function handle#{klass}(request) {\n  if (!request.valid) throw new Error('invalid');\n  // T-#{ticket.id}: #{ticket.title.truncate(50)}\n  return process(request);\n}\n"
+  else
+    "class #{klass}Service\n  def initialize(request)\n    @request = request\n  end\n\n  # T-#{ticket.id}: #{ticket.title.truncate(50)}\n  def call\n    raise ArgumentError, 'invalid' unless @request.valid?\n    process(@request)\n  end\nend\n"
+  end
+end
+
+def pr_test_source(lang)
+  case lang
+  when "csharp"
+    "[Test]\npublic void Handle_ReturnsOk_ForValidRequest()\n{\n    Assert.IsTrue(new Service().Handle(Valid()).Ok);\n}\n"
+  when "javascript"
+    "test('handles a valid request', () => {\n  expect(handle({ valid: true })).toBeTruthy();\n});\n"
+  else
+    "RSpec.describe Service do\n  it 'returns ok for a valid request' do\n    expect(described_class.new(valid_request).call).to be_present\n  end\nend\n"
+  end
+end
+
+def pr_files_and_tests(ticket, lang, repo_base, branch)
+  slug = ticket.title.parameterize(separator: "_").first(40).presence || "feature"
+  ext, src_dir, test_path = case lang
+  when "csharp"     then [ ".cs", "src", "tests/#{slug}_tests.cs" ]
+  when "javascript" then [ ".js", "src", "tests/#{slug}.test.js" ]
+  else                   [ ".rb", "app/services", "spec/services/#{slug}_spec.rb" ]
+  end
+  src_path     = "#{src_dir}/#{slug}#{ext}"
+  feature_path = "features/#{slug}.feature"
+
+  blob = ->(path) { "#{repo_base}/src/branch/#{branch}/#{path}" }
+  files = [
+    { "path" => src_path, "url" => blob.call(src_path), "language" => PullRequest.language_for(src_path),
+      "status" => "modified", "additions" => rand(10..80), "deletions" => rand(0..30),
+      "content" => pr_source_content(ticket, lang) },
+    { "path" => test_path, "url" => blob.call(test_path), "language" => PullRequest.language_for(test_path),
+      "status" => "added", "additions" => rand(8..40), "deletions" => 0,
+      "content" => pr_test_source(lang) },
+    { "path" => feature_path, "url" => blob.call(feature_path), "language" => "gherkin",
+      "status" => "added", "additions" => rand(12..30), "deletions" => 0,
+      "content" => pr_feature_content(ticket) }
+  ]
+
+  tests = [
+    { "name" => "Happy path",        "file" => feature_path, "suite" => "Cucumber", "status" => "passed",                          "time_ms" => rand(120..900) },
+    { "name" => "Validation error",  "file" => feature_path, "suite" => "Cucumber", "status" => (rand < 0.18 ? "failed" : "passed"), "time_ms" => rand(120..900) },
+    { "name" => "returns ok for a valid request", "file" => test_path, "suite" => "Unit", "status" => "passed",                    "time_ms" => rand(20..200) },
+    { "name" => "raises on invalid input",        "file" => test_path, "suite" => "Unit", "status" => (rand < 0.1 ? "skipped" : "passed"), "time_ms" => rand(20..200) }
+  ]
+  [ files, tests ]
+end
+
+pr_built = 0
+Ticket.includes(:project, :pull_requests).find_each do |ticket|
+  pr = ticket.pull_requests.first
+  next if pr&.files_data.present?
+
+  project   = ticket.project
+  lang      = pr_language_for(project)
+  repo_base = (project.repo_url.presence || "http://gitea.local/devteam/#{project.name.parameterize}")
+  branch    = ticket.branch_name.presence || project.default_branch.presence || "main"
+  files, tests = pr_files_and_tests(ticket, lang, repo_base, branch)
+  pr_number = pr&.pr_number || (5000 + ticket.id)
+
+  pr ||= ticket.pull_requests.build(project: project, pr_number: pr_number,
+                                    title: "T-#{ticket.id}: #{ticket.title.truncate(60)}")
+  pr.assign_attributes(
+    project:      project,
+    files_data:   files,
+    tests_data:   tests,
+    files_changed: files.map { |f| f["path"] },
+    coverage_percent: rand(68.0..98.0).round(1),
+    gitea_url:    pr.gitea_url.presence || "#{repo_base}/pulls/#{pr_number}",
+    status:       pr.status.presence || %w[open review merged].sample,
+    author:       pr.author.presence || (Project.first && project.members.to_a.sample&.name) || "dev",
+    latest_test_results: {
+      "total"   => tests.size,
+      "passed"  => tests.count { |t| t["status"] == "passed" },
+      "failed"  => tests.count { |t| t["status"] == "failed" },
+      "skipped" => tests.count { |t| t["status"] == "skipped" }
+    },
+    synced_at: Time.current - rand(1..72).hours
+  )
+  pr.save!
+  pr_built += 1
+end
+puts "  ✓ Rich PR data (files + tests) on #{pr_built} tickets; #{PullRequest.count} PRs total"
+
 # ─────────────────────────────────────────────────────────────────
 # Documents from docs/ folder
 # ─────────────────────────────────────────────────────────────────

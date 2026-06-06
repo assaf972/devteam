@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_07_060001) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_07_063000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -408,9 +408,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_07_060001) do
     t.string "author"
     t.text "build_errors"
     t.text "code_changed"
+    t.decimal "coverage_percent", precision: 5, scale: 2
     t.datetime "created_at", null: false
     t.text "description"
     t.text "files_changed"
+    t.text "files_data"
     t.string "gitea_url"
     t.text "latest_test_results"
     t.datetime "merged_at"
@@ -420,6 +422,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_07_060001) do
     t.integer "status"
     t.datetime "synced_at"
     t.text "test_code"
+    t.text "tests_data"
     t.integer "ticket_id", null: false
     t.string "title"
     t.datetime "updated_at", null: false
