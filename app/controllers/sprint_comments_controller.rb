@@ -4,6 +4,7 @@ class SprintCommentsController < ApplicationController
   def create
     @comment = @sprint.comments.build(
       body:   params[:comment][:body].to_s.strip,
+      kind:   params.dig(:comment, :kind).presence_in(Comment.kinds.keys) || "note",
       author: current_user
     )
 

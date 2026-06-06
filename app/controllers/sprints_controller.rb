@@ -10,15 +10,32 @@ class SprintsController < ApplicationController
   end
 
   def show
-    @tickets       = @sprint.tickets.includes(:assignee, :owner).order(:status, :priority)
-    # A ticket still needs evaluation/refinement until it has both a story-point
-    # estimate and a dev hour estimate. Everything else is considered planned work.
-    @refinement_tickets, @assigned_tickets =
-      @tickets.partition { |t| t.story_points.blank? || t.dev_estimate_hours.blank? }
+    @tickets = @sprint.tickets.includes(:assignee, :owner, :tasks).order(:status, :priority).to_a
+
+    # Top-tile totals
+    @done_count    = @tickets.count { |t| %w[done closed].include?(t.status) }
+    @progress      = @sprint.progress_percent
+    @bug_count     = @tickets.count { |t| %w[bug_fix hotfix].include?(t.kind) }
+
+    # Tickets tabs: open / completed / needs estimation
+    @tab = params[:tab].presence_in(%w[open completed needs_estimation]) || "open"
+    not_closed = @tickets.reject { |t| %w[done closed].include?(t.status) }
+    @tab_tickets = case @tab
+    when "completed"        then @tickets.select { |t| %w[done closed].include?(t.status) }
+    when "needs_estimation" then not_closed.select { |t| t.story_points.blank? || t.dev_estimate_hours.blank? }
+    else                         not_closed
+    end
+    @tab_counts = {
+      "open"            => not_closed.size,
+      "completed"       => @tickets.size - not_closed.size,
+      "needs_estimation" => not_closed.count { |t| t.story_points.blank? || t.dev_estimate_hours.blank? }
+    }
+
     @meetings      = @sprint.meetings.order(:scheduled_at)
     @pull_requests = @sprint.pull_requests.includes(:ticket).order(created_at: :desc)
     @comments      = @sprint.comments.includes(:author).order(:created_at)
     @comment       = Comment.new
+    @documents     = @sprint.documents.includes(:author).order(updated_at: :desc)
   end
 
   # Analytical dashboard summarising and analysing a single sprint.

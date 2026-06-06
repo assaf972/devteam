@@ -1473,6 +1473,43 @@ end
 puts "  ✓ #{doc_count} documents seeded from docs/ folder"
 
 # ──────────────────────────────────────────────────────────────────────────────
+# Sprint documents (related to a sprint) + sprint comments with kinds
+# ──────────────────────────────────────────────────────────────────────────────
+sprint_doc_count = 0
+Sprint.includes(project: :members).find_each do |sprint|
+  next if sprint.documents.any?
+
+  author = sprint.project.members.to_a.sample || admin
+  [
+    { title: "#{sprint.name} — Sprint Plan", doc_type: :timeline,
+      content: "# #{sprint.name} — Plan\n\n## Goal\n#{sprint.goals}\n\n## Committed scope\n_Tickets pulled into this sprint._\n" },
+    { title: "#{sprint.name} — Retro Notes", doc_type: :other,
+      content: "# #{sprint.name} — Retrospective\n\n## What went well\n- TBD\n\n## To improve\n- TBD\n" }
+  ].each do |attrs|
+    sprint.project.documents.create!(attrs.merge(sprint: sprint, author: author, version_number: "1.0", is_template: false))
+    sprint_doc_count += 1
+  end
+end
+puts "  ✓ #{sprint_doc_count} sprint documents"
+
+SAMPLE_SPRINT_COMMENTS = [
+  [ :green_card, "Great pace this week — CI stayed green throughout. 👏" ],
+  [ :red_card,   "Two high-priority tickets slipped; we need tighter WIP limits." ],
+  [ :note,       "Reminder: demo prep on Thursday before the review." ]
+].freeze
+sprint_comment_count = 0
+Sprint.active.includes(:project).find_each do |sprint|
+  next if sprint.comments.any?
+
+  members = sprint.participants.to_a
+  SAMPLE_SPRINT_COMMENTS.each do |kind, body|
+    sprint.comments.create!(kind: kind, body: body, author: members.sample || admin)
+    sprint_comment_count += 1
+  end
+end
+puts "  ✓ #{sprint_comment_count} sprint comments (with green/red cards)"
+
+# ──────────────────────────────────────────────────────────────────────────────
 # Assign tickets to sprints so sprint dashboards have data
 #   done/closed → a completed sprint · active work → the active sprint · backlog → none
 # ──────────────────────────────────────────────────────────────────────────────

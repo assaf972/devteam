@@ -5,6 +5,7 @@ class CodeReviewCommentsController < ApplicationController
   def create
     @comment = @code_review.comments.build(
       body:   params[:comment][:body].to_s.strip,
+      kind:   params.dig(:comment, :kind).presence_in(Comment.kinds.keys) || "note",
       author: current_user
     )
 
