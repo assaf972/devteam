@@ -76,12 +76,16 @@ class TicketsController < ApplicationController
     end
   end
 
-  def edit; end
+  def edit
+    @section = edit_section
+  end
 
   def update
+    @section = edit_section
     old_assignee_id = @ticket.assignee_id
     updated_attrs = ticket_params.to_h
-    updated_attrs["estimated_by_id"] = current_user.id
+    # Only stamp the estimator when the estimation fields are the ones being edited.
+    updated_attrs["estimated_by_id"] = current_user.id if @section == "estimation"
 
     if @ticket.update(updated_attrs)
       # Auto-create branch when ticket is assigned for the first time
@@ -163,6 +167,12 @@ class TicketsController < ApplicationController
   def set_ticket
     @ticket  = Ticket.find(params[:id])
     @project = @ticket.project
+  end
+
+  # Which slice of the ticket form to render: "specs" (the basics) or
+  # "estimation" (refinement & estimation). Keeps each form short.
+  def edit_section
+    %w[specs estimation].include?(params[:section]) ? params[:section] : "specs"
   end
 
   def ticket_params

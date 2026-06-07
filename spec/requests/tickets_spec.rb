@@ -154,11 +154,26 @@ RSpec.describe "Tickets", type: :request do
       expect(desc_pos).to be < htr_pos
     end
 
-    it "exposes the estimate fields once the ticket is approved for refinement" do
-      ticket.update!(approved_at: Time.current, story_points: nil, dev_estimate_hours: nil)
+    it "defaults to the short specs form (no estimation fields)" do
       get edit_ticket_path(ticket)
+      expect(response.body).to include("ticket_how_to_reproduce_input")
+      expect(response.body).not_to include("ticket_dev_estimate_hours")
+      # both section links are offered
+      expect(response.body).to include(edit_ticket_path(ticket, section: "estimation"))
+    end
+
+    it "exposes the estimate fields on the estimation section" do
+      ticket.update!(approved_at: Time.current, story_points: nil, dev_estimate_hours: nil)
+      get edit_ticket_path(ticket, section: "estimation")
       expect(response.body).to include("Refinement &amp; Estimation")
       expect(response.body).to include("ticket_dev_estimate_hours")
+    end
+
+    it "shows the current estimation value on the estimation section when estimated" do
+      ticket.update!(approved_at: Time.current, story_points: 8, dev_estimate_hours: 12, tester_estimate_hours: 4)
+      get edit_ticket_path(ticket, section: "estimation")
+      expect(response.body).to include("Current estimation:")
+      expect(response.body).to include("8")
     end
   end
 
@@ -174,13 +189,22 @@ RSpec.describe "Tickets", type: :request do
         expect(ticket.reload.status).to eq("in_progress")
       end
 
-      it "sets estimated_by to the current user" do
+      it "sets estimated_by to the current user when editing the estimation section" do
         patch ticket_path(ticket), params: {
+          section: "estimation",
           ticket: { dev_estimate_hours: "6.0", actual_hours: "1d 2h" }
         }
 
         expect(response).to redirect_to(ticket_path(ticket))
         expect(ticket.reload.estimated_by_id).to eq(user.id)
+      end
+
+      it "does not stamp estimated_by when editing the specs section" do
+        patch ticket_path(ticket), params: {
+          section: "specs",
+          ticket: { title: "Specs only edit" }
+        }
+        expect(ticket.reload.estimated_by_id).to be_nil
       end
     end
 
@@ -327,9 +351,9 @@ RSpec.describe "Tickets", type: :request do
       expect(response.body).not_to include("ticket_story_points")
     end
 
-    it "shows estimation fields once approved but not yet estimated" do
+    it "shows estimation fields on the estimation section once approved but not yet estimated" do
       ticket.update!(approved_at: Time.current, story_points: nil, dev_estimate_hours: nil)
-      get edit_ticket_path(ticket)
+      get edit_ticket_path(ticket, section: "estimation")
       expect(response.body).to include("Refinement &amp; Estimation")
       expect(response.body).to include("ticket_story_points")
     end

@@ -107,6 +107,19 @@ RSpec.describe "Projects", type: :request do
       expect(response.body).to include("Estimated")
       expect(response.body).to include("Actual")
     end
+
+    it "offers a 'Set as active' button for non-current sprints" do
+      planning = create(:sprint, project: project, name: "Sprint Planning", status: :planning)
+      get project_path(project)
+      expect(response.body).to include("Set as active")
+      expect(response.body).to include(activate_sprint_path(planning))
+    end
+
+    it "shows ★ Active instead of the button for the current sprint" do
+      create(:sprint, project: project, name: "Sprint Live", status: :active)
+      get project_path(project)
+      expect(response.body).to include("★ Active")
+    end
   end
 
   # ── GET /projects/:id/dashboard ───────────────────────────────────────────

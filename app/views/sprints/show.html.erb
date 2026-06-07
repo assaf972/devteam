@@ -1,15 +1,18 @@
 <% content_for :title, @sprint.name %>
 
+<%= render "shared/context_bar", type: "Sprint", icon: "🏃", color: "warning",
+      crumbs: [
+        ["Projects", projects_path],
+        [@project.name, project_path(@project)],
+        ["Sprints", project_sprints_path(@project)],
+        [@sprint.name, nil]
+      ] %>
+
 <%# ── Header ──────────────────────────────────────────────────────────────── %>
 <div class="level">
   <div class="level-left">
     <div>
-      <nav class="breadcrumb is-small"><ul>
-        <li><%= link_to @project.name, @project %></li>
-        <li><%= link_to "Sprints", project_sprints_path(@project) %></li>
-        <li class="is-active"><a><%= @sprint.name %></a></li>
-      </ul></nav>
-      <h1 class="fw-bold mb-1"><%= @sprint.name %></h1>
+      <h1 class="fw-bold mb-1">🏃 <%= @sprint.name %></h1>
       <p class="text-muted fs-7">
         <%= @sprint.start_date.strftime("%d %b %Y") %> – <%= @sprint.end_date.strftime("%d %b %Y") %>
         · <%= @sprint.duration_days %> days
