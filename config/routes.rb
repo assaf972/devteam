@@ -263,7 +263,10 @@ Rails.application.routes.draw do
     get "messages",    to: "mobile#messages",    as: :messages
     get "meetings",    to: "mobile#meetings",    as: :meetings
     get "projects",    to: "mobile#projects",    as: :projects
+    get "project/:id", to: "mobile#project",     as: :project
     get "tickets",     to: "mobile#tickets",     as: :tickets
+    get "ticket/:id",  to: "mobile#ticket",      as: :ticket
+    get "sprint/:id",  to: "mobile#sprint",      as: :sprint
     get "video-calls", to: "mobile#video_calls", as: :video_calls
     root to: "mobile#today", as: :root
   end

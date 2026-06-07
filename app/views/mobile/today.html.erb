@@ -67,7 +67,7 @@
                     else "dot-default"
                     end
       %>
-      <%= link_to ticket_path(ticket), class: "ticket-item px-3" do %>
+      <%= link_to mobile_ticket_path(ticket), class: "ticket-item px-3" do %>
         <span class="ticket-dot <%= dot_class %>"></span>
         <div style="flex:1;overflow:hidden;">
           <div class="ticket-title"><%= ticket.title.truncate(48) %></div>
