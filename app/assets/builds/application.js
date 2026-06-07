@@ -20244,6 +20244,16 @@ var ai_chat_controller_default = class extends Controller {
   }
 };
 
+// app/javascript/controllers/pr_files_controller.js
+var pr_files_controller_default = class extends Controller {
+  static targets = ["item", "panel"];
+  select(event) {
+    const idx = event.currentTarget.dataset.index;
+    this.itemTargets.forEach((el) => el.classList.toggle("active-file", el.dataset.index === idx));
+    this.panelTargets.forEach((el) => el.classList.toggle("d-none", el.dataset.index !== idx));
+  }
+};
+
 // app/javascript/controllers/gherkin_editor_controller.js
 var gherkin_editor_controller_default = class extends Controller {
   static targets = ["input", "highlight"];
@@ -20288,6 +20298,7 @@ application.register("calendar", calendar_controller_default);
 application.register("log-viewer", log_viewer_controller_default);
 application.register("quick-contact", quick_contact_controller_default);
 application.register("ai-chat", ai_chat_controller_default);
+application.register("pr-files", pr_files_controller_default);
 application.register("gherkin-editor", gherkin_editor_controller_default);
 
 // node_modules/@popperjs/core/lib/index.js

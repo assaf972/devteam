@@ -3,8 +3,9 @@ class MeetingCommentsController < ApplicationController
 
   def create
     body = params.dig(:body) || params.dig(:comment, :body)
+    kind = params.dig(:comment, :kind).presence_in(Comment.kinds.keys) || "note"
     if body.present?
-      @meeting.comments.create!(body: body, author: current_user)
+      @meeting.comments.create!(body: body, kind: kind, author: current_user)
     end
     redirect_to @meeting
   end

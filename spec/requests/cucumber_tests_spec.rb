@@ -25,6 +25,18 @@ RSpec.describe "CucumberTests", type: :request do
     end
   end
 
+  describe "GET /cucumber_tests/edit?pull_request_id=" do
+    it "loads the feature content from the PR's stored files (no Gitea fetch needed)" do
+      pr = create(:pull_request, project: project, ticket: ticket, pr_number: 9,
+                  files_data: [{ "path" => "features/checkout.feature", "language" => "gherkin",
+                                 "content" => "Feature: Checkout\n  Scenario: Buy\n    Given a cart\n    Then it works" }])
+      get edit_cucumber_test_path(pull_request_id: pr.id, path: "features/checkout.feature")
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include("Feature: Checkout")
+      expect(response.body).to include("Back to PR ##{pr.pr_number}")
+    end
+  end
+
   describe "POST /cucumber_tests/review" do
     it "runs the AI test review on the edited content and shows the result" do
       allow_any_instance_of(Ai::OllamaClient).to receive(:chat)

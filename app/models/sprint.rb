@@ -6,6 +6,7 @@ class Sprint < ApplicationRecord
   has_many :pull_requests, through: :tickets
   has_many :comments, as: :commentable, dependent: :destroy
   has_many :ai_reviews, as: :reviewable, dependent: :destroy
+  has_many :documents, dependent: :nullify
 
   enum :status, { planning: 0, active: 1, completed: 2, cancelled: 3 }, default: :planning
 

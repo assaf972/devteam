@@ -59,34 +59,57 @@ RSpec.describe "Sprints", type: :request do
       expect(response.body).to match(/\d+%/)
     end
 
-    it "lists fully-estimated tickets under Assigned Tickets" do
-      ready = create(:ticket, project: project, sprint: sprint,
-                     title: "Ready ticket", story_points: 3, dev_estimate_hours: 8)
+    it "shows the top tiles incl. a bug count (bugs, not stories)" do
+      create(:ticket, project: project, sprint: sprint, kind: :bug_fix)
+      create(:ticket, project: project, sprint: sprint, kind: :story)
       get sprint_path(sprint)
-      expect(response.body).to include("Assigned Tickets")
-      expect(response.body).to include("Ready ticket")
+      expect(response.body).to include("Team velocity")
+      expect(response.body).to include("🐞 Bugs")
     end
 
-    it "lists tickets missing estimates under Needs Evaluation & Refinement" do
-      unrefined = create(:ticket, project: project, sprint: sprint,
-                         title: "Fuzzy ticket", story_points: nil, dev_estimate_hours: nil)
-      get sprint_path(sprint)
-      expect(response.body).to include("Needs Evaluation")
-      expect(response.body).to include("Fuzzy ticket")
-      expect(response.body).to include("No story points")
-      expect(response.body).to include("No dev estimate")
+    it "tabs the tickets into open / completed / needs estimation" do
+      open_t      = create(:ticket, project: project, sprint: sprint, title: "Open work", status: :open, story_points: 3, dev_estimate_hours: 8)
+      done_t      = create(:ticket, project: project, sprint: sprint, title: "Shipped work", status: :done)
+      unestimated = create(:ticket, project: project, sprint: sprint, title: "Fuzzy work", status: :open, story_points: nil, dev_estimate_hours: nil)
+
+      get sprint_path(sprint, tab: "completed")
+      expect(response.body).to include("Shipped work")
+      expect(response.body).not_to include("Open work")
+
+      get sprint_path(sprint, tab: "needs_estimation")
+      expect(response.body).to include("Fuzzy work")
+      expect(response.body).to include("Refine →")
     end
 
-    it "puts an estimated ticket in the assigned table, not refinement" do
-      ready     = create(:ticket, project: project, sprint: sprint,
-                         title: "Estimated work", story_points: 5, dev_estimate_hours: 4)
-      unrefined = create(:ticket, project: project, sprint: sprint,
-                         title: "Needs grooming", story_points: nil, dev_estimate_hours: nil)
+    it "shows sprint comments with their kind (green/red card)" do
+      sprint.comments.create!(kind: :green_card, body: "Nice momentum!", author: user)
+      sprint.comments.create!(kind: :red_card, body: "Scope slipped", author: user)
       get sprint_path(sprint)
-      assigned_section   = response.body[/Assigned Tickets.*?Needs Evaluation/m]
-      refinement_section = response.body[/Needs Evaluation.*/m]
-      expect(assigned_section).to include("Estimated work")
-      expect(refinement_section).to include("Needs grooming")
+      expect(response.body).to include("Sprint comments")
+      expect(response.body).to include("Green card")
+      expect(response.body).to include("Red card")
+      # the comment form lets you choose the kind
+      expect(response.body).to include('name="comment[kind]"')
+    end
+
+    it "lists documents created in this sprint" do
+      project.documents.create!(title: "Sprint Plan v1", content: "# Plan", sprint: sprint, doc_type: :timeline)
+      get sprint_path(sprint)
+      expect(response.body).to include("Sprint documents")
+      expect(response.body).to include("Sprint Plan v1")
+    end
+  end
+
+  # ── Sprint comment kind ─────────────────────────────────────────────────────
+  describe "POST /sprints/:sprint_id/comments with a kind" do
+    it "stores the selected kind" do
+      post sprint_comments_path(sprint), params: { comment: { body: "Blocker!", kind: "red_card" } }
+      expect(sprint.comments.last.kind).to eq("red_card")
+    end
+
+    it "defaults to note for an invalid/blank kind" do
+      post sprint_comments_path(sprint), params: { comment: { body: "fyi", kind: "bogus" } }
+      expect(sprint.comments.last.kind).to eq("note")
     end
   end
 

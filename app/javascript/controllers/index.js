@@ -28,5 +28,8 @@ application.register("quick-contact", QuickContactController)
 import AiChatController from "./ai_chat_controller"
 application.register("ai-chat", AiChatController)
 
+import PrFilesController from "./pr_files_controller"
+application.register("pr-files", PrFilesController)
+
 import GherkinEditorController from "./gherkin_editor_controller"
 application.register("gherkin-editor", GherkinEditorController)

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_06_110000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_07_063000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -194,6 +194,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_110000) do
     t.integer "commentable_id", null: false
     t.string "commentable_type", null: false
     t.datetime "created_at", null: false
+    t.integer "kind", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["author_id"], name: "index_comments_on_author_id"
     t.index ["commentable_type", "commentable_id"], name: "index_comments_on_commentable"
@@ -292,6 +293,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_110000) do
     t.integer "doc_type"
     t.boolean "is_template", default: false, null: false
     t.integer "project_id", null: false
+    t.bigint "sprint_id"
     t.text "summary"
     t.integer "template_id"
     t.string "title"
@@ -300,6 +302,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_110000) do
     t.index ["author_id"], name: "index_documents_on_author_id"
     t.index ["is_template"], name: "index_documents_on_is_template"
     t.index ["project_id"], name: "index_documents_on_project_id"
+    t.index ["sprint_id"], name: "index_documents_on_sprint_id"
     t.index ["template_id"], name: "index_documents_on_template_id"
   end
 
@@ -405,9 +408,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_110000) do
     t.string "author"
     t.text "build_errors"
     t.text "code_changed"
+    t.decimal "coverage_percent", precision: 5, scale: 2
     t.datetime "created_at", null: false
     t.text "description"
     t.text "files_changed"
+    t.text "files_data"
     t.string "gitea_url"
     t.text "latest_test_results"
     t.datetime "merged_at"
@@ -417,6 +422,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_06_110000) do
     t.integer "status"
     t.datetime "synced_at"
     t.text "test_code"
+    t.text "tests_data"
     t.integer "ticket_id", null: false
     t.string "title"
     t.datetime "updated_at", null: false
