@@ -61,7 +61,7 @@
   <% if project_sprints.any? %>
     <table class="table table-hover w-100 fs-7 align-middle mb-0">
       <thead>
-        <tr><th>Sprint</th><th>Status</th><th>Dates</th><th>Progress</th><th class="text-end">Estimated</th><th class="text-end">Actual</th></tr>
+        <tr><th>Sprint</th><th>Status</th><th>Dates</th><th>Progress</th><th class="text-end">Estimated</th><th class="text-end">Actual</th><th></th></tr>
       </thead>
       <tbody>
         <% project_sprints.each do |sprint| %>
@@ -78,6 +78,15 @@
             </td>
             <td class="text-end num"><%= sprint.total_estimated_hours %>h</td>
             <td class="text-end num"><%= sprint.total_actual_hours %>h</td>
+            <td class="text-end" onclick="event.stopPropagation();">
+              <% if sprint.current? %>
+                <span class="badge bg-success">★ Active</span>
+              <% else %>
+                <%= button_to "Set as active", activate_sprint_path(sprint), method: :patch,
+                      class: "btn btn-outline-success btn-sm py-0",
+                      form: { data: { turbo_confirm: "Make \"#{sprint.name}\" the active sprint for #{@project.name}?" } } %>
+              <% end %>
+            </td>
           </tr>
         <% end %>
       </tbody>

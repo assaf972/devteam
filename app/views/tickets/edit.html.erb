@@ -13,7 +13,19 @@
   <div class="alert alert-light fs-7">Draft stage — fill in the basics, then <strong>approve</strong> the ticket to refine and estimate it.</div>
 <% end %>
 
-<%= render "form", ticket: @ticket %>
+<%# Switch between the short specs form and the short estimation form. %>
+<ul class="nav nav-pills mb-3">
+  <li class="nav-item">
+    <%= link_to "📝 Specs", edit_ticket_path(@ticket, section: "specs"),
+          class: "nav-link #{'active' if @section == 'specs'}" %>
+  </li>
+  <li class="nav-item">
+    <%= link_to "📊 Estimation", edit_ticket_path(@ticket, section: "estimation"),
+          class: "nav-link #{'active' if @section == 'estimation'}" %>
+  </li>
+</ul>
+
+<%= render "form", ticket: @ticket, section: @section %>
 
 <% if @ticket.estimated? %>
   <div class="d-flex align-items-center mb-2 mt-4">

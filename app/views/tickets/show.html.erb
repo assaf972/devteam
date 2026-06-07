@@ -17,7 +17,10 @@
           <% else %>
             <%= button_to "✓ Approve", approve_ticket_path(@ticket), method: :patch, class: "btn btn-success btn-sm" %>
           <% end %>
-          <%= link_to t("common.actions.edit"), edit_ticket_path(@ticket), class: "btn btn-secondary btn-sm" %>
+          <%= link_to "📝 Edit specs", edit_ticket_path(@ticket, section: "specs"), class: "btn btn-secondary btn-sm" %>
+          <%= link_to edit_ticket_path(@ticket, section: "estimation"), class: "btn btn-outline-secondary btn-sm" do %>
+            📊 <%= @ticket.estimated? ? "Edit estimation (#{@ticket.story_points || "—"} pts)" : "Estimate" %>
+          <% end %>
           <%= link_to t("common.delete"), ticket_path(@ticket), data: { turbo_method: :delete, turbo_confirm: t("common.confirm_delete") }, class: "btn btn-outline-danger btn-sm" %>
         </div>
       </div>
