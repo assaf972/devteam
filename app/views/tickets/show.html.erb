@@ -1,5 +1,13 @@
 <% content_for :title, "Ticket ##{@ticket.id} – #{@ticket.title}" %>
 
+<%= render "shared/context_bar", type: "Ticket", icon: "🎫", color: "info",
+      crumbs: [
+        ["Projects", projects_path],
+        [@ticket.project.name, project_path(@ticket.project)],
+        ["Tickets", project_tickets_path(@ticket.project)],
+        ["##{@ticket.id}", nil]
+      ] %>
+
 <div class="row">
   <%# ─── Main column ──────────────────────────────────────────────────────── %>
   <div class="col-lg-8">
@@ -7,7 +15,7 @@
     <div class="card p-3 mb-3">
       <div class="d-flex justify-content-between align-items-start gap-3">
         <div>
-          <span class="text-muted fw-semibold">#<%= @ticket.id %></span>
+          <span class="text-muted fw-semibold">🎫 Ticket #<%= @ticket.id %> · <%= link_to @ticket.project.name, project_path(@ticket.project), class: "text-muted" %></span>
           <h1 class="fw-bold fs-4 mt-1 mb-0"><%= @ticket.title %></h1>
           <div class="d-flex flex-wrap gap-1 mt-2"><%= render "tickets/progress_badges", ticket: @ticket %></div>
         </div>

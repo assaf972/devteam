@@ -1,9 +1,12 @@
 <% content_for :title, @project.name %>
 
+<%= render "shared/context_bar", type: "Project", icon: "📦", color: "primary",
+      crumbs: [["Projects", projects_path], [@project.name, nil]] %>
+
 <div class="level">
   <div class="level-left">
     <div>
-      <h1 class="fw-bold"><%= @project.name %></h1>
+      <h1 class="fw-bold">📦 <%= @project.name %></h1>
       <p class="subfw-bold fs-6 text-muted"><%= @project.tech_stack %></p>
     </div>
   </div>
