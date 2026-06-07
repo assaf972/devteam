@@ -15,7 +15,7 @@
       </div>
       <div style="flex:1;overflow:hidden;">
         <div style="font-weight:700;font-size:0.95rem;">
-          <%= link_to project.name, project_path(project), class: "has-text-dark" %>
+          <%= link_to project.name, mobile_project_path(project), class: "has-text-dark" %>
         </div>
         <div class="mobile-card-meta">
           <% if active_sprint %>
@@ -49,7 +49,7 @@
         </div>
       </div>
       <div class="is-flex" style="gap:0.5rem;flex-wrap:wrap;margin-top:0.5rem;">
-        <%= link_to project_path(project), class: "button is-small is-light is-rounded" do %>
+        <%= link_to mobile_project_path(project), class: "button is-small is-light is-rounded" do %>
           <%= t('mobile.projects.view') %>
         <% end %>
         <%= link_to project_tickets_path(project), class: "button is-small is-light is-rounded" do %>

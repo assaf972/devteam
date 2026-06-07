@@ -3,35 +3,7 @@
 <%# ── Open tickets ────────────────────────────────────────────────────────── %>
 <% if @open.any? %>
   <p class="mobile-section-title"><%= t('mobile.tickets.open_header', count: @open.size) %></p>
-  <div class="box p-0" style="overflow:hidden;">
-    <% @open.each do |ticket| %>
-      <%
-        dot_class = case ticket.priority.to_s
-                    when "critical" then "dot-critical"
-                    when "high"     then "dot-high"
-                    when "medium"   then "dot-medium"
-                    when "low"      then "dot-low"
-                    else "dot-default"
-                    end
-        status_color = { "todo" => "is-light", "in_progress" => "is-info is-light",
-                         "in_review" => "is-warning is-light", "done" => "is-success is-light",
-                         "closed" => "is-light", "blocked" => "is-danger is-light" }
-        st_class = status_color.fetch(ticket.status.to_s, "is-light")
-      %>
-      <%= link_to ticket_path(ticket), class: "ticket-item px-3" do %>
-        <span class="ticket-dot <%= dot_class %>"></span>
-        <div style="flex:1;overflow:hidden;">
-          <div class="ticket-title"><%= ticket.title.truncate(44) %></div>
-          <div class="ticket-project"><%= ticket.project&.name %></div>
-          <div class="d-flex flex-wrap align-items-center gap-1 mt-1">
-            <%= render "tickets/people", ticket: ticket, size: 20 %>
-            <%= render "tickets/progress_badges", ticket: ticket %>
-          </div>
-        </div>
-        <span class="tag is-rounded is-small <%= st_class %>"><%= ticket.status.to_s.humanize %></span>
-      <% end %>
-    <% end %>
-  </div>
+  <%= render "mobile/tickets", tickets: @open %>
 <% else %>
   <div class="has-text-centered py-5" style="color:#bbb;">
     <p style="font-size:3rem;">✅</p>
@@ -42,23 +14,12 @@
 
 <%# ── Recently done ───────────────────────────────────────────────────────── %>
 <% if @done.any? %>
-  <p class="mobile-section-title"><%= t('mobile.tickets.done_header') %></p>
-  <div class="box p-0" style="overflow:hidden;">
-    <% @done.each do |ticket| %>
-      <%= link_to ticket_path(ticket), class: "ticket-item px-3", style: "opacity:0.6;" do %>
-        <span class="ticket-dot dot-default"></span>
-        <div style="flex:1;overflow:hidden;">
-          <div class="ticket-title"><%= ticket.title.truncate(44) %></div>
-          <div class="ticket-project"><%= ticket.project&.name %></div>
-        </div>
-        <span class="tag is-rounded is-small is-success is-light"><%= ticket.status.to_s.humanize %></span>
-      <% end %>
-    <% end %>
-  </div>
+  <p class="mobile-section-title">Recently done</p>
+  <%= render "mobile/tickets", tickets: @done %>
 <% end %>
 
 <div class="mt-4" style="text-align:right;">
-  <%= link_to projects_path, class: "button is-light is-rounded is-small" do %>
+  <%= link_to mobile_projects_path, class: "button is-light is-rounded is-small" do %>
     <%= t('mobile.tickets.browse_all') %>
   <% end %>
 </div>

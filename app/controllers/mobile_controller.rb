@@ -108,12 +108,12 @@ class MobileController < ApplicationController
 
   # ── Tickets ───────────────────────────────────────────────────────────────
   def tickets
-    @my_tickets = current_user.assigned_tickets
-                               .includes(:project, :sprint)
-                               .order(priority: :desc, updated_at: :desc)
+    scope = current_user.assigned_tickets.includes(:project, :assignee, :owner)
+    scope = Ticket.includes(:project, :assignee, :owner) if scope.none?
 
-    @open       = @my_tickets.where.not(status: %i[done closed])
-    @done       = @my_tickets.where(status: %i[done closed]).limit(10)
+    @open = scope.where.not(status: %i[done closed])
+                 .order(priority: :desc, updated_at: :desc).limit(25)
+    @done = scope.where(status: %i[done closed]).order(updated_at: :desc).limit(10)
   end
 
   # ── Video Calls ───────────────────────────────────────────────────────────
@@ -136,5 +136,42 @@ class MobileController < ApplicationController
                         .limit(10)
 
     @active_video = @upcoming_video.select { |m| m.status.to_s == "in_progress" }
+  end
+
+  # ── Project show ────────────────────────────────────────────────────────────
+  def project
+    @project = Project.find(params[:id])
+    @tickets = @project.tickets.includes(:assignee, :owner)
+                       .order(priority: :desc, updated_at: :desc).limit(20)
+    @sprints = @project.sprints.order(start_date: :desc).limit(10)
+    @pull_requests = @project.pull_requests.order(updated_at: :desc).limit(10)
+    @members  = @project.members.order(:name)
+    @notes    = @project.documents.order(updated_at: :desc).limit(10)
+    # Project has no direct comments; surface the latest discussion from its tickets.
+    @comments = Comment.where(commentable_type: "Ticket", commentable_id: @project.ticket_ids)
+                       .includes(:author).order(created_at: :desc).limit(10)
+  end
+
+  # ── Sprint show ─────────────────────────────────────────────────────────────
+  def sprint
+    @sprint  = Sprint.find(params[:id])
+    @project = @sprint.project
+    @tickets = @sprint.tickets.includes(:assignee, :owner)
+                      .order(priority: :desc, updated_at: :desc)
+    @pull_requests = @sprint.pull_requests.includes(:project).order(updated_at: :desc).limit(10)
+    @members  = @sprint.participants
+    @notes    = @sprint.documents.order(updated_at: :desc).limit(10)
+    @comments = @sprint.comments.includes(:author).order(created_at: :desc).limit(20)
+  end
+
+  # ── Ticket show ─────────────────────────────────────────────────────────────
+  def ticket
+    @ticket  = Ticket.find(params[:id])
+    @project = @ticket.project
+    @tasks   = @ticket.tasks.order(:created_at)
+    @pull_requests = @ticket.pull_requests.order(updated_at: :desc)
+    @comments = @ticket.comments.includes(:author).order(created_at: :desc)
+    @members  = [@ticket.assignee, @ticket.owner, *@ticket.watchers].compact.uniq
+    @notes    = @project.documents.order(updated_at: :desc).limit(5)
   end
 end
