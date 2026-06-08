@@ -58,6 +58,17 @@ RSpec.describe "Api::V1 client integrations", type: :request do
       expect(ticket.reload.status).to eq("in_progress")
       expect(ticket.priority).to eq("critical")
     end
+
+    it "persists branch_name (used by the devteam CLI `ticket open`)" do
+      patch "/api/v1/tickets/#{ticket.id}",
+            params: { ticket: { branch_name: "feature/t-#{ticket.id}-cli" } },
+            headers: headers,
+            as: :json
+
+      expect(response).to have_http_status(:ok)
+      expect(ticket.reload.branch_name).to eq("feature/t-#{ticket.id}-cli")
+      expect(response.parsed_body["branch_name"]).to eq("feature/t-#{ticket.id}-cli")
+    end
   end
 
   describe "POST /api/v1/pull_requests" do
