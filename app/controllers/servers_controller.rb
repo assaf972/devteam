@@ -23,6 +23,32 @@ class ServersController < ApplicationController
     @deployments = Deployment.where(ip_address: @ip).includes(:project).order(created_at: :desc).limit(20)
   end
 
+  # Docker / compose management console for a server.
+  def console
+    @ip     = params[:ip].to_s
+    @latest = ServerHeartbeat.for_ip(@ip).recent.first
+    return redirect_to(servers_path, alert: "Unknown server.") unless @latest
+
+    @docker     = Ops::DockerClient.new(server_ip: @ip)
+    @containers = (@docker.containers rescue [])
+    @dockerfile = @docker.dockerfile
+    @compose    = @docker.compose_file
+  end
+
+  # Container lifecycle actions + saving Dockerfile/compose.
+  def docker
+    ip     = params[:ip].to_s
+    docker = Ops::DockerClient.new(server_ip: ip)
+    msg = if params[:save_kind].present?
+            docker.save_file(params[:save_kind], params[:content])
+    else
+            docker.action(params[:verb], params[:container])
+    end
+    redirect_to server_console_path(ip: ip), notice: msg
+  rescue Ops::DockerClient::Error => e
+    redirect_to server_console_path(ip: ip), alert: e.message
+  end
+
   private
 
   def series(history, attr)

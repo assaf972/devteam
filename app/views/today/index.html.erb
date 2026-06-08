@@ -22,6 +22,42 @@
   <% end %>
 </div>
 
+<%# ── Active sprints ─────────────────────────────────────────────────────── %>
+<% if @active_sprints.any? %>
+  <div class="card p-0 mb-4">
+    <div class="d-flex align-items-center justify-content-between px-3 pt-3">
+      <h2 class="fw-bold fs-5 mb-0">🏃 Active sprints</h2>
+      <span class="badge bg-success"><%= @active_sprints.size %> running</span>
+    </div>
+    <table class="table table-hover align-middle mb-0 mt-2 fs-7">
+      <thead>
+        <tr><th>Sprint</th><th>Project</th><th>Progress</th><th>Dates</th><th class="text-end">Remaining</th></tr>
+      </thead>
+      <tbody>
+        <% @active_sprints.each do |sprint| %>
+          <tr style="cursor:pointer;" onclick="window.location='<%= sprint_path(sprint) %>'">
+            <td class="fw-semibold"><%= sprint.name %></td>
+            <td><%= link_to sprint.project.name, project_path(sprint.project), class: "text-decoration-none" %></td>
+            <td style="min-width:140px;">
+              <div class="progress" style="height:6px;"><div class="progress-bar bg-success" style="width:<%= sprint.progress_percent %>%"></div></div>
+              <span class="fs-8 text-muted"><%= sprint.progress_percent %>% · <%= sprint.tickets.size %> tickets</span>
+            </td>
+            <td class="text-muted"><%= sprint.start_date&.strftime("%d %b") %> – <%= sprint.end_date&.strftime("%d %b") %></td>
+            <td class="text-end">
+              <% days = sprint.respond_to?(:days_remaining) ? sprint.days_remaining : (sprint.end_date && (sprint.end_date - Date.today).to_i) %>
+              <% if days && days >= 0 %>
+                <span class="badge <%= days <= 2 ? 'bg-danger' : 'bg-light text-dark border' %>"><%= days %> day<%= 's' unless days == 1 %></span>
+              <% else %>
+                <span class="badge bg-secondary">ended</span>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>
+
 <%# ── Summary cards ──────────────────────────────────────────────────────── %>
 <div class="row mb-5">
   <div class="col">
@@ -93,6 +129,42 @@
               <%= priority_tag(ticket.priority) if ticket.priority.present? %>
               <%= status_tag(ticket.status) %>
             </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+
+    <%# Review queue -%>
+    <div id="section-reviews" class="card p-3 mb-4">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <h2 class="fw-bold fs-5 mb-0">🔍 Review queue</h2>
+        <span class="badge bg-light text-dark border"><%= @review_queue.size %> open</span>
+      </div>
+      <% if @my_open_prs.any? %>
+        <p class="text-uppercase text-muted fw-bold small mb-1">My open PRs</p>
+        <% @my_open_prs.each do |pr| %>
+          <div class="d-flex justify-content-between align-items-center py-1">
+            <div>
+              <%= link_to "##{pr.pr_number} #{pr.title.truncate(48)}", cockpit_pull_request_path(pr), class: "fw-medium text-decoration-none" %>
+              <span class="badge bg-light text-dark is-small ms-1"><%= pr.project.name %></span>
+            </div>
+            <span class="badge bg-<%= pr.status == 'review' ? 'primary' : 'success' %>"><%= pr.status.capitalize %></span>
+          </div>
+        <% end %>
+        <hr class="my-2">
+      <% end %>
+      <% if @review_queue.empty? %>
+        <p class="text-muted mb-0">Nothing waiting for review. 🎉</p>
+      <% else %>
+        <p class="text-uppercase text-muted fw-bold small mb-1">Awaiting review</p>
+        <% @review_queue.each do |pr| %>
+          <div class="d-flex justify-content-between align-items-center py-1" style="border-bottom:1px solid #f0f0f0;">
+            <div>
+              <%= link_to "##{pr.pr_number} #{pr.title.truncate(46)}", cockpit_pull_request_path(pr), class: "fw-medium text-decoration-none" %>
+              <span class="badge bg-light text-dark is-small ms-1"><%= pr.project.name %></span>
+              <% if pr.author.present? %><span class="fs-8 text-muted ms-1">by <%= pr.author %></span><% end %>
+            </div>
+            <%= link_to "Review →", cockpit_pull_request_path(pr), class: "btn btn-sm btn-outline-primary py-0" %>
           </div>
         <% end %>
       <% end %>
