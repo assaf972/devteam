@@ -1,6 +1,6 @@
 # Tasks under a ticket — the small, estimable units that make up a story.
 class TasksController < ApplicationController
-  before_action :set_ticket, only: :create
+  before_action :set_ticket, only: %i[create complete_all]
   before_action :set_task,   only: %i[update destroy start complete reopen]
 
   def create
@@ -34,6 +34,11 @@ class TasksController < ApplicationController
   def reopen
     @task.reopen!
     redirect_to ticket_path(@task.ticket, anchor: "tasks"), notice: "Task reopened."
+  end
+
+  def complete_all
+    @ticket.tasks.where(completed_at: nil).each(&:complete!)
+    redirect_to edit_ticket_path(@ticket, section: "dev"), notice: "All tasks marked done."
   end
 
   def destroy

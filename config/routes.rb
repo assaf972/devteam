@@ -249,6 +249,9 @@ Rails.application.routes.draw do
         patch :complete
         patch :reopen
       end
+      collection do
+        post :complete_all
+      end
     end
   end
 

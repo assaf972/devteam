@@ -13,26 +13,311 @@
   <div class="alert alert-light fs-7">Draft stage — fill in the basics, then <strong>approve</strong> the ticket to refine and estimate it.</div>
 <% end %>
 
-<%# Switch between the short specs form and the short estimation form. %>
+<%# ── Tabs ────────────────────────────────────────────────────────────────── %>
 <ul class="nav nav-pills mb-3">
   <li class="nav-item">
-    <%= link_to "📝 Specs", edit_ticket_path(@ticket, section: "specs"),
-          class: "nav-link #{'active' if @section == 'specs'}" %>
+    <%= link_to edit_ticket_path(@ticket, section: "specs"),
+          class: "nav-link #{'active' if @section == 'specs'}" do %>
+      📝 Specs
+    <% end %>
   </li>
   <li class="nav-item">
-    <%= link_to "📊 Estimation", edit_ticket_path(@ticket, section: "estimation"),
-          class: "nav-link #{'active' if @section == 'estimation'}" %>
+    <%= link_to edit_ticket_path(@ticket, section: "estimation"),
+          class: "nav-link #{'active' if @section == 'estimation'}" do %>
+      📊 Estimation
+      <% progress = @ticket.task_progress %>
+      <% if progress[:total] > 0 %>
+        <span class="badge bg-light text-dark ms-1 border" style="font-size:.68rem;">
+          <%= progress[:completed] %>/<%= progress[:total] %>
+        </span>
+      <% end %>
+    <% end %>
+  </li>
+  <li class="nav-item">
+    <%= link_to edit_ticket_path(@ticket, section: "dev"),
+          class: "nav-link #{'active' if @section == 'dev'}" do %>
+      💻 Dev
+      <% if @ticket.in_progress? %>
+        <span class="badge bg-primary ms-1" style="font-size:.68rem;">active</span>
+      <% end %>
+    <% end %>
   </li>
 </ul>
 
-<%= render "form", ticket: @ticket, section: @section %>
+<%# ── SPECS tab ───────────────────────────────────────────────────────────── %>
+<% if @section == "specs" %>
+  <%= render "form", ticket: @ticket, section: @section %>
+<% end %>
 
-<% if @ticket.estimated? %>
-  <div class="d-flex align-items-center mb-2 mt-4">
+<%# ── ESTIMATION tab ──────────────────────────────────────────────────────── %>
+<% if @section == "estimation" %>
+  <%= render "form", ticket: @ticket, section: @section %>
+
+  <%# ── Tasks ── %>
+  <div class="d-flex align-items-center mb-2 mt-4 gap-2 flex-wrap">
     <h2 class="fs-5 fw-bold mb-0">🧩 Tasks</h2>
-    <%= button_to "🤖 Generate tasks & estimations", tools_ai_generate_tasks_path(ticket_id: @ticket.id),
-          method: :post, class: "btn btn-sm btn-outline-primary ms-auto" %>
+    <% progress = @ticket.task_progress %>
+    <% if progress[:total] > 0 %>
+      <span class="badge bg-<%= progress[:percent] == 100 ? 'success' : 'secondary' %>">
+        <%= progress[:percent] %>% · <%= progress[:completed] %>/<%= progress[:total] %> done
+      </span>
+      <% if @ticket.total_tasks_estimation.to_f.positive? %>
+        <span class="badge bg-light text-dark border">⏱ <%= @ticket.total_tasks_estimation %>h est.</span>
+      <% end %>
+    <% end %>
+
+    <%# AI generate button %>
+    <%= button_to tools_ai_generate_tasks_path(ticket_id: @ticket.id),
+          method: :post,
+          class: "btn btn-sm btn-outline-primary ms-auto",
+          data: { turbo_confirm: @ticket.tasks.any? ? "This will add AI-generated tasks to the existing list. Continue?" : nil } do %>
+      🤖 AI Task Breakdown
+    <% end %>
   </div>
-  <p class="text-muted fs-7">This ticket is estimated — break it into tasks (or let the AI generate them with calibrated estimates).</p>
-  <%= render "tickets/tasks", ticket: @ticket %>
+  <p class="text-muted fs-7 mb-3">
+    Break this ticket into small, estimable tasks. Use <strong>🤖 AI Task Breakdown</strong> to auto-generate tasks with
+    calibrated time estimates based on your team's history.
+  </p>
+
+  <div class="card p-0 mb-3" id="tasks">
+    <%# Progress bar %>
+    <% if progress[:total] > 0 %>
+      <div class="px-3 pt-3">
+        <div class="progress" style="height:6px;">
+          <div class="progress-bar bg-success" style="width:<%= progress[:percent] %>%"></div>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @ticket.tasks.ordered.any? %>
+      <table class="table table-hover align-middle mb-0 fs-7 mt-2">
+        <thead class="table-light">
+          <tr>
+            <th>Description</th>
+            <th style="width:90px;">Estimate</th>
+            <th style="width:90px;">Actual</th>
+            <th style="width:110px;">Assignee</th>
+            <th style="width:110px;">Status</th>
+            <th style="width:90px;" class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @ticket.tasks.ordered.each do |task| %>
+            <tr>
+              <td class="<%= 'text-decoration-line-through text-muted' if task.completed? %>">
+                <%= task.description %>
+              </td>
+              <td class="text-muted"><%= task.estimation.presence || "—" %></td>
+              <td class="text-muted"><%= task.actual.presence || "—" %></td>
+              <td class="text-muted"><%= task.user&.display_name || "—" %></td>
+              <td><span class="badge <%= task.status_badge_class %>"><%= task.status.humanize %></span></td>
+              <td class="text-end text-nowrap">
+                <%= button_to "🗑", ticket_task_path(@ticket, task), method: :delete,
+                      class: "btn btn-sm btn-outline-danger py-0",
+                      data: { turbo_confirm: "Delete this task?" } %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <p class="text-muted fs-7 p-3 mb-0">No tasks yet. Add one below, or click <strong>🤖 AI Task Breakdown</strong> to generate them automatically.</p>
+    <% end %>
+
+    <%# Add task form %>
+    <%= form_with url: ticket_tasks_path(@ticket), method: :post, class: "p-3 border-top" do %>
+      <div class="row g-2 align-items-end">
+        <div class="col-5">
+          <label class="form-label fw-semibold fs-7 mb-1">Description</label>
+          <input type="text" name="task[description]" class="form-control form-control-sm" placeholder="New task…" required>
+        </div>
+        <div class="col-2">
+          <label class="form-label fw-semibold fs-7 mb-1">Estimate</label>
+          <input type="text" name="task[estimation]" class="form-control form-control-sm" placeholder="e.g. 2h, 1d">
+        </div>
+        <div class="col-3">
+          <label class="form-label fw-semibold fs-7 mb-1">Assignee</label>
+          <select name="task[user_id]" class="form-select form-select-sm">
+            <option value="">— Anyone —</option>
+            <% User.order(:name).each do |u| %>
+              <option value="<%= u.id %>" <%= 'selected' if u.id == @ticket.assignee_id %>><%= u.display_name %></option>
+            <% end %>
+          </select>
+        </div>
+        <div class="col-2">
+          <%= submit_tag "＋ Add Task", class: "btn btn-sm btn-primary w-100" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+
+<%# ── DEV tab ─────────────────────────────────────────────────────────────── %>
+<% if @section == "dev" %>
+  <% tasks = @ticket.tasks.ordered %>
+  <% progress = @ticket.task_progress %>
+
+  <%# ── Status & quick actions bar ── %>
+  <div class="card p-3 mb-3">
+    <div class="d-flex align-items-center flex-wrap gap-3">
+      <div>
+        <div class="fs-7 text-muted text-uppercase fw-semibold mb-1">Ticket status</div>
+        <span class="badge fs-6 bg-<%= @ticket.done? ? 'success' : @ticket.in_progress? ? 'primary' : 'secondary' %>">
+          <%= @ticket.status.humanize %>
+        </span>
+      </div>
+
+      <% if @ticket.branch_name_for_ticket.present? %>
+        <div>
+          <div class="fs-7 text-muted text-uppercase fw-semibold mb-1">Branch</div>
+          <code class="fs-7"><%= @ticket.branch_name_for_ticket %></code>
+        </div>
+      <% end %>
+
+      <% if progress[:total] > 0 %>
+        <div>
+          <div class="fs-7 text-muted text-uppercase fw-semibold mb-1">Task progress</div>
+          <div class="d-flex align-items-center gap-2">
+            <div class="progress" style="width:100px;height:8px;">
+              <div class="progress-bar bg-success" style="width:<%= progress[:percent] %>%"></div>
+            </div>
+            <span class="fs-7"><%= progress[:completed] %>/<%= progress[:total] %></span>
+          </div>
+        </div>
+      <% end %>
+
+      <div class="ms-auto d-flex gap-2 flex-wrap">
+        <%# Start work — show when not in progress %>
+        <% unless @ticket.in_progress? || @ticket.done? %>
+          <%= button_to "▶ Start work", ticket_path(@ticket),
+                method: :patch, params: { ticket: { status: "in_progress" }, section: "dev" },
+                class: "btn btn-primary btn-sm" %>
+        <% end %>
+
+        <%# Mark done %>
+        <% unless @ticket.done? %>
+          <%= button_to "✓ Mark as done", ticket_path(@ticket),
+                method: :patch, params: { ticket: { status: "done" }, section: "dev" },
+                class: "btn btn-success btn-sm",
+                data: { turbo_confirm: "Mark ticket as done? This will also complete any open tasks." } %>
+        <% end %>
+
+        <%# Reopen %>
+        <% if @ticket.done? %>
+          <%= button_to "↺ Reopen", ticket_path(@ticket),
+                method: :patch, params: { ticket: { status: "in_progress" }, section: "dev" },
+                class: "btn btn-outline-secondary btn-sm" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <%# ── Actual hours ── %>
+  <div class="card p-3 mb-3">
+    <h3 class="fs-6 fw-bold mb-3">⏱ Actual Hours</h3>
+    <%= form_with url: ticket_path(@ticket), method: :patch, class: "row g-2 align-items-end" do |f| %>
+      <%= hidden_field_tag :section, "dev" %>
+      <div class="col-md-4">
+        <label class="form-label fw-semibold fs-7">Total actual hours (e.g. 2d 4h)</label>
+        <input type="text" name="ticket[actual_hours]" class="form-control form-control-sm"
+               value="<%= @ticket.actual_hours %>" placeholder="e.g. 1d 4h, 6h">
+      </div>
+      <div class="col-md-3">
+        <%= submit_tag "Save", class: "btn btn-sm btn-outline-primary" %>
+      </div>
+    <% end %>
+  </div>
+
+  <%# ── Tasks worklist ── %>
+  <div class="d-flex align-items-center mb-2 gap-2">
+    <h2 class="fs-5 fw-bold mb-0">🧩 Tasks</h2>
+    <% if progress[:total] > 0 %>
+      <span class="badge bg-<%= progress[:percent] == 100 ? 'success' : 'secondary' %>">
+        <%= progress[:percent] %>% · <%= progress[:completed] %>/<%= progress[:total] %> done
+      </span>
+    <% end %>
+    <% if tasks.none? %>
+      <%= link_to "＋ Go add tasks", edit_ticket_path(@ticket, section: "estimation"),
+            class: "btn btn-sm btn-outline-secondary ms-auto" %>
+    <% end %>
+  </div>
+
+  <% if tasks.none? %>
+    <div class="card p-4 text-center text-muted fs-7">
+      No tasks yet. Switch to the <strong>Estimation</strong> tab to add or generate tasks first.
+    </div>
+  <% else %>
+    <div class="card p-0 mb-3">
+      <% tasks.each_with_index do |task, idx| %>
+        <div class="d-flex align-items-start gap-3 px-3 py-3 <%= idx < tasks.size - 1 ? 'border-bottom' : '' %>">
+
+          <%# Status indicator %>
+          <div class="pt-1">
+            <% if task.completed? %>
+              <span style="font-size:1.3rem;">✅</span>
+            <% elsif task.status == "in_progress" %>
+              <span style="font-size:1.3rem;">⚙️</span>
+            <% else %>
+              <span style="font-size:1.3rem;">⬜</span>
+            <% end %>
+          </div>
+
+          <%# Description + meta %>
+          <div class="flex-grow-1">
+            <div class="fw-semibold <%= 'text-decoration-line-through text-muted' if task.completed? %>">
+              <%= task.description %>
+            </div>
+            <div class="fs-7 text-muted mt-1 d-flex flex-wrap gap-3">
+              <% if task.estimation.present? %>
+                <span>📐 est: <strong><%= task.estimation %></strong></span>
+              <% end %>
+              <% if task.actual.present? %>
+                <span>⏱ actual: <strong><%= task.actual %></strong></span>
+              <% end %>
+              <% if task.user %>
+                <span>👤 <%= task.user.display_name %></span>
+              <% end %>
+              <% if task.started_at %>
+                <span class="text-muted">started <%= task.started_at.strftime("%-d %b %H:%M") %></span>
+              <% end %>
+              <% if task.completed_at %>
+                <span class="text-success">done <%= task.completed_at.strftime("%-d %b %H:%M") %></span>
+              <% end %>
+            </div>
+
+            <%# Inline actual hours edit %>
+            <%= form_with url: ticket_task_path(@ticket, task), method: :patch, class: "mt-2 d-flex gap-2 align-items-center" do %>
+              <input type="text" name="task[actual]" class="form-control form-control-sm"
+                     style="max-width:110px;" value="<%= task.actual %>" placeholder="actual (e.g. 3h)">
+              <%= submit_tag "Save", class: "btn btn-sm btn-outline-secondary py-0" %>
+            <% end %>
+          </div>
+
+          <%# Action buttons %>
+          <div class="d-flex flex-column gap-1 flex-shrink-0">
+            <% if task.status == "not_started" %>
+              <%= button_to "▶ Start", start_ticket_task_path(@ticket, task), method: :patch,
+                    class: "btn btn-sm btn-outline-primary py-0" %>
+            <% end %>
+            <% unless task.completed? %>
+              <%= button_to "✓ Done", complete_ticket_task_path(@ticket, task), method: :patch,
+                    class: "btn btn-sm btn-success py-0" %>
+            <% else %>
+              <%= button_to "↺ Reopen", reopen_ticket_task_path(@ticket, task), method: :patch,
+                    class: "btn btn-sm btn-outline-secondary py-0" %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <%# Complete all remaining shortcut %>
+      <% if tasks.any? && !tasks.all?(&:completed?) %>
+        <div class="px-3 py-2 border-top bg-light d-flex justify-content-end gap-2">
+          <%= button_to "✓ Complete all tasks", complete_all_ticket_tasks_path(@ticket),
+                method: :post, class: "btn btn-sm btn-outline-success",
+                data: { turbo_confirm: "Mark all tasks as done?" } %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
 <% end %>

@@ -97,7 +97,11 @@ class TicketsController < ApplicationController
       if @ticket.saved_change_to_status?
         @ticket.watchers.each { |w| TicketMailer.status_changed(@ticket, w).deliver_later }
       end
-      redirect_to @ticket, notice: t("tickets.updated")
+      if params[:section].present?
+        redirect_to edit_ticket_path(@ticket, section: params[:section]), notice: t("tickets.updated")
+      else
+        redirect_to @ticket, notice: t("tickets.updated")
+      end
     else
       render :edit, status: :unprocessable_entity
     end
@@ -172,7 +176,7 @@ class TicketsController < ApplicationController
   # Which slice of the ticket form to render: "specs" (the basics) or
   # "estimation" (refinement & estimation). Keeps each form short.
   def edit_section
-    %w[specs estimation].include?(params[:section]) ? params[:section] : "specs"
+    %w[specs estimation dev].include?(params[:section]) ? params[:section] : "specs"
   end
 
   def ticket_params
