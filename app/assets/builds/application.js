@@ -20254,6 +20254,35 @@ var pr_files_controller_default = class extends Controller {
   }
 };
 
+// app/javascript/controllers/deploy_form_controller.js
+var deploy_form_controller_default = class extends Controller {
+  static targets = ["project", "tag"];
+  static values = { tags: Object };
+  connect() {
+    this.populate();
+  }
+  populate() {
+    const id = this.projectTarget.value;
+    const tags = this.tagsValue[id] || [];
+    this.tagTarget.innerHTML = "";
+    if (tags.length === 0) {
+      const opt = document.createElement("option");
+      opt.value = "";
+      opt.textContent = "No passing CI builds for this project";
+      this.tagTarget.appendChild(opt);
+      this.tagTarget.disabled = true;
+      return;
+    }
+    this.tagTarget.disabled = false;
+    tags.forEach((t5) => {
+      const opt = document.createElement("option");
+      opt.value = t5.tag;
+      opt.textContent = t5.label;
+      this.tagTarget.appendChild(opt);
+    });
+  }
+};
+
 // app/javascript/controllers/gherkin_editor_controller.js
 var gherkin_editor_controller_default = class extends Controller {
   static targets = ["input", "highlight"];
@@ -20299,6 +20328,7 @@ application.register("log-viewer", log_viewer_controller_default);
 application.register("quick-contact", quick_contact_controller_default);
 application.register("ai-chat", ai_chat_controller_default);
 application.register("pr-files", pr_files_controller_default);
+application.register("deploy-form", deploy_form_controller_default);
 application.register("gherkin-editor", gherkin_editor_controller_default);
 
 // node_modules/@popperjs/core/lib/index.js

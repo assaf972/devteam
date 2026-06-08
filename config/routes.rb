@@ -62,6 +62,10 @@ Rails.application.routes.draw do
   get "servers",      to: "servers#index", as: :servers
   get "server",       to: "servers#show",  as: :server   # ?ip=<ip_address>
 
+  # ── Deploy console (wraps the external deploy backend) ──────────────────────
+  get  "deploy", to: "deploy#index",  as: :deploy
+  post "deploy", to: "deploy#create"
+
   # ── Log Viewer (reads the central Loki store) ───────────────────────────────
   get "logs",      to: "log_viewer#index", as: :log_viewer
   get "logs/tail", to: "log_viewer#tail",  as: :log_viewer_tail

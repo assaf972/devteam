@@ -108,6 +108,11 @@
     <span class="nav-icon">🖥️</span> <%= t('sidebar.ci.servers') %>
   <% end %>
 
+  <%= link_to deploy_path,
+        class: "sidebar-nav-item #{controller_name == 'deploy' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">🚀</span> Deploy
+  <% end %>
+
   <hr class="sidebar-divider">
 
   <%# ── AI Agent ─────────────────────────────────────────────────────── %>
