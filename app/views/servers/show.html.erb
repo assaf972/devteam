@@ -15,7 +15,8 @@
       </p>
     </div>
   </div>
-  <div class="level-right">
+  <div class="level-right d-flex align-items-center gap-2">
+    <%= link_to "🐳 Docker console", server_console_path(ip: @ip), class: "btn btn-dark btn-sm" %>
     <%= form_with url: server_path, method: :get, class: "d-flex align-items-center gap-2" do %>
       <%= hidden_field_tag :ip, @ip %>
       <label class="fs-7 text-muted mb-0">Window</label>

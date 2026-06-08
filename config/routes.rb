@@ -59,8 +59,23 @@ Rails.application.routes.draw do
       constraints: { kind: /planning|refinement|review/ }
 
   # ── Server / remote-machine monitoring (heartbeats) ─────────────────────────
-  get "servers",      to: "servers#index", as: :servers
-  get "server",       to: "servers#show",  as: :server   # ?ip=<ip_address>
+  get "servers",        to: "servers#index",   as: :servers
+  get "server",         to: "servers#show",    as: :server          # ?ip=<ip_address>
+  get  "server/console", to: "servers#console", as: :server_console # ?ip=<ip_address>
+  post "server/docker",  to: "servers#docker",  as: :server_docker
+
+  # ── Deploy console (wraps the external deploy backend) ──────────────────────
+  get  "deploy", to: "deploy#index",  as: :deploy
+  post "deploy", to: "deploy#create"
+
+  # ── Release timeline + rollback ─────────────────────────────────────────────
+  get  "releases",             to: "releases#index",    as: :releases
+  post "releases/:id/rollback", to: "releases#rollback", as: :rollback_release
+
+  # ── AI chat terminal (agentic console) ──────────────────────────────────────
+  get  "assistant",         to: "assistant#index",   as: :assistant
+  post "assistant/message", to: "assistant#message", as: :assistant_message
+  post "assistant/clear",   to: "assistant#clear",   as: :assistant_clear
 
   # ── Log Viewer (reads the central Loki store) ───────────────────────────────
   get "logs",      to: "log_viewer#index", as: :log_viewer
@@ -172,7 +187,11 @@ Rails.application.routes.draw do
     end
     resources :branches, only: [ :index, :show ], shallow: true
     resources :pull_requests, only: [ :index, :show ], shallow: true do
-      member { post :sync }
+      member do
+        post :sync
+        get  :cockpit
+        post :merge
+      end
     end
     resources :project_memberships, only: %i[create destroy]
     resources :activities,           only: %i[index]

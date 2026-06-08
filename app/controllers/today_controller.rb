@@ -79,6 +79,18 @@ class TodayController < ApplicationController
     @jenkins_url = ENV.fetch("JENKINS_URL", "http://localhost:8080")
     @gitea_url   = ENV.fetch("GITEA_URL",   "http://localhost:3000")
 
+    # ── Active sprints (my projects first, else org-wide) ──────────────────────
+    @active_sprints = Sprint.active.where(project_id: my_project_ids)
+                            .includes(:project).order(:end_date).to_a
+    @active_sprints = Sprint.active.includes(:project).order(:end_date).to_a if @active_sprints.empty?
+
+    # ── Review queue: PRs awaiting review + my own open PRs ─────────────────────
+    @review_queue = PullRequest.where(status: %i[open review])
+                               .includes(:project, :ticket)
+                               .order(updated_at: :desc).limit(10)
+    @my_open_prs  = PullRequest.where(status: %i[open review], author: current_user.display_name)
+                               .includes(:project).order(updated_at: :desc).limit(10)
+
     # ── Summary counters ──────────────────────────────────────────────────────
     @summary = {
       active_tickets:    @my_active_tickets.count,

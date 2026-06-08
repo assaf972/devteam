@@ -31,5 +31,11 @@ application.register("ai-chat", AiChatController)
 import PrFilesController from "./pr_files_controller"
 application.register("pr-files", PrFilesController)
 
+import DeployFormController from "./deploy_form_controller"
+application.register("deploy-form", DeployFormController)
+
+import ConflictResolverController from "./conflict_resolver_controller"
+application.register("conflict-resolver", ConflictResolverController)
+
 import GherkinEditorController from "./gherkin_editor_controller"
 application.register("gherkin-editor", GherkinEditorController)

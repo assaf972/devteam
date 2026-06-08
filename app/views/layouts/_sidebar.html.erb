@@ -88,11 +88,6 @@
     <span class="nav-icon">✅</span> <%= t('sidebar.ci.test_results') %>
   <% end %>
 
-  <%= link_to reports_deployment_summary_path,
-        class: "sidebar-nav-item #{controller_name == 'reports' && action_name == 'deployment_summary' ? 'is-active' : ''}" do %>
-    <span class="nav-icon">🚀</span> <%= t('sidebar.ci.deployments') %>
-  <% end %>
-
   <%= link_to log_viewer_path,
         class: "sidebar-nav-item #{controller_name == 'log_viewer' ? 'is-active' : ''}" do %>
     <span class="nav-icon">📜</span> <%= t('sidebar.ci.logs') %>
@@ -108,10 +103,25 @@
     <span class="nav-icon">🖥️</span> <%= t('sidebar.ci.servers') %>
   <% end %>
 
+  <%= link_to deploy_path,
+        class: "sidebar-nav-item #{controller_name == 'deploy' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">🚀</span> Deploy
+  <% end %>
+
+  <%= link_to releases_path,
+        class: "sidebar-nav-item #{controller_name == 'releases' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">🗓️</span> Releases
+  <% end %>
+
   <hr class="sidebar-divider">
 
   <%# ── AI Agent ─────────────────────────────────────────────────────── %>
   <div class="sidebar-section-label"><%= t('sidebar.ai_label') %></div>
+
+  <%= link_to assistant_path,
+        class: "sidebar-nav-item #{controller_name == 'assistant' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">💬</span> Assistant
+  <% end %>
 
   <%= link_to tools_ai_path,
         class: "sidebar-nav-item #{controller_path == 'tools/ai' && action_name == 'index' ? 'is-active' : ''}" do %>
