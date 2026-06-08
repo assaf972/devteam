@@ -37,6 +37,16 @@ module Ops
       raise Error, "Docker host #{@server_ip} unreachable: #{e.message}"
     end
 
+    # Last 200 log lines for a container.
+    def container_logs(container)
+      return demo_logs(container) unless configured?
+      resp = @conn.get("/containers/#{container}/logs", stdout: true, stderr: true, tail: 200)
+      return "(no logs)" unless resp.success?
+      resp.body.to_s.gsub(/[\x00-\x08\x0b\x0c\x0e-\x1f]/, "")
+    rescue Faraday::Error => e
+      raise Error, "Could not fetch logs for #{container}: #{e.message}"
+    end
+
     def dockerfile  = read_file("Dockerfile")        || demo_dockerfile
     def compose_file = read_file("docker-compose.yml") || demo_compose
 
@@ -85,6 +95,22 @@ module Ops
         { "name" => "redis",    "image" => "redis:7",                     "status" => "Up 12 days",   "state" => "running", "ports" => "6379→6379" },
         { "name" => "nginx",    "image" => "nginx:1.27",                  "status" => "Restarting",   "state" => "restarting", "ports" => "80→80, 443→443" }
       ]
+    end
+
+    def demo_logs(container)
+      <<~LOGS
+        2026-06-08T08:01:12Z [info]  Starting #{container}...
+        2026-06-08T08:01:13Z [info]  Loaded configuration from /etc/app/config.yml
+        2026-06-08T08:01:14Z [info]  Database connection established
+        2026-06-08T08:01:15Z [info]  Server listening on 0.0.0.0:3000
+        2026-06-08T09:15:02Z [info]  GET /health 200 1ms
+        2026-06-08T09:15:33Z [info]  POST /api/v1/tickets 201 12ms
+        2026-06-08T09:16:44Z [warn]  Slow query detected (245ms): SELECT * FROM tickets WHERE ...
+        2026-06-08T09:17:01Z [info]  GET /api/v1/projects 200 3ms
+        2026-06-08T10:00:00Z [info]  Background job processed: SendNotificationJob
+        2026-06-08T10:05:11Z [error] Retrying Sidekiq job (attempt 2/3): NetworkError
+        2026-06-08T10:05:41Z [info]  Sidekiq job succeeded on retry
+      LOGS
     end
 
     def demo_dockerfile

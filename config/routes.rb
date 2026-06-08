@@ -64,6 +64,11 @@ Rails.application.routes.draw do
   get  "server/console", to: "servers#console", as: :server_console # ?ip=<ip_address>
   post "server/docker",  to: "servers#docker",  as: :server_docker
 
+  # ── Docker containers dashboard (multi-server) ─────────────────────────────
+  get  "docker",               to: "docker_containers#index",  as: :docker_containers
+  post "docker/action",        to: "docker_containers#action", as: :docker_containers_action
+  get  "docker/logs",          to: "docker_containers#logs",   as: :docker_containers_logs
+
   # ── Deploy console (wraps the external deploy backend) ──────────────────────
   get  "deploy", to: "deploy#index",  as: :deploy
   post "deploy", to: "deploy#create"

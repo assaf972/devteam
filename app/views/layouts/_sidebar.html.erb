@@ -103,6 +103,11 @@
     <span class="nav-icon">🖥️</span> <%= t('sidebar.ci.servers') %>
   <% end %>
 
+  <%= link_to docker_containers_path,
+        class: "sidebar-nav-item #{controller_name == 'docker_containers' ? 'is-active' : ''}" do %>
+    <span class="nav-icon">🐳</span> Docker
+  <% end %>
+
   <%= link_to deploy_path,
         class: "sidebar-nav-item #{controller_name == 'deploy' ? 'is-active' : ''}" do %>
     <span class="nav-icon">🚀</span> Deploy
