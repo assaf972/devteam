@@ -88,11 +88,6 @@
     <span class="nav-icon">✅</span> <%= t('sidebar.ci.test_results') %>
   <% end %>
 
-  <%= link_to reports_deployment_summary_path,
-        class: "sidebar-nav-item #{controller_name == 'reports' && action_name == 'deployment_summary' ? 'is-active' : ''}" do %>
-    <span class="nav-icon">🚀</span> <%= t('sidebar.ci.deployments') %>
-  <% end %>
-
   <%= link_to log_viewer_path,
         class: "sidebar-nav-item #{controller_name == 'log_viewer' ? 'is-active' : ''}" do %>
     <span class="nav-icon">📜</span> <%= t('sidebar.ci.logs') %>
