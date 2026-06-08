@@ -84,6 +84,16 @@ class TodayController < ApplicationController
                             .includes(:project).order(:end_date).to_a
     @active_sprints = Sprint.active.includes(:project).order(:end_date).to_a if @active_sprints.empty?
 
+    # Preload per-sprint ticket status counts in one query to avoid N+1.
+    sprint_ids = @active_sprints.map(&:id)
+    raw_counts = Ticket.where(sprint_id: sprint_ids)
+                       .group(:sprint_id, :status)
+                       .count
+    # Build a hash: sprint_id => { status_int => count }
+    @sprint_ticket_counts = raw_counts.each_with_object(Hash.new { |h, k| h[k] = {} }) do |((sid, st), cnt), h|
+      h[sid][st] = cnt
+    end
+
     # ── Review queue: PRs awaiting review + my own open PRs ─────────────────────
     @review_queue = PullRequest.where(status: %i[open review])
                                .includes(:project, :ticket)
