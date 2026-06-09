@@ -15,6 +15,10 @@
           <% d.button_action "Set as current", activate_sprint_path(sprint), icon: '★',
                 confirm: "Make \"#{sprint.name}\" the current sprint? The previous current sprint will be closed." %>
         <% end %>
+        <% unless sprint.planning? %>
+          <% d.button_action "Set as Planning", set_as_planning_sprint_path(sprint), icon: '📋',
+                confirm: "Move \"#{sprint.name}\" back to planning mode?" %>
+        <% end %>
         <% d.link t('common.actions.edit'), edit_sprint_path(sprint), icon: '✏️' %>
         <% d.divider %>
         <% d.delete t('common.delete'), sprint_path(sprint), confirm: t('common.confirm_delete') %>

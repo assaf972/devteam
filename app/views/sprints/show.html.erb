@@ -24,8 +24,14 @@
     <% status_colors = { "planning" => "bg-info", "active" => "bg-success", "completed" => "bg-secondary", "cancelled" => "bg-danger" } %>
     <% if @sprint.current? %>
       <span class="badge bg-success align-self-center">★ Current sprint</span>
+      <%= button_to "📋 Set as Planning", set_as_planning_sprint_path(@sprint), method: :patch, class: "btn btn-outline-info btn-sm",
+            form: { data: { turbo_confirm: "Move \"#{@sprint.name}\" back to planning mode?" } } %>
     <% else %>
       <span class="badge <%= status_colors[@sprint.status] || "bg-secondary" %> align-self-center"><%= @sprint.status.humanize %></span>
+      <% unless @sprint.planning? %>
+        <%= button_to "📋 Set as Planning", set_as_planning_sprint_path(@sprint), method: :patch, class: "btn btn-outline-info btn-sm",
+              form: { data: { turbo_confirm: "Move \"#{@sprint.name}\" back to planning mode?" } } %>
+      <% end %>
       <%= button_to "★ Set as current", activate_sprint_path(@sprint), method: :patch, class: "btn btn-success btn-sm",
             form: { data: { turbo_confirm: "Make this the current sprint for #{@project.name}? The previous current sprint will be closed." } } %>
     <% end %>
@@ -97,8 +103,15 @@
             <td><%= render "tickets/people", ticket: ticket, size: 22 %></td>
             <td><%= render "tickets/progress_cell", ticket: ticket %></td>
             <td class="text-end" onclick="event.stopPropagation();" style="cursor:default;">
-              <% if @tab == "needs_estimation" %>
-                <%= link_to "Refine →", edit_ticket_path(ticket), class: "btn btn-outline-primary btn-sm" %>
+              <%= actions_dropdown do |d| %>
+                <% if @tab == "needs_estimation" %>
+                  <% d.link "Refine →", edit_ticket_path(ticket), icon: '✏️' %>
+                  <% d.divider %>
+                <% end %>
+                <% d.button_action t('tickets.move.current_sprint'), move_to_sprint_ticket_path(ticket, target: 'current'), icon: '🏃' %>
+                <% d.button_action t('tickets.move.next_sprint'),    move_to_sprint_ticket_path(ticket, target: 'next'),    icon: '⏭️' %>
+                <% d.divider %>
+                <% d.button_action t('tickets.move.backlog'),        move_to_sprint_ticket_path(ticket, target: 'backlog'), icon: '📥' %>
               <% end %>
             </td>
           </tr>

@@ -173,7 +173,8 @@ Rails.application.routes.draw do
     resources :sprints, shallow: true do
       member do
         get   :dashboard
-        patch :activate   # make this the project's current (active) sprint
+        patch :activate        # make this the project's current (active) sprint
+        patch :set_as_planning # mark this sprint as planning
       end
     end
     resources :milestones, shallow: true

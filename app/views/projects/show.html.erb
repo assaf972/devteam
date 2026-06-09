@@ -175,6 +175,8 @@
                   <% d.button_action "Mark #{t("tickets.statuses.#{st}")}", update_status_ticket_path(ticket, status: st), icon: "→" %>
                 <% end %>
                 <% d.divider %>
+                <% d.button_action t('tickets.move.current_sprint'), move_to_sprint_ticket_path(ticket, target: 'current'), icon: '🏃' %>
+                <% d.button_action t('tickets.move.next_sprint'),    move_to_sprint_ticket_path(ticket, target: 'next'),    icon: '⏭️' %>
                 <% d.button_action "Move to backlog", move_to_sprint_ticket_path(ticket, target: "backlog"), icon: "📥" %>
               <% end %>
             </td>

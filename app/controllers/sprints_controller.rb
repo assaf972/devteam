@@ -1,6 +1,6 @@
 class SprintsController < ApplicationController
   before_action :set_project, only: %i[index new create]
-  before_action :set_sprint,  only: %i[show edit update destroy dashboard activate]
+  before_action :set_sprint,  only: %i[show edit update destroy dashboard activate set_as_planning]
 
   def index
     @sprints = @project.sprints.order(start_date: :desc)
@@ -87,6 +87,11 @@ class SprintsController < ApplicationController
   def activate
     @sprint.make_current!
     redirect_to @sprint, notice: "\"#{@sprint.name}\" is now the current sprint for #{@project.name}."
+  end
+
+  def set_as_planning
+    @sprint.update!(status: :planning)
+    redirect_to @sprint, notice: "\"#{@sprint.name}\" is now in planning mode."
   end
 
   def edit; end
