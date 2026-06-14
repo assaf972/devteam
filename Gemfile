@@ -40,7 +40,7 @@ gem "groupdate"
 gem "ransack"
 
 # In-app notifications
-gem "noticed", "~> 2.0"
+gem "noticed", "~> 3.0"
 
 # APM – Sentry error tracking
 gem "sentry-ruby"
